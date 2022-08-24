@@ -1,0 +1,221 @@
+library(tidyverse)
+library(lubridate)
+library(zoo)
+
+# ---- Manually scrape visa data from Home Office ----
+# - Current figures: https://www.gov.uk/government/publications/ukraine-family-scheme-application-data/ukraine-family-scheme-and-ukraine-sponsorship-scheme-homes-for-ukraine-visa-data
+# - Historical figures: https://web.archive.org/web/*/https://www.gov.uk/government/publications/ukraine-family-scheme-application-data/ukraine-family-scheme-and-ukraine-sponsorship-scheme-homes-for-ukraine-visa-data
+visas_scraped <- tribble(
+  ~Week, ~Date, ~Stage, ~Scheme, ~Visas,
+  1, "2022-03-31", "visa applications received", "Ukraine Family Scheme", 32800,
+  1, "2022-03-31", "visa applications received", "Ukraine Sponsorship Scheme", 32200,
+  1, "2022-03-31", "visas issued", "Ukraine Family Scheme", 24400,
+  1, "2022-03-31", "visas issued", "Ukraine Sponsorship Scheme", 4700,
+  # 1, "2022-03-31", "arrivals of visa-holders in the UK", "Ukraine Family Scheme", NA,
+  # 1, "2022-03-31", "arrivals of visa-holders in the UK", "Ukraine Sponsorship Scheme", NA,
+  
+  2, "2022-04-07", "visa applications received", "Ukraine Family Scheme", 36300,
+  2, "2022-04-07", "visa applications received", "Ukraine Sponsorship Scheme", 43600,
+  2, "2022-04-07", "visas issued", "Ukraine Family Scheme", 28500,
+  2, "2022-04-07", "visas issued", "Ukraine Sponsorship Scheme", 12500,
+  2, "2022-04-05", "arrivals of visa-holders in the UK", "Ukraine Family Scheme", 10800,
+  2, "2022-04-05", "arrivals of visa-holders in the UK", "Ukraine Sponsorship Scheme", 1200,
+  
+  3, "2022-04-13", "visa applications received", "Ukraine Family Scheme", 39100,
+  3, "2022-04-13", "visa applications received", "Ukraine Sponsorship Scheme", 55600,
+  3, "2022-04-13", "visas issued", "Ukraine Family Scheme", 31400,
+  3, "2022-04-13", "visas issued", "Ukraine Sponsorship Scheme", 25100,
+  3, "2022-04-11", "arrivals of visa-holders in the UK", "Ukraine Family Scheme", 13200,
+  3, "2022-04-11", "arrivals of visa-holders in the UK", "Ukraine Sponsorship Scheme", 3200,
+  
+  4, "2022-04-20", "visa applications received", "Ukraine Family Scheme", 41200,
+  4, "2022-04-20", "visa applications received", "Ukraine Sponsorship Scheme", 65900,
+  4, "2022-04-20", "visas issued", "Ukraine Family Scheme", 32500,
+  4, "2022-04-20", "visas issued", "Ukraine Sponsorship Scheme", 39300,
+  4, "2022-04-18", "arrivals of visa-holders in the UK", "Ukraine Family Scheme", 15000,
+  4, "2022-04-18", "arrivals of visa-holders in the UK", "Ukraine Sponsorship Scheme", 6600,
+  
+  5, "2022-04-27", "visa applications received", "Ukraine Family Scheme", 42900,
+  5, "2022-04-27", "visa applications received", "Ukraine Sponsorship Scheme", 74700,
+  5, "2022-04-27", "visas issued", "Ukraine Family Scheme", 34900,
+  5, "2022-04-27", "visas issued", "Ukraine Sponsorship Scheme", 51300,
+  5, "2022-04-25", "arrivals of visa-holders in the UK", "Ukraine Family Scheme", 16000,
+  5, "2022-04-25", "arrivals of visa-holders in the UK", "Ukraine Sponsorship Scheme", 11100,
+  
+  6, "2022-05-05", "visa applications received", "Ukraine Family Scheme", 44200,
+  6, "2022-05-05", "visa applications received", "Ukraine Sponsorship Scheme", 80900,
+  6, "2022-05-05", "visas issued", "Ukraine Family Scheme", 36300,
+  6, "2022-05-05", "visas issued", "Ukraine Sponsorship Scheme", 59100,
+  6, "2022-05-03", "arrivals of visa-holders in the UK", "Ukraine Family Scheme", 17900,
+  6, "2022-05-03", "arrivals of visa-holders in the UK", "Ukraine Sponsorship Scheme", 19500,
+  
+  7, "2022-05-11", "visa applications received", "Ukraine Family Scheme", 42400,
+  7, "2022-05-11", "visa applications received", "Ukraine Sponsorship Scheme", 78000,
+  7, "2022-05-11", "visas issued", "Ukraine Family Scheme", 37500,
+  7, "2022-05-11", "visas issued", "Ukraine Sponsorship Scheme", 64800,
+  7, "2022-05-09", "arrivals of visa-holders in the UK", "Ukraine Family Scheme", 19500,
+  7, "2022-05-09", "arrivals of visa-holders in the UK", "Ukraine Sponsorship Scheme", 26600,
+  
+  8, "2022-05-17", "visa applications received", "Ukraine Family Scheme", 43700,
+  8, "2022-05-17", "visa applications received", "Ukraine Sponsorship Scheme", 84400,
+  8, "2022-05-17", "visas issued", "Ukraine Family Scheme", 38700,
+  8, "2022-05-17", "visas issued", "Ukraine Sponsorship Scheme", 68700,
+  8, "2022-05-16", "arrivals of visa-holders in the UK", "Ukraine Family Scheme", 20800,
+  8, "2022-05-16", "arrivals of visa-holders in the UK", "Ukraine Sponsorship Scheme", 33000,
+  
+  9, "2022-05-24", "visa applications received", "Ukraine Family Scheme", 45000,
+  9, "2022-05-24", "visa applications received", "Ukraine Sponsorship Scheme", 90500,
+  9, "2022-05-24", "visas issued", "Ukraine Family Scheme", 39700,
+  9, "2022-05-24", "visas issued", "Ukraine Sponsorship Scheme", 75300,
+  9, "2022-05-23", "arrivals of visa-holders in the UK", "Ukraine Family Scheme", 22000,
+  9, "2022-05-23", "arrivals of visa-holders in the UK", "Ukraine Sponsorship Scheme", 38100,
+  
+  10, "2022-05-30", "visa applications received", "Ukraine Family Scheme", 46000,
+  10, "2022-05-30", "visa applications received", "Ukraine Sponsorship Scheme", 97900,
+  10, "2022-05-30", "visas issued", "Ukraine Family Scheme", 40300,
+  10, "2022-05-30", "visas issued", "Ukraine Sponsorship Scheme", 79900,
+  10, "2022-05-29", "arrivals of visa-holders in the UK", "Ukraine Family Scheme", 23100,
+  10, "2022-05-29", "arrivals of visa-holders in the UK", "Ukraine Sponsorship Scheme", 42600,
+  
+  11, "2022-06-07", "visa applications received", "Ukraine Family Scheme", 47300,
+  11, "2022-06-07", "visa applications received", "Ukraine Sponsorship Scheme", 107200,
+  11, "2022-06-07", "visas issued", "Ukraine Family Scheme", 41000,
+  11, "2022-06-07", "visas issued", "Ukraine Sponsorship Scheme", 83400,
+  11, "2022-06-06", "arrivals of visa-holders in the UK", "Ukraine Family Scheme", 24000,
+  11, "2022-06-06", "arrivals of visa-holders in the UK", "Ukraine Sponsorship Scheme", 46500,
+  11, "2022-06-07", "applications withdrawn", "Ukraine Family Scheme", 2100,
+  11, "2022-06-07", "applications withdrawn", "Ukraine Sponsorship Scheme", 1900,
+  
+  # Week of 14 June missing and not on archive.org - set as NA
+  12, "2022-06-14", "visa applications received", "Ukraine Family Scheme", NA,
+  12, "2022-06-14", "visa applications received", "Ukraine Sponsorship Scheme", NA,
+  12, "2022-06-14", "visas issued", "Ukraine Family Scheme", NA,
+  12, "2022-06-14", "visas issued", "Ukraine Sponsorship Scheme", NA,
+  12, "2022-06-13", "arrivals of visa-holders in the UK", "Ukraine Family Scheme", NA,
+  12, "2022-06-13", "arrivals of visa-holders in the UK", "Ukraine Sponsorship Scheme", NA,
+  12, "2022-06-14", "applications withdrawn", "Ukraine Family Scheme", NA,
+  12, "2022-06-14", "applications withdrawn", "Ukraine Sponsorship Scheme", NA,
+  
+  13, "2022-06-21", "visa applications received", "Ukraine Family Scheme", 49700,
+  13, "2022-06-21", "visa applications received", "Ukraine Sponsorship Scheme", 111800,
+  13, "2022-06-21", "visas issued", "Ukraine Family Scheme", 43200,
+  13, "2022-06-21", "visas issued", "Ukraine Sponsorship Scheme", 92700,
+  13, "2022-06-20", "arrivals of visa-holders in the UK", "Ukraine Family Scheme", 26700,
+  13, "2022-06-20", "arrivals of visa-holders in the UK", "Ukraine Sponsorship Scheme", 55500,
+  13, "2022-06-21", "applications withdrawn", "Ukraine Family Scheme", 2300,
+  13, "2022-06-21", "applications withdrawn", "Ukraine Sponsorship Scheme", 2100,
+  
+  14, "2022-06-28", "visa applications received", "Ukraine Family Scheme", 50800,
+  14, "2022-06-28", "visa applications received", "Ukraine Sponsorship Scheme", 117800,
+  14, "2022-06-28", "visas issued", "Ukraine Family Scheme", 44100,
+  14, "2022-06-28", "visas issued", "Ukraine Sponsorship Scheme", 98400,
+  14, "2022-06-27", "arrivals of visa-holders in the UK", "Ukraine Family Scheme", 27800,
+  14, "2022-06-27", "arrivals of visa-holders in the UK", "Ukraine Sponsorship Scheme", 58800,
+  14, "2022-06-28", "applications withdrawn", "Ukraine Family Scheme", 2500,
+  14, "2022-06-28", "applications withdrawn", "Ukraine Sponsorship Scheme", 2100,
+  
+  15, "2022-07-05", "visa applications received", "Ukraine Family Scheme", 51900,
+  15, "2022-07-05", "visa applications received", "Ukraine Sponsorship Scheme", 123200,
+  15, "2022-07-05", "visas issued", "Ukraine Family Scheme", 44900,
+  15, "2022-07-05", "visas issued", "Ukraine Sponsorship Scheme", 103300,
+  15, "2022-07-04", "arrivals of visa-holders in the UK", "Ukraine Family Scheme", 28700,
+  15, "2022-07-04", "arrivals of visa-holders in the UK", "Ukraine Sponsorship Scheme", 62300,
+  15, "2022-07-05", "applications withdrawn", "Ukraine Family Scheme", 2600,
+  15, "2022-07-05", "applications withdrawn", "Ukraine Sponsorship Scheme", 2400,
+  
+  16, "2022-07-12", "visa applications received", "Ukraine Family Scheme", 52200,
+  16, "2022-07-12", "visa applications received", "Ukraine Sponsorship Scheme", 135600,
+  16, "2022-07-12", "visas issued", "Ukraine Family Scheme", 45900,
+  16, "2022-07-12", "visas issued", "Ukraine Sponsorship Scheme", 109700,
+  16, "2022-07-11", "arrivals of visa-holders in the UK", "Ukraine Family Scheme", 29700,
+  16, "2022-07-11", "arrivals of visa-holders in the UK", "Ukraine Sponsorship Scheme", 65600,
+  16, "2022-07-12", "applications withdrawn", "Ukraine Family Scheme", 2800,
+  16, "2022-07-12", "applications withdrawn", "Ukraine Sponsorship Scheme", 2500,
+  16, "2022-07-12", "applications refused", "Ukraine Family Scheme", 500,
+  16, "2022-07-12", "applications refused", "Ukraine Sponsorship Scheme", 300,
+  16, "2022-07-12", "applications awaiting conclusion", "Ukraine Family Scheme", 2900,
+  16, "2022-07-12", "applications awaiting conclusion", "Ukraine Sponsorship Scheme", 23000,
+  
+  # Week of 19 June missing and not on archive.org - set as NA
+  17, "2022-07-19", "visa applications received", "Ukraine Family Scheme", NA,
+  17, "2022-07-19", "visa applications received", "Ukraine Sponsorship Scheme", NA,
+  17, "2022-07-19", "visas issued", "Ukraine Family Scheme", NA,
+  17, "2022-07-19", "visas issued", "Ukraine Sponsorship Scheme", NA,
+  17, "2022-07-18", "arrivals of visa-holders in the UK", "Ukraine Family Scheme", NA,
+  17, "2022-07-18", "arrivals of visa-holders in the UK", "Ukraine Sponsorship Scheme", NA,
+  17, "2022-07-19", "applications withdrawn", "Ukraine Family Scheme", NA,
+  17, "2022-07-19", "applications withdrawn", "Ukraine Sponsorship Scheme", NA,
+  17, "2022-07-19", "applications refused", "Ukraine Family Scheme", NA,
+  17, "2022-07-19", "applications refused", "Ukraine Sponsorship Scheme", NA,
+  17, "2022-07-19", "applications awaiting conclusion", "Ukraine Family Scheme", NA,
+  17, "2022-07-19", "applications awaiting conclusion", "Ukraine Sponsorship Scheme", NA,
+  
+  # Week of 26 June missing and not on archive.org - set as NA
+  18, "2022-07-26", "visa applications received", "Ukraine Family Scheme", NA,
+  18, "2022-07-26", "visa applications received", "Ukraine Sponsorship Scheme", NA,
+  18, "2022-07-26", "visas issued", "Ukraine Family Scheme", NA,
+  18, "2022-07-26", "visas issued", "Ukraine Sponsorship Scheme", NA,
+  18, "2022-07-25", "arrivals of visa-holders in the UK", "Ukraine Family Scheme", NA,
+  18, "2022-07-25", "arrivals of visa-holders in the UK", "Ukraine Sponsorship Scheme", NA,
+  18, "2022-07-26", "applications withdrawn", "Ukraine Family Scheme", NA,
+  18, "2022-07-26", "applications withdrawn", "Ukraine Sponsorship Scheme", NA,
+  18, "2022-07-26", "applications refused", "Ukraine Family Scheme", NA,
+  18, "2022-07-26", "applications refused", "Ukraine Sponsorship Scheme", NA,
+  18, "2022-07-26", "applications awaiting conclusion", "Ukraine Family Scheme", NA,
+  18, "2022-07-26", "applications awaiting conclusion", "Ukraine Sponsorship Scheme", NA,
+  
+  19, "2022-08-02", "visa applications received", "Ukraine Family Scheme", 55900,
+  19, "2022-08-02", "visa applications received", "Ukraine Sponsorship Scheme", 145000,
+  19, "2022-08-02", "visas issued", "Ukraine Family Scheme", 48200,
+  19, "2022-08-02", "visas issued", "Ukraine Sponsorship Scheme", 123000,
+  19, "2022-08-01", "arrivals of visa-holders in the UK", "Ukraine Family Scheme", 32100,
+  19, "2022-08-01", "arrivals of visa-holders in the UK", "Ukraine Sponsorship Scheme", 75900,
+  19, "2022-08-02", "applications withdrawn", "Ukraine Family Scheme", 2800,
+  19, "2022-08-02", "applications withdrawn", "Ukraine Sponsorship Scheme", 3300,
+  19, "2022-08-02", "applications refused", "Ukraine Family Scheme", 600,
+  19, "2022-08-02", "applications refused", "Ukraine Sponsorship Scheme", 500,
+  19, "2022-08-02", "applications awaiting conclusion", "Ukraine Family Scheme", 4300,
+  19, "2022-08-02", "applications awaiting conclusion", "Ukraine Sponsorship Scheme", 18200,
+  
+  20, "2022-08-09", "visa applications received", "Ukraine Family Scheme", 56900,
+  20, "2022-08-09", "visa applications received", "Ukraine Sponsorship Scheme", 146200,
+  20, "2022-08-09", "visas issued", "Ukraine Family Scheme", 48800,
+  20, "2022-08-09", "visas issued", "Ukraine Sponsorship Scheme", 125300,
+  20, "2022-08-08", "arrivals of visa-holders in the UK", "Ukraine Family Scheme", 32900,
+  20, "2022-08-08", "arrivals of visa-holders in the UK", "Ukraine Sponsorship Scheme", 79000,
+  20, "2022-08-09", "applications withdrawn", "Ukraine Family Scheme", 2800,
+  20, "2022-08-09", "applications withdrawn", "Ukraine Sponsorship Scheme", 3800,
+  20, "2022-08-09", "applications refused", "Ukraine Family Scheme", 600,
+  20, "2022-08-09", "applications refused", "Ukraine Sponsorship Scheme", 500,
+  20, "2022-08-09", "applications awaiting conclusion", "Ukraine Family Scheme", 4600,
+  20, "2022-08-09", "applications awaiting conclusion", "Ukraine Sponsorship Scheme", 16600,
+  
+  21, "2022-08-16", "visa applications received", "Ukraine Family Scheme", 57700,
+  21, "2022-08-16", "visa applications received", "Ukraine Sponsorship Scheme", 148300,
+  21, "2022-08-16", "visas issued", "Ukraine Family Scheme", 49700,
+  21, "2022-08-16", "visas issued", "Ukraine Sponsorship Scheme", 127300,
+  21, "2022-08-15", "arrivals of visa-holders in the UK", "Ukraine Family Scheme", 33500,
+  21, "2022-08-15", "arrivals of visa-holders in the UK", "Ukraine Sponsorship Scheme", 81700,
+  21, "2022-08-16", "applications withdrawn", "Ukraine Family Scheme", 2900,
+  21, "2022-08-16", "applications withdrawn", "Ukraine Sponsorship Scheme", 4100,
+  21, "2022-08-16", "applications refused", "Ukraine Family Scheme", 600,
+  21, "2022-08-16", "applications refused", "Ukraine Sponsorship Scheme", 500,
+  21, "2022-08-16", "applications awaiting conclusion", "Ukraine Family Scheme", 4500,
+  21, "2022-08-16", "applications awaiting conclusion", "Ukraine Sponsorship Scheme", 16400
+) |>
+  mutate(
+    Date = ymd(Date),
+    Week = week(Date)
+  )
+
+# Interpolate missing values
+visas_scraped <- 
+  visas_scraped |> 
+  group_by(Stage, Scheme) |> 
+  mutate(Visas_imputed = zoo::na.approx(Visas)) 
+
+# visas_arrivals <-
+#   visas_scraped |>
+#   filter(str_detect(Stage, "arrivals")) |>
+#   pivot_wider(names_from = Scheme, values_from = Visas) |>
+#   mutate(Arrivals = `Ukraine Family Scheme` + `Ukraine Sponsorship Scheme`)

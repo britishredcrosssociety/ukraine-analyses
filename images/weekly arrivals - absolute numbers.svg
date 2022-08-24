@@ -1,0 +1,884 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   class="svglite"
+   width="637.80pt"
+   height="425.20pt"
+   viewBox="0 0 637.80 425.20"
+   version="1.1"
+   id="svg269"
+   sodipodi:docname="weekly arrivals - absolute numbers.svg"
+   inkscape:version="1.2.1 (9c6d41e410, 2022-07-14)"
+   inkscape:export-filename="weekly arrivals - absolute numbers.png"
+   inkscape:export-xdpi="96"
+   inkscape:export-ydpi="96"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview271"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="pt"
+     showgrid="false"
+     inkscape:zoom="1.3744679"
+     inkscape:cx="371.78024"
+     inkscape:cy="255.37156"
+     inkscape:window-width="1920"
+     inkscape:window-height="1017"
+     inkscape:window-x="1358"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg269" />
+  <defs
+     id="defs4">
+    <style
+       type="text/css"
+       id="style2"><![CDATA[
+    .svglite line, .svglite polyline, .svglite polygon, .svglite path, .svglite rect, .svglite circle {
+      fill: none;
+      stroke: #000000;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-miterlimit: 10.00;
+    }
+    .svglite text {
+      white-space: pre;
+    }
+  ]]></style>
+  </defs>
+  <rect
+     width="100%"
+     height="100%"
+     style="stroke: none; fill: #FFFFFF;"
+     id="rect6" />
+  <defs
+     id="defs11">
+    <clipPath
+       id="cpMC4wMHw2MzcuODB8MC4wMHw0MjUuMjA=">
+      <rect
+         x="0.00"
+         y="0.00"
+         width="637.80"
+         height="425.20"
+         id="rect8" />
+    </clipPath>
+  </defs>
+  <g
+     clip-path="url(#cpMC4wMHw2MzcuODB8MC4wMHw0MjUuMjA=)"
+     id="g15">
+    <rect
+       x="0.00"
+       y="0.00"
+       width="637.80"
+       height="425.20"
+       style="stroke-width: 1.07; stroke: #FFFFFF; fill: #FFFFFF;"
+       id="rect13" />
+  </g>
+  <defs
+     id="defs20">
+    <clipPath
+       id="cpNDUuMzh8MzI2LjMwfDY3LjY1fDIxOS4xMw==">
+      <rect
+         x="45.38"
+         y="67.65"
+         width="280.92"
+         height="151.48"
+         id="rect17" />
+    </clipPath>
+  </defs>
+  <g
+     clip-path="url(#cpNDUuMzh8MzI2LjMwfDY3LjY1fDIxOS4xMw==)"
+     id="g32">
+    <rect
+       x="45.38"
+       y="67.65"
+       width="280.92"
+       height="151.48"
+       style="stroke-width: 1.07; stroke: none; fill: #FFFFFF;"
+       id="rect22" />
+    <polyline
+       points="45.38,190.08 326.30,190.08 "
+       style="stroke-width: 1.07; stroke: #D3D3D3; stroke-dasharray: 5.69,5.69; stroke-linecap: butt;"
+       id="polyline24" />
+    <polyline
+       points="45.38,144.95 326.30,144.95 "
+       style="stroke-width: 1.07; stroke: #D3D3D3; stroke-dasharray: 5.69,5.69; stroke-linecap: butt;"
+       id="polyline26" />
+    <polyline
+       points="45.38,99.81 326.30,99.81 "
+       style="stroke-width: 1.07; stroke: #D3D3D3; stroke-dasharray: 5.69,5.69; stroke-linecap: butt;"
+       id="polyline28" />
+    <polyline
+       points="137.47,90.69 151.01,112.36 162.62,74.53 178.10,141.79 191.64,151.58 205.18,90.83 218.73,187.01 232.27,162.32 245.81,182.09 259.36,211.43 272.90,170.40 286.44,188.37 299.99,202.72 313.53,212.24 "
+       style="stroke-width: 2.35; stroke: #66C2A5; stroke-linecap: butt;"
+       id="polyline30" />
+  </g>
+  <g
+     clip-path="url(#cpMC4wMHw2MzcuODB8MC4wMHw0MjUuMjA=)"
+     id="g34" />
+  <defs
+     id="defs39">
+    <clipPath
+       id="cpNDUuMzh8MzI2LjMwfDI0MS41M3wzOTMuMDE=">
+      <rect
+         x="45.38"
+         y="241.53"
+         width="280.92"
+         height="151.48"
+         id="rect36" />
+    </clipPath>
+  </defs>
+  <g
+     clip-path="url(#cpNDUuMzh8MzI2LjMwfDI0MS41M3wzOTMuMDE=)"
+     id="g55">
+    <rect
+       x="45.38"
+       y="241.53"
+       width="280.92"
+       height="151.48"
+       style="stroke-width: 1.07; stroke: none; fill: #FFFFFF;"
+       id="rect41" />
+    <polyline
+       points="45.38,386.12 326.30,386.12 "
+       style="stroke-width: 1.07; stroke: #D3D3D3; stroke-dasharray: 5.69,5.69; stroke-linecap: butt;"
+       id="polyline43" />
+    <polyline
+       points="45.38,336.62 326.30,336.62 "
+       style="stroke-width: 1.07; stroke: #D3D3D3; stroke-dasharray: 5.69,5.69; stroke-linecap: butt;"
+       id="polyline45" />
+    <polyline
+       points="45.38,287.12 326.30,287.12 "
+       style="stroke-width: 1.07; stroke: #D3D3D3; stroke-dasharray: 5.69,5.69; stroke-linecap: butt;"
+       id="polyline47" />
+    <polyline
+       points="137.47,364.64 151.01,369.19 162.62,366.22 178.10,368.80 191.64,375.53 205.18,366.32 218.73,373.45 232.27,371.27 245.81,370.58 259.36,376.52 272.90,372.85 286.44,376.02 299.99,377.11 313.53,379.09 "
+       style="stroke-width: 2.35; stroke: #8DA0CB; stroke-linecap: butt;"
+       id="polyline49" />
+    <polyline
+       points="137.47,357.71 151.01,356.02 162.62,342.46 178.10,351.57 191.64,347.02 205.18,314.15 218.73,334.64 232.27,308.11 245.81,307.81 259.36,316.23 272.90,248.41 286.44,254.85 299.99,269.70 313.53,295.14 "
+       style="stroke-width: 2.35; stroke: #8DA0CB; stroke-dasharray: 6.26,6.26; stroke-linecap: butt;"
+       id="polyline51" />
+    <rect
+       x="247.75"
+       y="248.41"
+       width="65.78"
+       height="137.71"
+       style="stroke-width: 1.07; stroke: none; stroke-linecap: square; stroke-linejoin: miter; fill: #595959; fill-opacity: 0.20;"
+       id="rect53" />
+  </g>
+  <g
+     clip-path="url(#cpMC4wMHw2MzcuODB8MC4wMHw0MjUuMjA=)"
+     id="g57" />
+  <defs
+     id="defs62">
+    <clipPath
+       id="cpMzUxLjQwfDYzMi4zMnw2Ny42NXwyMTkuMTM=">
+      <rect
+         x="351.40"
+         y="67.65"
+         width="280.92"
+         height="151.48"
+         id="rect59" />
+    </clipPath>
+  </defs>
+  <g
+     clip-path="url(#cpMzUxLjQwfDYzMi4zMnw2Ny42NXwyMTkuMTM=)"
+     id="g74">
+    <rect
+       x="351.40"
+       y="67.65"
+       width="280.92"
+       height="151.48"
+       style="stroke-width: 1.07; stroke: none; fill: #FFFFFF;"
+       id="rect64" />
+    <polyline
+       points="351.40,188.86 632.32,188.86 "
+       style="stroke-width: 1.07; stroke: #D3D3D3; stroke-dasharray: 5.69,5.69; stroke-linecap: butt;"
+       id="polyline66" />
+    <polyline
+       points="351.40,136.89 632.32,136.89 "
+       style="stroke-width: 1.07; stroke: #D3D3D3; stroke-dasharray: 5.69,5.69; stroke-linecap: butt;"
+       id="polyline68" />
+    <polyline
+       points="351.40,84.93 632.32,84.93 "
+       style="stroke-width: 1.07; stroke: #D3D3D3; stroke-dasharray: 5.69,5.69; stroke-linecap: butt;"
+       id="polyline70" />
+    <polyline
+       points="443.49,121.30 457.03,168.07 468.64,196.65 484.12,188.86 497.66,191.46 511.20,209.65 524.75,157.68 538.29,212.24 551.83,162.88 565.37,209.65 578.92,162.88 592.46,74.53 606.00,183.66 619.55,196.65 "
+       style="stroke-width: 2.35; stroke: #FC8D62; stroke-linecap: butt;"
+       id="polyline72" />
+  </g>
+  <g
+     clip-path="url(#cpMC4wMHw2MzcuODB8MC4wMHw0MjUuMjA=)"
+     id="g76" />
+  <defs
+     id="defs81">
+    <clipPath
+       id="cpMzUxLjQwfDYzMi4zMnwyNDEuNTN8MzkzLjAx">
+      <rect
+         x="351.40"
+         y="241.53"
+         width="280.92"
+         height="151.48"
+         id="rect78" />
+    </clipPath>
+  </defs>
+  <g
+     clip-path="url(#cpMzUxLjQwfDYzMi4zMnwyNDEuNTN8MzkzLjAx)"
+     id="g99">
+    <rect
+       x="351.40"
+       y="241.53"
+       width="280.92"
+       height="151.48"
+       style="stroke-width: 1.07; stroke: none; fill: #FFFFFF;"
+       id="rect83" />
+    <polyline
+       points="351.40,386.12 632.32,386.12 "
+       style="stroke-width: 1.07; stroke: #D3D3D3; stroke-dasharray: 5.69,5.69; stroke-linecap: butt;"
+       id="polyline85" />
+    <polyline
+       points="351.40,341.84 632.32,341.84 "
+       style="stroke-width: 1.07; stroke: #D3D3D3; stroke-dasharray: 5.69,5.69; stroke-linecap: butt;"
+       id="polyline87" />
+    <polyline
+       points="351.40,297.56 632.32,297.56 "
+       style="stroke-width: 1.07; stroke: #D3D3D3; stroke-dasharray: 5.69,5.69; stroke-linecap: butt;"
+       id="polyline89" />
+    <polyline
+       points="351.40,253.28 632.32,253.28 "
+       style="stroke-width: 1.07; stroke: #D3D3D3; stroke-dasharray: 5.69,5.69; stroke-linecap: butt;"
+       id="polyline91" />
+    <polyline
+       points="443.49,297.12 457.03,312.17 468.64,310.40 484.12,329.44 497.66,334.76 511.20,312.17 524.75,338.74 538.29,332.10 551.83,339.63 565.37,362.65 578.92,346.71 592.46,347.15 606.00,351.58 619.55,350.25 "
+       style="stroke-width: 2.35; stroke: #E78AC3; stroke-linecap: butt;"
+       id="polyline93" />
+    <polyline
+       points="443.49,341.40 457.03,344.50 468.64,341.40 484.12,337.41 497.66,303.76 511.20,248.41 524.75,302.88 538.29,254.17 551.83,307.75 565.37,313.94 578.92,312.62 592.46,307.30 606.00,338.30 619.55,338.74 "
+       style="stroke-width: 2.35; stroke: #E78AC3; stroke-dasharray: 6.26,6.26; stroke-linecap: butt;"
+       id="polyline95" />
+    <rect
+       x="489.92"
+       y="248.41"
+       width="129.63"
+       height="137.71"
+       style="stroke-width: 1.07; stroke: none; stroke-linecap: square; stroke-linejoin: miter; fill: #595959; fill-opacity: 0.20;"
+       id="rect97" />
+  </g>
+  <g
+     clip-path="url(#cpMC4wMHw2MzcuODB8MC4wMHw0MjUuMjA=)"
+     id="g101" />
+  <defs
+     id="defs106">
+    <clipPath
+       id="cpNDUuMzh8MzI2LjMwfDIyNC42MXwyNDEuNTM=">
+      <rect
+         x="45.38"
+         y="224.61"
+         width="280.92"
+         height="16.92"
+         id="rect103" />
+    </clipPath>
+  </defs>
+  <g
+     clip-path="url(#cpNDUuMzh8MzI2LjMwfDIyNC42MXwyNDEuNTM=)"
+     id="g112">
+    <rect
+       x="45.38"
+       y="224.61"
+       width="280.92"
+       height="16.92"
+       style="stroke-width: 2.13; fill: #FFFFFF;"
+       id="rect108" />
+    <text
+       x="185.84"
+       y="236.22"
+       text-anchor="middle"
+       style="font-size: 8.80px;fill: #1A1A1A; font-family: &quot;Arial&quot;;"
+       textLength="34.25px"
+       lengthAdjust="spacingAndGlyphs"
+       id="text110">Scotland</text>
+  </g>
+  <g
+     clip-path="url(#cpMC4wMHw2MzcuODB8MC4wMHw0MjUuMjA=)"
+     id="g114" />
+  <defs
+     id="defs119">
+    <clipPath
+       id="cpMzUxLjQwfDYzMi4zMnwyMjQuNjF8MjQxLjUz">
+      <rect
+         x="351.40"
+         y="224.61"
+         width="280.92"
+         height="16.92"
+         id="rect116" />
+    </clipPath>
+  </defs>
+  <g
+     clip-path="url(#cpMzUxLjQwfDYzMi4zMnwyMjQuNjF8MjQxLjUz)"
+     id="g125">
+    <rect
+       x="351.40"
+       y="224.61"
+       width="280.92"
+       height="16.92"
+       style="stroke-width: 2.13; fill: #FFFFFF;"
+       id="rect121" />
+    <text
+       x="491.86"
+       y="236.22"
+       text-anchor="middle"
+       style="font-size: 8.80px;fill: #1A1A1A; font-family: &quot;Arial&quot;;"
+       textLength="24.12px"
+       lengthAdjust="spacingAndGlyphs"
+       id="text123">Wales</text>
+  </g>
+  <g
+     clip-path="url(#cpMC4wMHw2MzcuODB8MC4wMHw0MjUuMjA=)"
+     id="g127" />
+  <defs
+     id="defs132">
+    <clipPath
+       id="cpNDUuMzh8MzI2LjMwfDUwLjczfDY3LjY1">
+      <rect
+         x="45.38"
+         y="50.73"
+         width="280.92"
+         height="16.92"
+         id="rect129" />
+    </clipPath>
+  </defs>
+  <g
+     clip-path="url(#cpNDUuMzh8MzI2LjMwfDUwLjczfDY3LjY1)"
+     id="g138">
+    <rect
+       x="45.38"
+       y="50.73"
+       width="280.92"
+       height="16.92"
+       style="stroke-width: 2.13; fill: #FFFFFF;"
+       id="rect134" />
+    <text
+       x="185.84"
+       y="62.34"
+       text-anchor="middle"
+       style="font-size: 8.80px;fill: #1A1A1A; font-family: &quot;Arial&quot;;"
+       textLength="32.30px"
+       lengthAdjust="spacingAndGlyphs"
+       id="text136">England</text>
+  </g>
+  <g
+     clip-path="url(#cpMC4wMHw2MzcuODB8MC4wMHw0MjUuMjA=)"
+     id="g140" />
+  <defs
+     id="defs145">
+    <clipPath
+       id="cpMzUxLjQwfDYzMi4zMnw1MC43M3w2Ny42NQ==">
+      <rect
+         x="351.40"
+         y="50.73"
+         width="280.92"
+         height="16.92"
+         id="rect142" />
+    </clipPath>
+  </defs>
+  <g
+     clip-path="url(#cpMzUxLjQwfDYzMi4zMnw1MC43M3w2Ny42NQ==)"
+     id="g151">
+    <rect
+       x="351.40"
+       y="50.73"
+       width="280.92"
+       height="16.92"
+       style="stroke-width: 2.13; fill: #FFFFFF;"
+       id="rect147" />
+    <text
+       x="491.86"
+       y="62.34"
+       text-anchor="middle"
+       style="font-size: 8.80px;fill: #1A1A1A; font-family: &quot;Arial&quot;;"
+       textLength="63.60px"
+       lengthAdjust="spacingAndGlyphs"
+       id="text149">Northern Ireland</text>
+  </g>
+  <g
+     clip-path="url(#cpMC4wMHw2MzcuODB8MC4wMHw0MjUuMjA=)"
+     id="g267">
+    <polyline
+       points="45.38,393.01 326.30,393.01 "
+       style="stroke-width: 1.07; stroke-linecap: butt;"
+       id="polyline153" />
+    <polyline
+       points="48.47,395.75 48.47,393.01 "
+       style="stroke-width: 1.07; stroke: #333333; stroke-linecap: butt;"
+       id="polyline155" />
+    <polyline
+       points="106.51,395.75 106.51,393.01 "
+       style="stroke-width: 1.07; stroke: #333333; stroke-linecap: butt;"
+       id="polyline157" />
+    <polyline
+       points="166.49,395.75 166.49,393.01 "
+       style="stroke-width: 1.07; stroke: #333333; stroke-linecap: butt;"
+       id="polyline159" />
+    <polyline
+       points="224.53,395.75 224.53,393.01 "
+       style="stroke-width: 1.07; stroke: #333333; stroke-linecap: butt;"
+       id="polyline161" />
+    <polyline
+       points="284.51,395.75 284.51,393.01 "
+       style="stroke-width: 1.07; stroke: #333333; stroke-linecap: butt;"
+       id="polyline163" />
+    <text
+       x="48.47"
+       y="404.24"
+       text-anchor="middle"
+       style="font-size: 8.80px;fill: #4D4D4D; font-family: &quot;Arial&quot;;"
+       textLength="13.69px"
+       lengthAdjust="spacingAndGlyphs"
+       id="text165">Apr</text>
+    <text
+       x="106.51"
+       y="404.24"
+       text-anchor="middle"
+       style="font-size: 8.80px;fill: #4D4D4D; font-family: &quot;Arial&quot;;"
+       textLength="16.62px"
+       lengthAdjust="spacingAndGlyphs"
+       id="text167">May</text>
+    <text
+       x="166.49"
+       y="404.24"
+       text-anchor="middle"
+       style="font-size: 8.80px;fill: #4D4D4D; font-family: &quot;Arial&quot;;"
+       textLength="14.19px"
+       lengthAdjust="spacingAndGlyphs"
+       id="text169">Jun</text>
+    <text
+       x="224.53"
+       y="404.24"
+       text-anchor="middle"
+       style="font-size: 8.80px;fill: #4D4D4D; font-family: &quot;Arial&quot;;"
+       textLength="11.25px"
+       lengthAdjust="spacingAndGlyphs"
+       id="text171">Jul</text>
+    <text
+       x="284.51"
+       y="404.24"
+       text-anchor="middle"
+       style="font-size: 8.80px;fill: #4D4D4D; font-family: &quot;Arial&quot;;"
+       textLength="15.66px"
+       lengthAdjust="spacingAndGlyphs"
+       id="text173">Aug</text>
+    <polyline
+       points="351.40,393.01 632.32,393.01 "
+       style="stroke-width: 1.07; stroke-linecap: butt;"
+       id="polyline175" />
+    <polyline
+       points="354.49,395.75 354.49,393.01 "
+       style="stroke-width: 1.07; stroke: #333333; stroke-linecap: butt;"
+       id="polyline177" />
+    <polyline
+       points="412.53,395.75 412.53,393.01 "
+       style="stroke-width: 1.07; stroke: #333333; stroke-linecap: butt;"
+       id="polyline179" />
+    <polyline
+       points="472.51,395.75 472.51,393.01 "
+       style="stroke-width: 1.07; stroke: #333333; stroke-linecap: butt;"
+       id="polyline181" />
+    <polyline
+       points="530.55,395.75 530.55,393.01 "
+       style="stroke-width: 1.07; stroke: #333333; stroke-linecap: butt;"
+       id="polyline183" />
+    <polyline
+       points="590.53,395.75 590.53,393.01 "
+       style="stroke-width: 1.07; stroke: #333333; stroke-linecap: butt;"
+       id="polyline185" />
+    <text
+       x="354.49"
+       y="404.24"
+       text-anchor="middle"
+       style="font-size: 8.80px;fill: #4D4D4D; font-family: &quot;Arial&quot;;"
+       textLength="13.69px"
+       lengthAdjust="spacingAndGlyphs"
+       id="text187">Apr</text>
+    <text
+       x="412.53"
+       y="404.24"
+       text-anchor="middle"
+       style="font-size: 8.80px;fill: #4D4D4D; font-family: &quot;Arial&quot;;"
+       textLength="16.62px"
+       lengthAdjust="spacingAndGlyphs"
+       id="text189">May</text>
+    <text
+       x="472.51"
+       y="404.24"
+       text-anchor="middle"
+       style="font-size: 8.80px;fill: #4D4D4D; font-family: &quot;Arial&quot;;"
+       textLength="14.19px"
+       lengthAdjust="spacingAndGlyphs"
+       id="text191">Jun</text>
+    <text
+       x="530.55"
+       y="404.24"
+       text-anchor="middle"
+       style="font-size: 8.80px;fill: #4D4D4D; font-family: &quot;Arial&quot;;"
+       textLength="11.25px"
+       lengthAdjust="spacingAndGlyphs"
+       id="text193">Jul</text>
+    <text
+       x="590.53"
+       y="404.24"
+       text-anchor="middle"
+       style="font-size: 8.80px;fill: #4D4D4D; font-family: &quot;Arial&quot;;"
+       textLength="15.66px"
+       lengthAdjust="spacingAndGlyphs"
+       id="text195">Aug</text>
+    <polyline
+       points="351.40,219.13 351.40,67.65 "
+       style="stroke-width: 1.07; stroke-linecap: butt;"
+       id="polyline197" />
+    <text
+       x="346.46"
+       y="192.01"
+       text-anchor="end"
+       style="font-size: 8.80px;fill: #4D4D4D; font-family: &quot;Arial&quot;;"
+       textLength="9.79px"
+       lengthAdjust="spacingAndGlyphs"
+       id="text199">20</text>
+    <text
+       x="346.46"
+       y="140.04"
+       text-anchor="end"
+       style="font-size: 8.80px;fill: #4D4D4D; font-family: &quot;Arial&quot;;"
+       textLength="9.79px"
+       lengthAdjust="spacingAndGlyphs"
+       id="text201">40</text>
+    <text
+       x="346.46"
+       y="88.08"
+       text-anchor="end"
+       style="font-size: 8.80px;fill: #4D4D4D; font-family: &quot;Arial&quot;;"
+       textLength="9.79px"
+       lengthAdjust="spacingAndGlyphs"
+       id="text203">60</text>
+    <polyline
+       points="348.66,188.86 351.40,188.86 "
+       style="stroke-width: 1.07; stroke: #333333; stroke-linecap: butt;"
+       id="polyline205" />
+    <polyline
+       points="348.66,136.89 351.40,136.89 "
+       style="stroke-width: 1.07; stroke: #333333; stroke-linecap: butt;"
+       id="polyline207" />
+    <polyline
+       points="348.66,84.93 351.40,84.93 "
+       style="stroke-width: 1.07; stroke: #333333; stroke-linecap: butt;"
+       id="polyline209" />
+    <polyline
+       points="351.40,393.01 351.40,241.53 "
+       style="stroke-width: 1.07; stroke-linecap: butt;"
+       id="polyline211" />
+    <text
+       x="346.46"
+       y="389.27"
+       text-anchor="end"
+       style="font-size: 8.80px;fill: #4D4D4D; font-family: &quot;Arial&quot;;"
+       textLength="4.90px"
+       lengthAdjust="spacingAndGlyphs"
+       id="text213">0</text>
+    <text
+       x="346.46"
+       y="344.99"
+       text-anchor="end"
+       style="font-size: 8.80px;fill: #4D4D4D; font-family: &quot;Arial&quot;;"
+       textLength="14.69px"
+       lengthAdjust="spacingAndGlyphs"
+       id="text215">100</text>
+    <text
+       x="346.46"
+       y="300.71"
+       text-anchor="end"
+       style="font-size: 8.80px;fill: #4D4D4D; font-family: &quot;Arial&quot;;"
+       textLength="14.69px"
+       lengthAdjust="spacingAndGlyphs"
+       id="text217">200</text>
+    <text
+       x="346.46"
+       y="256.43"
+       text-anchor="end"
+       style="font-size: 8.80px;fill: #4D4D4D; font-family: &quot;Arial&quot;;"
+       textLength="14.69px"
+       lengthAdjust="spacingAndGlyphs"
+       id="text219">300</text>
+    <polyline
+       points="348.66,386.12 351.40,386.12 "
+       style="stroke-width: 1.07; stroke: #333333; stroke-linecap: butt;"
+       id="polyline221" />
+    <polyline
+       points="348.66,341.84 351.40,341.84 "
+       style="stroke-width: 1.07; stroke: #333333; stroke-linecap: butt;"
+       id="polyline223" />
+    <polyline
+       points="348.66,297.56 351.40,297.56 "
+       style="stroke-width: 1.07; stroke: #333333; stroke-linecap: butt;"
+       id="polyline225" />
+    <polyline
+       points="348.66,253.28 351.40,253.28 "
+       style="stroke-width: 1.07; stroke: #333333; stroke-linecap: butt;"
+       id="polyline227" />
+    <polyline
+       points="45.38,219.13 45.38,67.65 "
+       style="stroke-width: 1.07; stroke-linecap: butt;"
+       id="polyline229" />
+    <text
+       x="40.45"
+       y="193.23"
+       text-anchor="end"
+       style="font-size: 8.80px;fill: #4D4D4D; font-family: &quot;Arial&quot;;"
+       textLength="22.03px"
+       lengthAdjust="spacingAndGlyphs"
+       id="text231">2,000</text>
+    <text
+       x="40.45"
+       y="148.10"
+       text-anchor="end"
+       style="font-size: 8.80px;fill: #4D4D4D; font-family: &quot;Arial&quot;;"
+       textLength="22.03px"
+       lengthAdjust="spacingAndGlyphs"
+       id="text233">3,000</text>
+    <text
+       x="40.45"
+       y="102.96"
+       text-anchor="end"
+       style="font-size: 8.80px;fill: #4D4D4D; font-family: &quot;Arial&quot;;"
+       textLength="22.03px"
+       lengthAdjust="spacingAndGlyphs"
+       id="text235">4,000</text>
+    <polyline
+       points="42.64,190.08 45.38,190.08 "
+       style="stroke-width: 1.07; stroke: #333333; stroke-linecap: butt;"
+       id="polyline237" />
+    <polyline
+       points="42.64,144.95 45.38,144.95 "
+       style="stroke-width: 1.07; stroke: #333333; stroke-linecap: butt;"
+       id="polyline239" />
+    <polyline
+       points="42.64,99.81 45.38,99.81 "
+       style="stroke-width: 1.07; stroke: #333333; stroke-linecap: butt;"
+       id="polyline241" />
+    <polyline
+       points="45.38,393.01 45.38,241.53 "
+       style="stroke-width: 1.07; stroke-linecap: butt;"
+       id="polyline243" />
+    <text
+       x="40.45"
+       y="389.27"
+       text-anchor="end"
+       style="font-size: 8.80px;fill: #4D4D4D; font-family: &quot;Arial&quot;;"
+       textLength="4.90px"
+       lengthAdjust="spacingAndGlyphs"
+       id="text245">0</text>
+    <text
+       x="40.45"
+       y="339.77"
+       text-anchor="end"
+       style="font-size: 8.80px;fill: #4D4D4D; font-family: &quot;Arial&quot;;"
+       textLength="14.69px"
+       lengthAdjust="spacingAndGlyphs"
+       id="text247">500</text>
+    <text
+       x="40.45"
+       y="290.27"
+       text-anchor="end"
+       style="font-size: 8.80px;fill: #4D4D4D; font-family: &quot;Arial&quot;;"
+       textLength="22.03px"
+       lengthAdjust="spacingAndGlyphs"
+       id="text249">1,000</text>
+    <polyline
+       points="42.64,386.12 45.38,386.12 "
+       style="stroke-width: 1.07; stroke: #333333; stroke-linecap: butt;"
+       id="polyline251" />
+    <polyline
+       points="42.64,336.62 45.38,336.62 "
+       style="stroke-width: 1.07; stroke: #333333; stroke-linecap: butt;"
+       id="polyline253" />
+    <polyline
+       points="42.64,287.12 45.38,287.12 "
+       style="stroke-width: 1.07; stroke: #333333; stroke-linecap: butt;"
+       id="polyline255" />
+    <text
+       transform="translate(13.36,230.33) rotate(-90)"
+       text-anchor="middle"
+       style="font-size: 11.00px; font-family: &quot;Arial&quot;;"
+       textLength="182.27px"
+       lengthAdjust="spacingAndGlyphs"
+       id="text257">Number of people arriving each week</text>
+    <text
+       x="5.48"
+       y="31.05"
+       style="font-size: 11.00px; font-family: &quot;Arial&quot;;"
+       textLength="514.17px"
+       lengthAdjust="spacingAndGlyphs"
+       id="text259">Showing weekly number of arrivals sponsored by individuals and by the Scottish and Welsh Governments</text>
+    <text
+       x="5.48"
+       y="42.93"
+       style="font-size: 11.00px; font-family: &quot;Arial&quot;;"
+       textLength="363.25px"
+       lengthAdjust="spacingAndGlyphs"
+       id="text261">Grey shaded areas show pauses in Government 'super sponsor' schemes.</text>
+    <text
+       x="5.48"
+       y="14.93"
+       style="font-size: 13.20px; font-family: &quot;Arial&quot;;"
+       textLength="417.21px"
+       lengthAdjust="spacingAndGlyphs"
+       id="text263">Spikes in arrivals could lead to spikes in destitution 6 to 12 months later</text>
+    <text
+       x="632.32"
+       y="417.87"
+       text-anchor="end"
+       style="font-size: 8.80px; font-family: &quot;Arial&quot;;"
+       textLength="197.60px"
+       lengthAdjust="spacingAndGlyphs"
+       id="text265">Source: British Red Cross analysis of DLUHC data</text>
+  </g>
+  <text
+     xml:space="preserve"
+     style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:9px;font-family:Arial;-inkscape-font-specification:Arial;white-space:pre;fill:#e78ac3;fill-opacity:1;stroke-width:0.75"
+     x="448.72067"
+     y="97.386475"
+     id="text3167"><tspan
+       sodipodi:role="line"
+       id="tspan3165"
+       style="font-weight:bold;fill:#000000;stroke-width:0.75"
+       x="448.72067"
+       y="97.386475">Potential spikes in destitution</tspan><tspan
+       sodipodi:role="line"
+       style="fill:#000000;stroke-width:0.75"
+       x="448.72067"
+       y="108.63647"
+       id="tspan3169">November 2022, February 2023, </tspan><tspan
+       sodipodi:role="line"
+       style="fill:#000000;stroke-width:0.75"
+       x="448.72067"
+       y="119.88647"
+       id="tspan3268">May 2023, February 2023</tspan></text>
+  <text
+     xml:space="preserve"
+     style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:9px;font-family:Arial;-inkscape-font-specification:Arial;white-space:pre;fill:#e78ac3;fill-opacity:1;stroke-width:0.75"
+     x="52.090549"
+     y="157.6073"
+     id="text3167-1"><tspan
+       sodipodi:role="line"
+       id="tspan3165-7"
+       style="font-weight:bold;fill:#000000;stroke-width:0.75"
+       x="52.090549"
+       y="157.6073">Potential spikes in destitution</tspan><tspan
+       sodipodi:role="line"
+       style="fill:#000000;stroke-width:0.75"
+       x="52.090549"
+       y="168.8573"
+       id="tspan3169-5">November/December 2022 and</tspan><tspan
+       sodipodi:role="line"
+       style="fill:#000000;stroke-width:0.75"
+       x="52.090549"
+       y="180.1073"
+       id="tspan3268-6">May/June 2023</tspan></text>
+  <text
+     xml:space="preserve"
+     style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:9px;font-family:Arial;-inkscape-font-specification:Arial;white-space:pre;fill:#e78ac3;fill-opacity:1;stroke-width:0.75"
+     x="357.62582"
+     y="268.87567"
+     id="text3167-1-5"><tspan
+       sodipodi:role="line"
+       id="tspan3165-7-2"
+       style="font-weight:bold;fill:#000000;stroke-width:0.75"
+       x="357.62582"
+       y="268.87567">Potential spikes in destitution</tspan><tspan
+       sodipodi:role="line"
+       style="fill:#000000;stroke-width:0.75"
+       x="357.62582"
+       y="280.12567"
+       id="tspan3169-5-1">November/December 2022 and</tspan><tspan
+       sodipodi:role="line"
+       style="fill:#000000;stroke-width:0.75"
+       x="357.62582"
+       y="291.37567"
+       id="tspan3268-6-5">May/June 2023</tspan></text>
+  <text
+     xml:space="preserve"
+     style="font-size:9px;white-space:pre;fill:#e78ac3;fill-opacity:1;stroke-width:0.75"
+     x="521.23212"
+     y="374.16074"
+     id="text1034-3-9"><tspan
+       sodipodi:role="line"
+       id="tspan1032-1-8"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:Arial;-inkscape-font-specification:Arial;fill:#e78ac3;fill-opacity:1;stroke-width:0.75"
+       x="521.23212"
+       y="374.16074">Homes for Ukraine</tspan></text>
+  <text
+     xml:space="preserve"
+     style="font-size:9px;white-space:pre;fill:#e78ac3;fill-opacity:1;stroke-width:0.75"
+     x="380.89673"
+     y="354.74307"
+     id="text1034-5"><tspan
+       sodipodi:role="line"
+       id="tspan1032-3"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:Arial;-inkscape-font-specification:Arial;fill:#e78ac3;fill-opacity:1;stroke-width:0.75"
+       x="380.89673"
+       y="354.74307">'Super sponsor' scheme</tspan></text>
+  <text
+     xml:space="preserve"
+     style="font-size:9px;white-space:pre;fill:#8da0cb;fill-opacity:1;stroke-width:0.75"
+     x="116.95667"
+     y="311.62332"
+     id="text1034"><tspan
+       sodipodi:role="line"
+       id="tspan1032"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:Arial;-inkscape-font-specification:Arial;fill:#8da0cb;fill-opacity:1;stroke-width:0.75"
+       x="116.95667"
+       y="311.62332">'Super sponsor' scheme</tspan></text>
+  <text
+     xml:space="preserve"
+     style="font-size:9px;white-space:pre;fill:#8da0cb;fill-opacity:1;stroke-width:0.75"
+     x="212.5652"
+     y="364.51788"
+     id="text1034-3"><tspan
+       sodipodi:role="line"
+       id="tspan1032-1"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:Arial;-inkscape-font-specification:Arial;fill:#8da0cb;fill-opacity:1;stroke-width:0.75"
+       x="212.5652"
+       y="364.51788">Homes for Ukraine</tspan></text>
+  <text
+     xml:space="preserve"
+     style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:9px;font-family:Arial;-inkscape-font-specification:Arial;white-space:pre;fill:#dddddd;fill-opacity:1;stroke:none;stroke-width:0.75"
+     x="77.321243"
+     y="254.16144"
+     id="text4812"><tspan
+       sodipodi:role="line"
+       id="tspan4810"
+       style="font-weight:bold;fill:#8b8b8b;fill-opacity:1;stroke:none;stroke-width:0.75"
+       x="77.321243"
+       y="254.16144">Government sponsorship paused</tspan></text>
+  <g
+     id="g6167"
+     transform="matrix(0.9014852,0,0,1,14.712309,-3.389202)">
+    <path
+       style="fill:#8b8b8b;fill-opacity:1;fill-rule:evenodd;stroke:#808080;stroke-width:0.75px;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-opacity:1"
+       d="m 230.22104,255.16881 h 25.77101"
+       id="path5660"
+       inkscape:connector-type="polyline"
+       inkscape:connector-curvature="0" />
+    <circle
+       style="opacity:1;fill:#808080;fill-opacity:1;stroke:none;stroke-width:0.375;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10"
+       id="path5714"
+       cx="256.49316"
+       cy="255.16881"
+       r="0.96042895" />
+  </g>
+</svg>
