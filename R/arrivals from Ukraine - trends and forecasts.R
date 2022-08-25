@@ -203,6 +203,7 @@ historical_processing_rates |>
   group_by(Scheme) |> 
   summarise(
     `Mean rate of applications issued visas` = mean(`% backlog issued a visa this week`, na.rm = TRUE),
+    `Median rate of applications issued visas` = median(`% backlog issued a visa this week`, na.rm = TRUE),
     `Min rate of applications issued visas` = min(`% backlog issued a visa this week`, na.rm = TRUE),
     `Max rate of applications issued visas` = max(`% backlog issued a visa this week`, na.rm = TRUE)
   )
@@ -1080,22 +1081,43 @@ simulated_visas_baseline |>
 ####
 
 ## Plot rates of applications issued as visas ----
+# historical_processing_rates |> 
+#   ggplot(aes(x = Scheme, y = `% backlog issued a visa this week`)) +
+#   geom_boxplot(aes(colour = Scheme), show.legend = FALSE) +
+#   geom_jitter(aes(colour = Scheme), alpha = 0.3, show.legend = FALSE) +
+#   scale_y_continuous(labels = scales::percent) +
+#   scale_color_brewer(palette = "Set2", direction = -1) +
+#   theme_classic() +
+#   theme(
+#     # axis.line.x = element_blank(),
+#     # axis.text.x = element_blank(),
+#     # axis.ticks.x = element_blank(),
+#     plot.title = element_text(size = rel(1)),
+#     plot.title.position = "plot"
+#   ) +
+#   labs(
+#     title = "Proportion of applications that are issued a visa each week\n",
+#     x = NULL,
+#     y = NULL
+#   )
+
+# Show mean and observed rates
+# (rather than the commented-out boxplots above, which show the medians - but we're using mean rates in the simulation)
 historical_processing_rates |> 
-  ggplot(aes(x = Scheme, y = `% backlog issued a visa this week`)) +
-  geom_boxplot(aes(colour = Scheme), show.legend = FALSE) +
-  geom_jitter(aes(colour = Scheme), alpha = 0.3, show.legend = FALSE) +
+  ggplot(aes(x = Scheme, y = `% backlog issued a visa this week`, colour = Scheme, fill = Scheme)) +
+  geom_dotplot(binaxis='y', stackdir='center', dotsize = 1, alpha = 0.3, show.legend = FALSE) +
+  stat_summary(fun.y = mean, geom = "point", size = 5, shape = 8, show.legend = FALSE) +
   scale_y_continuous(labels = scales::percent) +
   scale_color_brewer(palette = "Set2", direction = -1) +
+  scale_fill_brewer(palette = "Set2", direction = -1) +
   theme_classic() +
   theme(
-    # axis.line.x = element_blank(),
-    # axis.text.x = element_blank(),
-    # axis.ticks.x = element_blank(),
     plot.title = element_text(size = rel(1)),
     plot.title.position = "plot"
   ) +
   labs(
-    title = "Proportion of applications that are issued a visa each week\n",
+    title = "Proportion of applications that are issued a visa each week",
+    subtitle = str_wrap("Dots are the observed rates of visa issuance; stars show the mean rates.", 60),
     x = NULL,
     y = NULL
   )
