@@ -55,7 +55,7 @@ cumulative_visas_by_scheme <- bind_rows(cumulative_sponsorship_scheme_visas, cum
 
 # ---- Load simulated data (baseline scenario) ----
 # Load predictions for the most recently published DLUHC data
-simulated_visas_baseline <- read_csv("output-data/simulations/simulation-baseline-2022-08-15.csv")
+simulated_visas_baseline <- read_csv("output-data/simulations/simulation-baseline-2022-08-22.csv")
 
 # Load all simulation data into a `sim_data` tibble
 i <- 1
@@ -79,9 +79,16 @@ for (sim_file in sim_files) {
 sim_data <- bind_rows(sim_data)
 
 # ---- How closely did we predict the most recent arrivals? ----
+# predicted_arrivals <- 
+#   simulated_visas_baseline |> 
+#   filter(Date == max(cumulative_visas_by_scheme$Date)) |> 
+#   pull(`Total arrivals`)
+
+# Fetch total arrivals from the most recently run simulation that covers the most up-to-date visa data
 predicted_arrivals <- 
-  simulated_visas_baseline |> 
+  sim_data |> 
   filter(Date == max(cumulative_visas_by_scheme$Date)) |> 
+  filter(`Simulation date` == max(`Simulation date`)) |> 
   pull(`Total arrivals`)
 
 observed_arrivals <- 
@@ -90,9 +97,14 @@ observed_arrivals <-
   summarise(total = sum(`Number of arrivals`)) |> 
   pull(total)
 
+scales::comma(predicted_arrivals)
+scales::comma(observed_arrivals)
 abs(observed_arrivals - predicted_arrivals)
 
 # ---- Plot historical and simulated arrivals ----
+date_to_focus_on <- cumulative_visas_by_scheme |> filter(Date == max(Date)) |> distinct(Date) |> pull(Date)
+date_text <- str_glue("{day(date_to_focus_on)} {month.name[month(date_to_focus_on)]} {year(date_to_focus_on)}")
+
 cumulative_visas_by_scheme |> 
   ggplot(aes(x = Date, y = `Number of arrivals`)) +
   geom_col(position = "stack", colour = "white", fill = "grey60") +
@@ -130,10 +142,12 @@ cumulative_visas_by_scheme |>
   # Highlight prediction and observation
   geom_rect(
     data = tibble(
-      xmin = ymd("2022-08-10"),
-      xmax = ymd("2022-08-20"),
-      ymin = 105000,
-      ymax = 125000
+      xmin = date_to_focus_on - ddays(5),
+      xmax = date_to_focus_on + ddays(5),
+      ymin = observed_arrivals - 10000,
+      ymax = observed_arrivals + 10000
+      # ymin = 105000,
+      # ymax = 125000
     ),
     inherit.aes = FALSE,
     mapping = aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax),
@@ -143,7 +157,11 @@ cumulative_visas_by_scheme |>
     colour = "gold"
   ) +
   coord_cartesian(
-    xlim = c(ymd("2022-07-28"), ymd("2022-08-25")),
+    # xlim = c(ymd("2022-07-28"), ymd("2022-08-25")),
+    xlim = c(
+      date_to_focus_on - ddays(15),
+      date_to_focus_on + ddays(10)
+    ),
     ylim = c(90000, 150000)
   ) +
   
@@ -156,13 +174,13 @@ cumulative_visas_by_scheme |>
     plot.title.position = "plot"
   ) +
   labs(
-    title = "Our simulation predicted the observed numbers of arrivals as of 15 August 2022",
-    subtitle = str_wrap(str_glue("We predicted {scales::comma(predicted_arrivals)} people would arrive; {scales::comma(observed_arrivals)} did."), 100),
+    title = str_glue("Our simulation accurately predicted the observed numbers of arrivals as of {date_text}"),
+    subtitle = str_wrap(str_glue("We predicted {scales::comma(predicted_arrivals)} people would have arrived (in total); {scales::comma(observed_arrivals)} did."), 100),
     x = NULL,
     caption = "Source: British Red Cross analysis and simulation of DLUHC data"
   )
 
-ggsave("images/forecast arrivals - testing the simulation on newly observed data.png", height = 150, width = 180, units = "mm")
+ggsave("images/forecast arrivals - testing the simulation on newly observed data.png", height = 150, width = 200, units = "mm")
 
 # ---- Plot predictions 1, 2, ...n weeks ahead against observed data ----
 # When did our predictions start?
@@ -187,12 +205,12 @@ predicted_arrivals <-
 
 # Plot series of predictions against observed data
 predicted_arrivals |> 
-  ggplot(aes(x = Date, y = `Total arrivals`)) +
-  geom_pointrange(aes(ymin = `Total arrivals (lower bound)`, ymax = `Total arrivals (upper bound)`, colour = factor(`Simulation date`)), position = position_dodge(width = 0.1)) +
+  ggplot(aes(x = factor(Date), y = `Total arrivals`)) +
+  geom_pointrange(aes(ymin = `Total arrivals (lower bound)`, ymax = `Total arrivals (upper bound)`, colour = factor(`Simulation date`)), position = position_dodge(width = 0.2)) +
   geom_point(
     data = observed_arrivals,
     inherit.aes = FALSE,
-    mapping = aes(x = Date, y = `Actual arrivals`),
+    mapping = aes(x = factor(Date), y = `Actual arrivals`),
     shape = 4,
     size = 1.5
   ) +
@@ -204,11 +222,13 @@ predicted_arrivals |>
   ) +
   labs(
     title = "How close were our predictions?",
-    subtitle = "Dots and lines show predictions with upper/lower bounds, coloured by when the prediction was made. 'X's are the actual number of arrivals in a given week.",
+    subtitle = str_wrap("Dots and lines show predictions with upper/lower bounds, coloured by when the prediction was made. 'X's are the actual number of arrivals in a given week.", 80),
     colour = "Date prediction made",
     x = NULL,
     y = "Total arrivals (actual and predicted)"
   )
+
+ggsave("images/simulation/How close were our predictions.png", width = 150, height = 120, units = "mm")
 
 # ---- How have our predictions changed over time? ----
 # Which weeks do we have multiple predictions for?
