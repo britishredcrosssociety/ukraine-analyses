@@ -1085,6 +1085,7 @@ historical_processing_rates |>
   geom_boxplot(aes(colour = Scheme), show.legend = FALSE) +
   geom_jitter(aes(colour = Scheme), alpha = 0.3, show.legend = FALSE) +
   scale_y_continuous(labels = scales::percent) +
+  scale_color_brewer(palette = "Set2", direction = -1) +
   theme_classic() +
   theme(
     # axis.line.x = element_blank(),
@@ -1103,6 +1104,8 @@ ggsave("images/simulation/Proportion of applications that are issued a visa each
 
 ## Plot weekly arrivals as a proportion of the backlog of issued visas ----
 arrival_rates |> 
+  mutate(Scheme = factor(Scheme, levels = c("Sponsored by individuals", "Ukraine Family Scheme", "Government 'super sponsored'"))) |> 
+  
   ggplot(aes(x = Week, y = `% issued visas arriving this week`)) +
   geom_line(aes(colour = Scheme), size = 1.1) +
   geom_smooth(aes(colour = Scheme, fill = Scheme), method = "lm") +
@@ -1133,6 +1136,7 @@ ggsave("images/simulation/Weekly arrivals as a proportion of the backlog of issu
 ## Plot weekly applications by scheme ----
 weekly_visas_by_scheme |> 
   filter(!str_detect(Scheme, "Government")) |> 
+  
   ggplot(aes(x = Date, y = `Weekly applications`)) +
   geom_line(aes(colour = Scheme), size = 1.1) +
   geom_smooth(aes(colour = Scheme, fill = Scheme), method = "lm") +
