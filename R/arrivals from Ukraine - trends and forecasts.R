@@ -1082,7 +1082,8 @@ simulated_visas_baseline |>
 ## Plot rates of applications issued as visas ----
 historical_processing_rates |> 
   ggplot(aes(x = Scheme, y = `% backlog issued a visa this week`)) +
-  geom_boxplot() +
+  geom_boxplot(aes(colour = Scheme), show.legend = FALSE) +
+  geom_jitter(aes(colour = Scheme), alpha = 0.3, show.legend = FALSE) +
   scale_y_continuous(labels = scales::percent) +
   theme_classic() +
   theme(
