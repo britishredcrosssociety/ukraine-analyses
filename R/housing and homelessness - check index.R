@@ -109,7 +109,15 @@ ihs_imd_homelessness <-
   ihs_imd |> 
   select(
     ltla21_code, 
-    ltla21_name, 
+    ltla21_name,
+    
+    homeless_threatened = `Households assessed as threatened with homelessness per (000s)`, 
+    homeless = `Households assessed as homeless per (000s)`, 
+    temp_accom = `Households in temporary accommodation per 1,000`, 
+    waiting = `Households on housing waiting list per 1,000`, 
+    housing_stock = `Social housing stock as a proportion of all households`, 
+    vacancies = `Vacant dwellings per 1,000 units of social housing stock`,
+    
     `Index of Housing Insecurity` = housing_and_homelessness_composite_rank, 
     `IMD` = IMD_score_rank,
     `IMD Housing and Access domain` = Housing_and_Access_Score_rank,
@@ -118,21 +126,47 @@ ihs_imd_homelessness <-
   left_join(homelessness_trends |> select(ltla21_code = lad_code, total_aug, total_july, total_june))
 
 ihs_imd_homelessness |> 
-  pivot_longer(cols = c(`Index of Housing Insecurity`, `IMD Housing and Access domain`), values_to = "rank") |> 
+  pivot_longer(cols = c(`Index of Housing Insecurity`, `IMD Housing and Access domain`, `IMD Wider Barriers subdomain`), values_to = "rank") |> 
   
   ggplot(aes(x = rank, y = total_aug)) +
   geom_point() +
   geom_smooth(method = "lm") +
   facet_wrap(~name)
 
+# Which combination of housing insecurity indicators best predicts number of Ukrainian households at risk of homelessness?
+homelessness_indicators <- 
+  ihs_imd |> 
+  select(
+    ltla21_code,
+    homeless_threatened = `Households assessed as threatened with homelessness per (000s)`, 
+    homeless = `Households assessed as homeless per (000s)`, 
+    temp_accom = `Households in temporary accommodation per 1,000`, 
+    waiting = `Households on housing waiting list per 1,000`, 
+    housing_stock = `Social housing stock as a proportion of all households`, 
+    vacancies = `Vacant dwellings per 1,000 units of social housing stock`
+  ) |> 
+  left_join(homelessness_trends |> select(ltla21_code = lad_code, total_aug)) |> 
+  select(-ltla21_code) |> 
+  na.omit()
+
+mod_null <- lm(total_aug ~ 1, data = homelessness_indicators)
+mod_full <- lm(total_aug ~ ., data = homelessness_indicators)
+
+# Forward stepwise regression
+forward <- step(mod_null, direction = "forward", scope = formula(mod_full), trace = 0)
+
+forward$anova
+forward$coefficients
+
+#--> The model with rates of households assessed as homeless + households in temporary accommodation gives the best fit
+
 # Compare models to see which index better fits observed risks of homelessness
-#--> IMD's wider barriers (housing) sub-domain is the best fit to the observed risk of homelessness data
-#--> Our index gives a better fit than overall IMD scores, but the specific housing domain and sub-domain beat it
 bind_rows(
   glance(lm(total_aug ~ `Index of Housing Insecurity`, data = ihs_imd_homelessness)) |> mutate(predictor = "Index of Housing Insecurity") |> relocate(predictor),
   glance(lm(total_aug ~ IMD, data = ihs_imd_homelessness)) |> mutate(predictor = "IMD") |> relocate(predictor),
   glance(lm(total_aug ~ `IMD Housing and Access domain`, data = ihs_imd_homelessness)) |> mutate(predictor = "IMD Housing and Access domain") |> relocate(predictor),
-  glance(lm(total_aug ~ `IMD Wider Barriers subdomain`, data = ihs_imd_homelessness)) |> mutate(predictor = "IMD Wider Barriers subdomain") |> relocate(predictor)
+  glance(lm(total_aug ~ `IMD Wider Barriers subdomain`, data = ihs_imd_homelessness)) |> mutate(predictor = "IMD Wider Barriers subdomain") |> relocate(predictor),
+  glance(lm(total_aug ~ temp_accom + homeless, data = ihs_imd_homelessness)) |> mutate(predictor = "Homelessness + temp accomm") |> relocate(predictor)
 ) |> 
   arrange(AIC)
 
@@ -141,7 +175,8 @@ bind_rows(
   glance(lm(total_july ~ `Index of Housing Insecurity`, data = ihs_imd_homelessness)) |> mutate(predictor = "Index of Housing Insecurity") |> relocate(predictor),
   glance(lm(total_july ~ IMD, data = ihs_imd_homelessness)) |> mutate(predictor = "IMD") |> relocate(predictor),
   glance(lm(total_july ~ `IMD Housing and Access domain`, data = ihs_imd_homelessness)) |> mutate(predictor = "IMD Housing and Access domain") |> relocate(predictor),
-  glance(lm(total_july ~ `IMD Wider Barriers subdomain`, data = ihs_imd_homelessness)) |> mutate(predictor = "IMD Wider Barriers subdomain") |> relocate(predictor)
+  glance(lm(total_july ~ `IMD Wider Barriers subdomain`, data = ihs_imd_homelessness)) |> mutate(predictor = "IMD Wider Barriers subdomain") |> relocate(predictor),
+  glance(lm(total_july ~ temp_accom + homeless, data = ihs_imd_homelessness)) |> mutate(predictor = "Homelessness + temp accomm") |> relocate(predictor)
 ) |> 
   arrange(AIC)
 
@@ -149,8 +184,13 @@ bind_rows(
   glance(lm(total_june ~ `Index of Housing Insecurity`, data = ihs_imd_homelessness)) |> mutate(predictor = "Index of Housing Insecurity") |> relocate(predictor),
   glance(lm(total_june ~ IMD, data = ihs_imd_homelessness)) |> mutate(predictor = "IMD") |> relocate(predictor),
   glance(lm(total_june ~ `IMD Housing and Access domain`, data = ihs_imd_homelessness)) |> mutate(predictor = "IMD Housing and Access domain") |> relocate(predictor),
-  glance(lm(total_june ~ `IMD Wider Barriers subdomain`, data = ihs_imd_homelessness)) |> mutate(predictor = "IMD Wider Barriers subdomain") |> relocate(predictor)
+  glance(lm(total_june ~ `IMD Wider Barriers subdomain`, data = ihs_imd_homelessness)) |> mutate(predictor = "IMD Wider Barriers subdomain") |> relocate(predictor),
+  glance(lm(total_june ~ temp_accom + homeless, data = ihs_imd_homelessness)) |> mutate(predictor = "Homelessness + temp accomm") |> relocate(predictor)
 ) |> 
   arrange(AIC)
 
-#--> Same findings in all cases: wider barriers subdomain = best fit, followed by Housing and Access domain, followed by our index, then the overall IMD
+#--> Same findings in all cases: 
+#--> - A statistical index predicting Ukraine homelessness based on wider homelessness + temporary accommodation rates gives the best fit
+#--> - wider barriers subdomain is the next best fit, followed by Housing and Access domain
+#--> - Our composite housing insecurity index fits the data better than the overall IMD, but isn't a great predictor of Ukraine homelessness
+#--> - So, it'd be better to generalise from a model of homelessness + temp accomm, rather than use the composite index, to predict homelessness in the devolved nations.
