@@ -1,5 +1,6 @@
 library(tidyverse)
 library(tidymodels)
+library(poissonreg)
 
 tidymodels_prefer()
 
@@ -28,6 +29,8 @@ ukraine_test <- testing(ukraine_split)
 
 ukraine_train <- na.omit(ukraine_train)
 
+ukraine_val <- validation_split(ukraine_train, prop = 0.80)
+
 ukraine_cv <- vfold_cv(ukraine_train)
 
 # Also use homelessness data from the end of July for out-of-sample testing
@@ -38,6 +41,50 @@ ukraine_test_future <-
 
 # ---- Preprocess data ----
 model_recipe <- 
+  # recipe(
+  #   `% at risk of homelessness` ~ `Households assessed as threatened with homelessness per (000s)` +
+  #     `Households assessed as homeless per (000s)` +
+  #     `Households in temporary accommodation per 1,000` +
+  #     `Households on housing waiting list per 1,000` +
+  #     `Social housing stock as a proportion of all households` +
+  #     `Vacant dwellings per 1,000 units of social housing stock`,
+  #   data = ukraine_train
+  # ) |> 
+  recipe(`% at risk of homelessness` ~ ., data = ukraine_train) |> 
+  step_normalize(all_predictors()) |> 
+  update_role(ltla21_code, new_role = "ID")
+
+# ---- Interactions ----
+# Source: https://github.com/topepo/FES/blob/master/07_Detecting_Interaction_Effects/7_04_The_Brute-Force_Approach_to_Identifying_Predictive_Interactions/ames_glmnet.R
+int_vars <- 
+  model_recipe |> 
+  pluck("var_info") |> 
+  dplyr::filter(role == "predictor") |> 
+  pull(variable)
+
+interactions <- t(combn(as.character(int_vars), 2))
+colnames(interactions) <- c("var1", "var2")
+
+interactions <- 
+  interactions |> 
+  as_tibble() |> 
+  mutate(
+    term = 
+      paste0(
+        "starts_with('",
+        var1,
+        "'):starts_with('",
+        var2,
+        "')"
+      )
+  ) |>  
+  pull(term) |> 
+  paste(collapse = "+")
+
+interactions <- paste("~", interactions)
+interactions <- as.formula(interactions)
+
+interaction_recipe <- 
   recipe(
     `% at risk of homelessness` ~ `Households assessed as threatened with homelessness per (000s)` +
       `Households assessed as homeless per (000s)` +
@@ -47,33 +94,64 @@ model_recipe <-
       `Vacant dwellings per 1,000 units of social housing stock`,
     data = ukraine_train
   ) |> 
-  step_normalize()
+  step_normalize(all_predictors()) |> 
+  step_interact(interactions)
 
 # ---- Fit models to training data ----
-lm_mod <- 
-  linear_reg() |> 
-  set_engine("lm")
+# lm_mod <- 
+#   linear_reg() |> 
+#   set_engine("lm")
+
+# Set up a lasso Poisson regression
+poisson_mod <- 
+  poisson_reg(penalty = tune(), mixture = 1) |> 
+  set_engine("glmnet")
 
 # Define a regularized regression and explicitly leave the tuning parameters
 # empty for later tuning.
-glmnet_mod <-
-  linear_reg(penalty = tune::tune(), mixture = tune::tune()) |> 
-  set_engine("glmnet")
+# glmnet_mod <-
+#   linear_reg(penalty = tune::tune(), mixture = tune::tune()) |> 
+#   set_engine("glmnet")
 
 # Construct a workflow combining the recipe and models
-lm_wflow <-
+poisson_wflow <-
   workflow() |> 
-  add_recipe(model_recipe) |> 
-  add_model(glmnet_mod)
+  add_model(poisson_mod) |> 
+  add_recipe(model_recipe)
+
+reg_grid <- tibble(penalty = 10^seq(-4, -1, length.out = 30))
+
+# Find best tuned model
+res <- 
+  poisson_wflow |> 
+  tune_grid(
+    resamples = ukraine_val,
+    grid = reg_grid,
+    control = control_grid(save_pred = TRUE, verbose = T),
+    metrics = metric_set(rmse)
+  )
+
+res |> 
+  collect_metrics() |> 
+  ggplot(aes(x = penalty, y = mean)) + 
+  geom_point() + 
+  geom_line() + 
+  ylab("RMSE") +
+  scale_x_log10(labels = scales::label_number())
+
+res |> 
+  show_best("rmse", n = 15) |> 
+  arrange(penalty)
 
 # Find best tuned model
 res <-
-  lm_wflow |> 
+  poisson_wflow |> 
   tune_grid(
     resamples = ukraine_cv,
     grid = 10,
     metrics = yardstick::metric_set(yardstick::rmse)
   )
+
 
 # ---- Validation ----
 # Select best parameters
@@ -83,9 +161,12 @@ best_params <-
 
 # Refit using the entire training data
 reg_res <-
-  lm_wflow |> 
+  poisson_wflow |> 
   finalize_workflow(best_params) |> 
   fit(data = ukraine_train)
+
+reg_res |> 
+  collect_predictions()
 
 # reg_res |> 
 #   predict(new_data = bake(model_recipe |> prep(), ukraine_test)) |> 

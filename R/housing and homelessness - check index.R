@@ -145,12 +145,15 @@ homelessness_indicators <-
     housing_stock = `Social housing stock as a proportion of all households`, 
     vacancies = `Vacant dwellings per 1,000 units of social housing stock`
   ) |> 
-  left_join(homelessness_trends |> select(ltla21_code = lad_code, total_aug)) |> 
+  left_join(homelessness_trends |> select(ltla21_code = lad_code, percent_aug)) |> 
   select(-ltla21_code) |> 
   na.omit()
 
-mod_null <- lm(total_aug ~ 1, data = homelessness_indicators)
-mod_full <- lm(total_aug ~ ., data = homelessness_indicators)
+mod_null <- glm(total_aug ~ 1, data = homelessness_indicators, family = "poisson")
+mod_full <- glm(total_aug ~ ., data = homelessness_indicators, family = "poisson")
+
+mod_null <- lm(percent_aug ~ 1, data = homelessness_indicators)
+mod_full <- lm(percent_aug ~ ., data = homelessness_indicators)
 
 # Forward stepwise regression
 forward <- step(mod_null, direction = "forward", scope = formula(mod_full), trace = 0)
@@ -169,6 +172,19 @@ bind_rows(
   glance(lm(total_aug ~ temp_accom + homeless, data = ihs_imd_homelessness)) |> mutate(predictor = "Homelessness + temp accomm") |> relocate(predictor)
 ) |> 
   arrange(AIC)
+
+bind_rows(
+  glance(glm(total_aug ~ `Index of Housing Insecurity`, data = ihs_imd_homelessness, family = "poisson")) |> mutate(predictor = "Index of Housing Insecurity") |> relocate(predictor),
+  glance(glm(total_aug ~ IMD, data = ihs_imd_homelessness, family = "poisson")) |> mutate(predictor = "IMD") |> relocate(predictor),
+  glance(glm(total_aug ~ `IMD Housing and Access domain`, data = ihs_imd_homelessness, family = "poisson")) |> mutate(predictor = "IMD Housing and Access domain") |> relocate(predictor),
+  glance(glm(total_aug ~ `IMD Wider Barriers subdomain`, data = ihs_imd_homelessness, family = "poisson")) |> mutate(predictor = "IMD Wider Barriers subdomain") |> relocate(predictor),
+  glance(glm(total_aug ~ homeless, data = ihs_imd_homelessness, family = "poisson")) |> mutate(predictor = "Homelessness") |> relocate(predictor),
+  glance(glm(total_aug ~ homeless + homeless_threatened, data = ihs_imd_homelessness, family = "poisson")) |> mutate(predictor = "Homelessness + threatened") |> relocate(predictor),
+  glance(glm(total_aug ~ temp_accom + homeless, data = ihs_imd_homelessness, family = "poisson")) |> mutate(predictor = "Homelessness + temp accomm") |> relocate(predictor),
+  glance(glm(total_aug ~ temp_accom + homeless + homeless_threatened + waiting + housing_stock + vacancies, data = ihs_imd_homelessness, family = "poisson")) |> mutate(predictor = "Full model") |> relocate(predictor)
+) |> 
+  arrange(AIC) |> 
+  mutate(delta = lag(AIC))
 
 # Check against historical data
 bind_rows(
