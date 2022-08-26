@@ -230,6 +230,13 @@ predicted_arrivals |>
 
 ggsave("images/simulation/How close were our predictions.png", width = 150, height = 120, units = "mm")
 
+# ---- How well do we predict arrivals one week ahead of time (calculate Root Mean Square Error)? ----
+# Keep only simulations that are nearest to the observed data date (those are the sims we ran a week in advance)
+predicted_arrivals |> 
+  filter(Date == `Simulation date`) |> 
+  left_join(observed_arrivals) |> 
+  yardstick::rmse(`Actual arrivals`, `Total arrivals`)
+
 # ---- How have our predictions changed over time? ----
 # Which weeks do we have multiple predictions for?
 sim_multiple_weeks <- 
