@@ -17,8 +17,12 @@ england_indicators <-
   select(-ltla21_name, -ends_with("_quintile"))
 
 ukraine_data <- 
-  homelessness_feb_july |> 
-  select(ltla21_code = lad_code, `% at risk of homelessness`) |> 
+  homelessness_feb_aug |> 
+  select(
+    ltla21_code = lad_code, 
+    Ukraine_homelessness = `Total Ukrainian households owed a prevention or relief duty`
+    # Ukraine_homelessness = `% at risk of homelessness`
+  ) |> 
   left_join(england_indicators)
 
 # ---- Split data ----
@@ -29,14 +33,18 @@ ukraine_test <- testing(ukraine_split)
 
 ukraine_train <- na.omit(ukraine_train)
 
-ukraine_val <- validation_split(ukraine_train, prop = 0.80)
+# ukraine_val <- validation_split(ukraine_train, prop = 0.80)
 
 ukraine_cv <- vfold_cv(ukraine_train)
 
 # Also use homelessness data from the end of July for out-of-sample testing
 ukraine_test_future <- 
-  homelessness_feb_aug |> 
-  select(ltla21_code = lad_code, `% at risk of homelessness`) |> 
+  homelessness_feb_july |> 
+  select(
+    ltla21_code = lad_code, 
+    Ukraine_homelessness = `Total Ukrainian households owed a prevention or relief duty`
+    # Ukraine_homelessness = `% at risk of homelessness`
+  ) |> 
   left_join(england_indicators)
 
 # ---- Preprocess data ----
@@ -50,68 +58,17 @@ model_recipe <-
   #     `Vacant dwellings per 1,000 units of social housing stock`,
   #   data = ukraine_train
   # ) |> 
-  recipe(`% at risk of homelessness` ~ ., data = ukraine_train) |> 
+  recipe(Ukraine_homelessness ~ ., data = ukraine_train) |> 
+  update_role(ltla21_code, new_role = "ID") |> 
   step_normalize(all_predictors()) |> 
-  update_role(ltla21_code, new_role = "ID")
-
-# ---- Interactions ----
-# Source: https://github.com/topepo/FES/blob/master/07_Detecting_Interaction_Effects/7_04_The_Brute-Force_Approach_to_Identifying_Predictive_Interactions/ames_glmnet.R
-int_vars <- 
-  model_recipe |> 
-  pluck("var_info") |> 
-  dplyr::filter(role == "predictor") |> 
-  pull(variable)
-
-interactions <- t(combn(as.character(int_vars), 2))
-colnames(interactions) <- c("var1", "var2")
-
-interactions <- 
-  interactions |> 
-  as_tibble() |> 
-  mutate(
-    term = 
-      paste0(
-        "starts_with('",
-        var1,
-        "'):starts_with('",
-        var2,
-        "')"
-      )
-  ) |>  
-  pull(term) |> 
-  paste(collapse = "+")
-
-interactions <- paste("~", interactions)
-interactions <- as.formula(interactions)
-
-interaction_recipe <- 
-  recipe(
-    `% at risk of homelessness` ~ `Households assessed as threatened with homelessness per (000s)` +
-      `Households assessed as homeless per (000s)` +
-      `Households in temporary accommodation per 1,000` +
-      `Households on housing waiting list per 1,000` +
-      `Social housing stock as a proportion of all households` +
-      `Vacant dwellings per 1,000 units of social housing stock`,
-    data = ukraine_train
-  ) |> 
-  step_normalize(all_predictors()) |> 
-  step_interact(interactions)
-
+  step_poly(all_predictors()) |> 
+  step_interact(~ all_predictors():all_predictors())
+  
 # ---- Fit models to training data ----
-# lm_mod <- 
-#   linear_reg() |> 
-#   set_engine("lm")
-
 # Set up a lasso Poisson regression
 poisson_mod <- 
   poisson_reg(penalty = tune(), mixture = 1) |> 
   set_engine("glmnet")
-
-# Define a regularized regression and explicitly leave the tuning parameters
-# empty for later tuning.
-# glmnet_mod <-
-#   linear_reg(penalty = tune::tune(), mixture = tune::tune()) |> 
-#   set_engine("glmnet")
 
 # Construct a workflow combining the recipe and models
 poisson_wflow <-
@@ -125,9 +82,9 @@ reg_grid <- tibble(penalty = 10^seq(-4, -1, length.out = 30))
 res <- 
   poisson_wflow |> 
   tune_grid(
-    resamples = ukraine_val,
+    resamples = ukraine_cv,
     grid = reg_grid,
-    control = control_grid(save_pred = TRUE, verbose = T),
+    control = control_grid(save_pred = TRUE),
     metrics = metric_set(rmse)
   )
 
@@ -143,16 +100,6 @@ res |>
   show_best("rmse", n = 15) |> 
   arrange(penalty)
 
-# Find best tuned model
-res <-
-  poisson_wflow |> 
-  tune_grid(
-    resamples = ukraine_cv,
-    grid = 10,
-    metrics = yardstick::metric_set(yardstick::rmse)
-  )
-
-
 # ---- Validation ----
 # Select best parameters
 best_params <-
@@ -165,31 +112,32 @@ reg_res <-
   finalize_workflow(best_params) |> 
   fit(data = ukraine_train)
 
-reg_res |> 
-  collect_predictions()
+model_perf <- 
+  ukraine_test |> 
+  select(Ukraine_homelessness) |> 
+  bind_cols(predict(reg_res, ukraine_test))
 
-# reg_res |> 
-#   predict(new_data = bake(model_recipe |> prep(), ukraine_test)) |> 
-#   bind_cols(ukraine_test) |> 
-#   select(`% at risk of homelessness`, .pred) |> 
-#   rmse(`% at risk of homelessness`, .pred)
+model_perf |> 
+  rmse(Ukraine_homelessness , .pred)
 
-ukraine_test |> 
-  select(`% at risk of homelessness`) |> 
-  bind_cols(predict(reg_res, ukraine_test)) |> 
-  rmse(`% at risk of homelessness`, .pred)
+model_perf |> 
+  ggplot(aes(x = Ukraine_homelessness, y = .pred)) +
+  geom_abline(lty = 2) +
+  geom_point() +
+  coord_obs_pred()
 
+# How well does the model predict observed homelessness in a whole other month?
 ukraine_predictions <- 
   ukraine_test_future |> 
-  select(ltla21_code, `% at risk of homelessness`) |> 
+  select(ltla21_code, Ukraine_homelessness) |> 
   bind_cols(predict(reg_res, ukraine_test_future))
 
 ukraine_predictions |> 
-  ggplot(aes(x = `% at risk of homelessness`, y = .pred)) +
+  ggplot(aes(x = Ukraine_homelessness, y = .pred)) +
+  geom_abline(lty = 2) +
   geom_point() +
-  geom_smooth(method = "lm") +
-  scale_y_continuous(limits = c(0, .3)) +
-  scale_y_continuous(limits = c(0, .3))
+  #geom_smooth(method = "lm") +
+  coord_obs_pred()
 
 # ---- Compare to composite index ----
 ukraine_predictions <- 
@@ -206,5 +154,7 @@ index |>
   left_join(ukraine_predictions) |> 
   
   ggplot(aes(x = rank, y = prediction_rank)) +
-  geom_point() +
-  geom_smooth(method = "lm")
+  geom_abline(lty = 2) +
+  geom_point(alpha = 0.3) +
+  geom_smooth(method = "lm") +
+  coord_obs_pred()
