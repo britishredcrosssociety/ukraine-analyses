@@ -145,7 +145,7 @@ homelessness_indicators <-
     housing_stock = `Social housing stock as a proportion of all households`, 
     vacancies = `Vacant dwellings per 1,000 units of social housing stock`
   ) |> 
-  left_join(homelessness_trends |> select(ltla21_code = lad_code, percent_aug)) |> 
+  left_join(homelessness_trends |> select(ltla21_code = lad_code, total_aug)) |> 
   select(-ltla21_code) |> 
   na.omit()
 
@@ -210,3 +210,14 @@ bind_rows(
 #--> - wider barriers subdomain is the next best fit, followed by Housing and Access domain
 #--> - Our composite housing insecurity index fits the data better than the overall IMD, but isn't a great predictor of Ukraine homelessness
 #--> - So, it'd be better to generalise from a model of homelessness + temp accomm, rather than use the composite index, to predict homelessness in the devolved nations.
+
+# ---- Try a multivariate adaptive regression spline ----
+library(vip)
+library(earth)
+
+# Fit a MARS model
+poisson_mars <- earth(total_aug ~ ., data = homelessness_indicators, degree = 2, pmethod = "exhaustive", glm = list(family="poisson"))
+
+# Variable importance
+vip::vi(poisson_mars)
+vip(poisson_mars)
