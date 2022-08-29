@@ -281,3 +281,116 @@ stan_fit <-
   stan_wflow |> 
   fit(data = ukraine_train)
 
+
+ukraine_train |> 
+  group_by(region21_name) |> 
+  nest()
+
+# x <- ukraine_train |> filter(region21_name == "London") |> select(-region21_name)
+
+create_mars_models <- function(x) {
+  mars_recipe <- 
+    recipe(Ukraine_homelessness ~ ., data = x) |> 
+    update_role(ltla21_code, new_role = "ID") |> 
+    step_normalize(all_numeric_predictors())
+  
+  mars_folds <- vfold_cv(x, v = 5)
+  
+  mars_model <- mars(num_terms = tune(), prod_degree = tune()) |> 
+    set_mode("regression") |> 
+    set_engine("earth")
+  
+  mars_grid <- grid_regular(extract_parameter_set_dials(mars_model), levels = 10)
+  
+  mars_wf <- 
+    workflow() |> 
+    add_model(mars_model) |> 
+    add_recipe(mars_recipe)
+  
+  mars_res <- 
+    mars_wf |> 
+    tune_grid(
+      resamples = mars_folds,
+      grid = mars_grid,
+      metrics = metric_set(mae)
+    )
+  
+  mars_tune <- mars_res |> select_best("mae")
+  
+  mars_wf <- mars_wf |> finalize_workflow(mars_tune)
+  
+  final_model <- fit(mars_wf, x)
+  
+  print("Model fitted")
+  return(final_model)
+}
+
+mars_models <- 
+  ukraine_data |> 
+  na.omit() |> 
+  group_by(region21_name) |> 
+  nest() |> 
+  mutate(model = map(data, create_mars_models))
+
+mars_predictions <- 
+  mars_models |> 
+  mutate(results = map2(model, data, predict)) |> 
+  
+  select(region21_name, data, results) |> 
+  unnest(cols = c(data, results)) |> 
+  ungroup()
+
+mars_predictions |> 
+  mutate(
+    id = row_number(),
+    .resid = Ukraine_homelessness - .pred
+  ) |> 
+  ggplot(aes(x = id, y = .resid)) +
+  geom_hline(yintercept = 0, lty = 2) +
+  geom_point(aes(colour = region21_name), alpha = 0.8, show.legend = FALSE) +
+  geom_smooth() +
+  facet_wrap(~region21_name, scales = "free_x")
+
+mars_predictions |> 
+  ggplot(aes(x = Ukraine_homelessness, y = .pred)) +
+  geom_abline(lty = 2) +
+  geom_point() +
+  facet_wrap(~region21_name) +
+  coord_obs_pred()
+
+# Try on homelessness data from another month
+ukraine_test_nested <- 
+  ukraine_test_future |> 
+  
+  filter(ltla21_code %in% (ukraine_data |> na.omit() |> pull(ltla21_code))) |> 
+  
+  group_by(region21_name) |> 
+  nest() |> 
+  rename(test_data = data)
+
+mars_test <- 
+  mars_models |> 
+  left_join(ukraine_test_nested) |> 
+  mutate(results = map2(model, test_data, predict)) |> 
+  
+  select(region21_name, data, results) |> 
+  unnest(cols = c(data, results)) |> 
+  ungroup()
+
+mars_test |> 
+  ggplot(aes(x = Ukraine_homelessness, y = .pred)) +
+  geom_abline(lty = 2) +
+  geom_point() +
+  facet_wrap(~region21_name) +
+  coord_obs_pred()
+
+mars_test |> 
+  mutate(
+    id = row_number(),
+    .resid = Ukraine_homelessness - .pred
+  ) |> 
+  ggplot(aes(x = id, y = .resid)) +
+  geom_hline(yintercept = 0, lty = 2) +
+  geom_point(aes(colour = region21_name), alpha = 0.8, show.legend = FALSE) +
+  geom_smooth() +
+  facet_wrap(~region21_name, scales = "free_x")
