@@ -53,6 +53,28 @@ cumulative_visas_by_scheme <- bind_rows(cumulative_sponsorship_scheme_visas, cum
   mutate(Date = ymd("2022-01-03") + weeks(Week - 1)) |> 
   relocate(Date)
 
+# ---- Make a dataframe containing weekly visa data ----
+weekly_visas <- 
+  visas_scraped |> 
+  arrange(Date) |> 
+  filter(str_detect(Stage, "arrivals")) |> 
+  
+  select(-Date, -Visas) |> 
+  
+  pivot_wider(names_from = Stage, values_from = Visas_imputed) |> 
+  
+  group_by(Week) |> 
+  summarise(
+    `arrivals of visa-holders in the UK` = sum(`arrivals of visa-holders in the UK`, na.rm = TRUE)
+  ) |> 
+  
+  # Calculate week-on-week changes
+  mutate(
+    `Weekly arrivals` = `arrivals of visa-holders in the UK` - lag(`arrivals of visa-holders in the UK`)
+  ) |> 
+  
+  select(Week, starts_with("Weekly"))
+
 # ---- Load simulated data (baseline scenario) ----
 # Load predictions for the most recently published DLUHC data
 simulated_visas_baseline <- read_csv("output-data/simulations/simulation-baseline-2022-08-29.csv")
@@ -230,12 +252,61 @@ predicted_arrivals |>
 
 ggsave("images/simulation/How close were our predictions.png", width = 150, height = 120, units = "mm")
 
+# ---- Plot predictions 1, 2, ...n weeks ahead against observed data - using weekly data ----
+# When did our predictions start?
+sim_start_week <- 
+  sim_data |> 
+  filter(month(`Simulation date`) >= 8) |> 
+  filter(Week == min(Week)) |> 
+  pull(Week)
+
+# Get actual arrival figures, starting from when we made our first prediction
+observed_arrivals <- 
+  weekly_visas |> 
+  filter(Week >= sim_start_week) |> 
+  group_by(Week) |> 
+  summarise(`Actual arrivals` = sum(`Weekly arrivals`))
+
+# Get predicted arrivals over the same period
+predicted_arrivals <- 
+  sim_data |> 
+  filter(Week %in% observed_arrivals$Week) |> 
+  select(Week, `Simulation date`, `Weekly arrivals`, `Weekly arrivals (lower bound)`, `Weekly arrivals (upper bound)`)
+
+# Plot series of predictions against observed data
+predicted_arrivals |> 
+  ggplot(aes(x = factor(Week), y = `Weekly arrivals`)) +
+  geom_pointrange(aes(ymin = `Weekly arrivals (lower bound)`, ymax = `Weekly arrivals (upper bound)`, colour = factor(`Simulation date`)), position = position_dodge(width = 0.2)) +
+  geom_point(
+    data = observed_arrivals,
+    inherit.aes = FALSE,
+    mapping = aes(x = factor(Week), y = `Actual arrivals`),
+    shape = 4,
+    size = 1.5
+  ) +
+  scale_y_continuous(labels = scales::comma) +
+  theme_classic() +
+  theme(
+    legend.position = "top",
+    plot.title.position = "plot"
+  ) +
+  labs(
+    title = "How close were our predictions?",
+    subtitle = str_wrap("Dots and lines show predictions with upper/lower bounds, coloured by when the prediction was made. 'X's are the actual number of arrivals in a given week.", 80),
+    colour = "Date prediction made",
+    x = NULL,
+    y = "Weekly arrivals (actual and predicted)"
+  )
+
+ggsave("images/simulation/How close were our predictions - weekly arrivals.png", width = 150, height = 120, units = "mm")
+
 # ---- How well do we predict arrivals one week ahead of time (calculate Root Mean Square Error)? ----
 # Keep only simulations that are nearest to the observed data date (those are the sims we ran a week in advance)
 predicted_arrivals |> 
-  filter(Date == `Simulation date`) |> 
+  #filter(Date == `Simulation date`) |> 
+  filter(month(`Simulation date`) >= 8) |> 
   left_join(observed_arrivals) |> 
-  yardstick::rmse(`Actual arrivals`, `Total arrivals`)
+  yardstick::rmse(`Actual arrivals`, `Weekly arrivals`)
 
 # ---- How have our predictions changed over time? ----
 # Which weeks do we have multiple predictions for?
