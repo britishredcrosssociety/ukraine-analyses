@@ -55,7 +55,7 @@ cumulative_visas_by_scheme <- bind_rows(cumulative_sponsorship_scheme_visas, cum
 
 # ---- Load simulated data (baseline scenario) ----
 # Load predictions for the most recently published DLUHC data
-simulated_visas_baseline <- read_csv("output-data/simulations/simulation-baseline-2022-08-22.csv")
+simulated_visas_baseline <- read_csv("output-data/simulations/simulation-baseline-2022-08-29.csv")
 
 # Load all simulation data into a `sim_data` tibble
 i <- 1
