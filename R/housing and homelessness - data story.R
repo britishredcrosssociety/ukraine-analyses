@@ -7,7 +7,7 @@ source("https://github.com/matthewgthomas/brclib/raw/master/R/colours.R")
 
 # ---- Load data ----
 source("R/load Ukraine visa data - scraped.R")
-source("R/load Ukraine visa data - Local Authorities.R")
+# source("R/load Ukraine visa data - Local Authorities.R")
 
 homelessness_feb_june <- read_csv("data/homelessness/ukraine-homelessness-3-june.csv")
 homelessness_feb_july <- read_csv("data/homelessness/ukraine-homelessness-1-july.csv")
@@ -72,7 +72,7 @@ homelessness_total |>
   labs(
     title = str_glue(
       "People arriving on the <span style='color:{get_brc_colours()$red}'>Homes of Ukraine Scheme</span> increasingly face homelessness<br/>
-      <span style='font-size:10pt'>% of Ukraine refugee housholds on the <span style='color:{get_brc_colours()$teal}'>Family Scheme</span> and the <span style='color:{get_brc_colours()$red}'>Homes for Ukraine Scheme</span></span>"
+      <span style='font-size:10pt; color=#737373'>% of Ukraine refugee housholds on the <span style='color:{get_brc_colours()$teal}'>Family Scheme</span> and the <span style='color:{get_brc_colours()$red}'>Homes for Ukraine Scheme</span></span>"
     ),
     # subtitle = str_glue("% of Ukraine refugee housholds on the <span style='color:{get_brc_colours()$teal}'>Family Scheme</span> and the <span style='color:{get_brc_colours()$red}'>Homes for Ukraine Scheme</span>"),
     x = NULL,
@@ -136,17 +136,30 @@ new_homelessness |>
   count(region21_name, sort = TRUE)
 
 # ---- Local Authorities with the highest rates of homelessness risk ----
+pal_region <- 
+  tribble(
+    ~region21_name, ~region_colour,
+    "London", "#a50f15",
+    "South East", "#de2d26",
+    "East of England", "#fb6a4a",
+    "Yorkshire and The Humber", "#737373",
+    "West Midlands", "#737373"
+  )
+
 homelessness_feb_aug |> 
   left_join(geographr::lookup_ltla21_region21, by = c("lad_code" = "ltla21_code")) |> 
   select(lad_name, region21_name, `% at risk of homelessness`, `% in temporary accommodation`) |> 
   arrange(desc(`% at risk of homelessness`), desc(`% in temporary accommodation`)) |> 
   slice(1:10) |> 
   
+  left_join(pal_region) |> 
+  
   ggplot(aes(x = reorder(lad_name, `% at risk of homelessness`, sum), y = `% at risk of homelessness`)) +
-  geom_col(aes(fill = region21_name)) +
+  geom_col(aes(fill = region_colour)) +
   geom_bar_text(aes(label = lad_name)) +
   coord_flip() +
-  scale_fill_brewer(palette = "Set2") +
+  # scale_fill_brewer(palette = "Set2") +
+  scale_fill_identity() +
   scale_y_continuous(
     limits = c(0, 0.33),
     breaks = c(0, 0.1, 0.2, 0.25, 0.33),
@@ -158,13 +171,14 @@ homelessness_feb_aug |>
     legend.position = "bottom",
     plot.title.position = "plot",
     plot.title = element_textbox_simple(size = 12),
+    plot.subtitle = element_text(colour = "#737373"),
     axis.text.y = element_blank(),
     panel.grid.major.y = element_blank(),
     panel.grid.minor.x = element_blank()
   ) +
   labs(
-    title = str_wrap("Risk of homelessness for Ukraine refugees is highest in <span style='color:#fc8d62'>London</span>, the <span style='color:#8da0cb'>South East</span>, and <span style='color:#66c2a5'>East</span> of England", 60),
-    subtitle = str_wrap("Percentages are based on individual arrivals, not households, so are likely to underestimate the true rate of homelessness risks", 60),
+    title = str_wrap("Risk of homelessness for Ukraine refugees is highest in <span style='color:#a50f15'>London</span>, the <span style='color:#de2d26'>South East</span>, and <span style='color:#fb6a4a'>East</span> of England", 60),
+    subtitle = str_wrap("Showing the ten Local Authorities with the largest risks. Percentages are based on individual arrivals, not households, so are likely to underestimate the true rate of homelessness risks", 60),
     x = NULL,
     fill = NULL,
     caption = "British Red Cross analysis of DLUHC data"
@@ -210,14 +224,13 @@ ihs_imd_homelessness <-
   )
 
 # Explore relationship between all indicators and numbers of homeless Ukrainian households
-ihs_imd_homelessness |> 
-  # pivot_longer(cols = c(`IMD`, `IMD Housing and Access domain`, `IMD Wider Barriers subdomain`), values_to = "rank") |> 
-  pivot_longer(cols = homeless_threatened:`IMD Wider Barriers subdomain`, values_to = "rank") |> 
-  
-  ggplot(aes(x = rank, y = total_aug)) +
-  geom_point() +
-  geom_smooth(method = "lm") +
-  facet_wrap(~name, ncol = 3, scales = "free_x")
+# ihs_imd_homelessness |> 
+#   pivot_longer(cols = homeless_threatened:`IMD Wider Barriers subdomain`, values_to = "rank") |> 
+#   
+#   ggplot(aes(x = rank, y = total_aug)) +
+#   geom_point() +
+#   geom_smooth(method = "lm") +
+#   facet_wrap(~name, ncol = 3, scales = "free_x")
 
 # Plot 'wider barriers' subdomain
 ihs_imd_homelessness |> 
@@ -231,7 +244,8 @@ ihs_imd_homelessness |>
   scale_y_continuous(expand = expansion(mult = c(0, 0.1), add = 0)) +
   theme_classic() +
   theme(
-    plot.title.position = "plot"
+    plot.title.position = "plot",
+    plot.subtitle = element_text(colour = "#737373")
   ) +
   labs(
     title = str_wrap("Homelessness for Ukraine refugees tends to be higher in places with higher barriers to housing", 60),
