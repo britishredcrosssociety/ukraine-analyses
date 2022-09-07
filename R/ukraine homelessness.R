@@ -29,10 +29,10 @@ england_index <- read_csv("output-data/index-of-housing-insecurity/housing-index
 
 # ---- Homelessness and deprivation ----
 homelessness_feb_aug |> 
-  left_join(imd_england_lad |> select(lad_code, Proportion, Extent)) |> 
+  left_join(imd_england_lad |> select(lad_code, Score, Proportion, Extent)) |> 
   
-  ggplot(aes(x = Extent, y = `Temporary Accommodation Snapshot`)) +
-  # ggplot(aes(x = Extent, y = `Total Ukrainian households owed a prevention or relief duty`)) +
+  ggplot(aes(x = Score, y = `Temporary Accommodation Snapshot`)) +
+  # ggplot(aes(x = Score, y = `Total Ukrainian households owed a prevention or relief duty`)) +
   geom_point() +
   geom_smooth(method = "lm")
 
@@ -87,7 +87,7 @@ homelessness_feb_aug |>
 
 # ---- Rates/proportions of homelessness ----
 # Table, where more than 10% of arrivals are at risk of homelessness or in temp accommodation
-homelessness_feb_july |> 
+homelessness_feb_aug |> 
   filter(`% at risk of homelessness` >= 0.1 | `% in temporary accommodation` >= 0.1) |> 
   select(lad_name, `% at risk of homelessness`, `% in temporary accommodation`) |> 
   arrange(desc(`% at risk of homelessness`))
