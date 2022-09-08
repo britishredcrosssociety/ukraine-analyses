@@ -34,8 +34,46 @@ homelessness_total |>
   filter(Date == max(Date)) |> 
   select(`Total Ukrainian households owed a prevention or relief duty`)
 
+homelessness_total |> 
+  select(Date, Homeless = `Total Ukrainian households owed a prevention or relief duty`) |> 
+  arrange(Date) |> 
+  mutate(
+    Diff = (Homeless - lag(Homeless)),
+    `% change` = (Homeless - lag(Homeless)) / lag(Homeless)
+  )
+
 # % increase since first homelessness stats released?
 max(homelessness_total$`Total Ukrainian households owed a prevention or relief duty`) / min(homelessness_total$`Total Ukrainian households owed a prevention or relief duty`)
+
+homelessness_total |> 
+  select(Date_text, `Total Ukrainian households owed a prevention or relief duty`) |> 
+  
+  ggplot(aes(x = Date_text, y = `Total Ukrainian households owed a prevention or relief duty`, group = 1)) +
+  geom_line(size = 1.1, colour = get_brc_colours()$red) +
+  geom_point(size = 2.5, pch = 21, colour = "white", fill = get_brc_colours()$red) +
+  
+  scale_y_continuous(labels = scales::comma, limits = c(0, NA)) +
+  
+  theme_classic() +
+  theme(
+    legend.position = "none",
+    plot.title.position = "plot",
+    plot.title = element_textbox_simple(size = 12)
+  ) +
+  labs(
+    title = ""
+      
+      str_glue(
+      "People arriving on the <span style='color:{get_brc_colours()$red}; font-weight:bold'>Homes for Ukraine Scheme</span> increasingly face homelessness<br/>
+      <span style='font-size:10pt; color:#737373; font-weight:bold'>% of Ukraine refugee housholds on the <span style='color:{get_brc_colours()$teal}; font-weight:bold'>Family Scheme</span> and the <span style='color:{get_brc_colours()$red}'>Homes for Ukraine Scheme</span></span>"
+    ),
+    # subtitle = str_glue("% of Ukraine refugee housholds on the <span style='color:{get_brc_colours()$teal}'>Family Scheme</span> and the <span style='color:{get_brc_colours()$red}'>Homes for Ukraine Scheme</span>"),
+    x = NULL,
+    y = NULL,
+    caption = "British Red Cross analysis of DLUHC data"
+  )
+
+ggsave("images/homelessness - percent by scheme.png", width = 110, height = 100, units = "mm")
 
 # ---- How many months since first arrivals? ----
 first_arrivals <- 
@@ -60,12 +98,13 @@ homelessness_total |>
   select(Date_text, `% Homes for Ukraine`, `% Family Scheme`) |> 
   pivot_longer(cols = starts_with("%"), names_to = "Scheme", values_to = "Percent") |> 
   
-  ggplot(aes(x = Date_text, y = Percent, group = Scheme, colour = Scheme)) +
-  geom_line(size = 1.1) +
-  geom_point(size = 2.5) +
+  ggplot(aes(x = Date_text, y = Percent, group = Scheme)) +
+  geom_line(aes(colour = Scheme), size = 1.1) +
+  geom_point(aes(fill = Scheme), size = 2.5, pch = 21, colour = "white") +
   
   scale_y_continuous(labels = scales::percent, limits = c(0, NA)) +
   scale_color_manual(values = c(get_brc_colours()$teal, get_brc_colours()$red)) +
+  scale_fill_manual(values = c(get_brc_colours()$teal, get_brc_colours()$red)) +
   
   theme_classic() +
   theme(
@@ -266,7 +305,7 @@ ihs_imd_homelessness |>
     axis.ticks.x = element_blank()
   ) +
   labs(
-    title = str_wrap("Homelessness for Ukraine refugees tends to be higher in places with higher barriers to housing", 52),
+    title = str_wrap("Homelessness for Ukraine refugees tends to be higher in places with greater barriers to housing", 52),
     subtitle = str_wrap("Barriers to housing include affordability, overcrowding, and Local Authority housing assistance", 60),
     x = "Barriers to housing",
     y = "Number of Ukraine refugee households\n at risk of homelessness",
