@@ -9,9 +9,10 @@ source("https://github.com/matthewgthomas/brclib/raw/master/R/colours.R")
 source("R/load Ukraine visa data - scraped.R")
 # source("R/load Ukraine visa data - Local Authorities.R")
 
-homelessness_feb_june <- read_csv("data/homelessness/ukraine-homelessness-3-june.csv")
-homelessness_feb_july <- read_csv("data/homelessness/ukraine-homelessness-1-july.csv")
-homelessness_feb_aug <- read_csv("data/homelessness/ukraine-homelessness-29-july.csv")
+homelessness_24feb_3jun <- read_csv("data/homelessness/ukraine-homelessness-3-june.csv")
+homelessness_24feb_1jul <- read_csv("data/homelessness/ukraine-homelessness-1-july.csv")
+homelessness_24feb_29jul <- read_csv("data/homelessness/ukraine-homelessness-29-july.csv")
+homelessness_24feb_26aug <- read_csv("data/homelessness/ukraine-homelessness-26-august.csv")
 
 homelessness_total <- read_csv("data/homelessness/ukraine-homelessness-summary.csv")
 
@@ -24,7 +25,7 @@ england_index <- read_csv("output-data/index-of-housing-insecurity/housing-index
 homelessness_total <- 
   homelessness_total |> 
   mutate(
-    Date_text = factor(Date_text, levels = c("3 June", "1 July", "29 July")),
+    Date_text = factor(Date_text, levels = c("3 June", "1 July", "29 July", "26 August")),
     `% in temporary accommodation` = `Temporary Accommodation Snapshot` / `Total Ukrainian households owed a prevention or relief duty`
   )
 
@@ -45,7 +46,10 @@ first_arrivals <-
   distinct(Date) |> 
   pull(Date)
 
-latest_homelessness_data <- ymd("2022-09-02")
+latest_homelessness_data <- 
+  homelessness_total |> 
+  filter(Date == max(Date)) |> 
+  pull(Date)
 
 # How many months in between?
 latest_homelessness_data - first_arrivals
@@ -71,8 +75,8 @@ homelessness_total |>
   ) +
   labs(
     title = str_glue(
-      "People arriving on the <span style='color:{get_brc_colours()$red}'>Homes of Ukraine Scheme</span> increasingly face homelessness<br/>
-      <span style='font-size:10pt; color=#737373'>% of Ukraine refugee housholds on the <span style='color:{get_brc_colours()$teal}'>Family Scheme</span> and the <span style='color:{get_brc_colours()$red}'>Homes for Ukraine Scheme</span></span>"
+      "People arriving on the <span style='color:{get_brc_colours()$red}; font-weight:bold'>Homes for Ukraine Scheme</span> increasingly face homelessness<br/>
+      <span style='font-size:10pt; color:#737373; font-weight:bold'>% of Ukraine refugee housholds on the <span style='color:{get_brc_colours()$teal}; font-weight:bold'>Family Scheme</span> and the <span style='color:{get_brc_colours()$red}'>Homes for Ukraine Scheme</span></span>"
     ),
     # subtitle = str_glue("% of Ukraine refugee housholds on the <span style='color:{get_brc_colours()$teal}'>Family Scheme</span> and the <span style='color:{get_brc_colours()$red}'>Homes for Ukraine Scheme</span>"),
     x = NULL,
@@ -80,16 +84,16 @@ homelessness_total |>
     caption = "British Red Cross analysis of DLUHC data"
   )
 
-ggsave("images/homelessness - percent by scheme.png", width = 100, height = 100, units = "mm")
+ggsave("images/homelessness - percent by scheme.png", width = 110, height = 100, units = "mm")
 
 # ---- Numbers and %s in temporary accommodation ----
 homelessness_total |> 
   select(Date, `Temporary Accommodation Snapshot`, `% in temporary accommodation`)
 
 # ---- %s of total homelessness in each region ----
-total_homelessness <- sum(homelessness_feb_aug$`Total Ukrainian households owed a prevention or relief duty`, na.rm = TRUE)
+total_homelessness <- sum(homelessness_24feb_26aug$`Total Ukrainian households owed a prevention or relief duty`, na.rm = TRUE)
 
-homelessness_feb_aug |> 
+homelessness_24feb_26aug |> 
   arrange(desc(`Total Ukrainian households owed a prevention or relief duty`)) |> 
   left_join(geographr::lookup_ltla21_region21, by = c("lad_code" = "ltla21_code")) |> 
   select(lad_name, region21_name, homelessness = `Total Ukrainian households owed a prevention or relief duty`) |> 
@@ -101,10 +105,13 @@ homelessness_feb_aug |>
   ) |> 
   arrange(desc(proportion))
 
-# ---- %s of households in temporary accommodation in each region ----
-total_temp_acc <- sum(homelessness_feb_aug$`Temporary Accommodation Snapshot`, na.rm = TRUE)
+# % at risk of homelessness in South East and East
+0.171 + 0.107
 
-homelessness_feb_aug |> 
+# ---- %s of households in temporary accommodation in each region ----
+total_temp_acc <- sum(homelessness_24feb_26aug$`Temporary Accommodation Snapshot`, na.rm = TRUE)
+
+homelessness_24feb_26aug |> 
   left_join(geographr::lookup_ltla21_region21, by = c("lad_code" = "ltla21_code")) |> 
   select(lad_name, region21_name, temp_acc = `Temporary Accommodation Snapshot`) |> 
   
@@ -116,7 +123,7 @@ homelessness_feb_aug |>
   arrange(desc(proportion))
 
 # % in temporary accommodation in London, South East, and East
-.426 + .158 + .0988
+.164 + .0857
 
 # ---- Where has experienced by biggest increases in homelessness? ----
 homelessness_trends |> 
@@ -126,16 +133,23 @@ homelessness_trends |>
 # ---- Which places had no homelessness in June but do now? ----
 new_homelessness <- 
   homelessness_trends |> 
-  filter((is.na(total_june) | total_june == 0) & (is.na(total_july) | total_july == 0) & (total_aug > 0)) |> 
-  arrange(desc(total_aug)) |> 
-  select(region21_name, lad_name, total_june, total_july, total_aug)
-
-new_homelessness
+  filter((is.na(total_3jun) | total_3jun == 0) & (is.na(total_1jul) | total_1jul == 0) & (is.na(total_29jul) | total_29jul == 0) & (total_26aug > 0)) |> 
+  arrange(desc(total_26aug)) |> 
+  select(region21_name, lad_name, total_3jun, total_1jul, total_29jul, total_26aug)
 
 new_homelessness |> 
   count(region21_name, sort = TRUE)
 
+new_homelessness
+
 # ---- Local Authorities with the highest rates of homelessness risk ----
+homelessness_24feb_26aug |> 
+  left_join(geographr::lookup_ltla21_region21, by = c("lad_code" = "ltla21_code")) |> 
+  select(lad_name, region21_name, `% at risk of homelessness`, `% in temporary accommodation`) |> 
+  arrange(desc(`% at risk of homelessness`), desc(`% in temporary accommodation`)) |> 
+  slice(1:10) |> 
+  count(region21_name, sort = TRUE)
+
 pal_region <- 
   tribble(
     ~region21_name, ~region_colour,
@@ -143,10 +157,11 @@ pal_region <-
     "South East", "#de2d26",
     "East of England", "#fb6a4a",
     "Yorkshire and The Humber", "#737373",
+    "East Midlands", "#737373",
     "West Midlands", "#737373"
   )
 
-homelessness_feb_aug |> 
+homelessness_24feb_26aug |> 
   left_join(geographr::lookup_ltla21_region21, by = c("lad_code" = "ltla21_code")) |> 
   select(lad_name, region21_name, `% at risk of homelessness`, `% in temporary accommodation`) |> 
   arrange(desc(`% at risk of homelessness`), desc(`% in temporary accommodation`)) |> 
@@ -174,11 +189,13 @@ homelessness_feb_aug |>
     plot.subtitle = element_text(colour = "#737373"),
     axis.text.y = element_blank(),
     panel.grid.major.y = element_blank(),
-    panel.grid.minor.x = element_blank()
+    panel.grid.minor.x = element_blank(),
+    # panel.background = element_rect(colour = "white"), 
+    plot.background = element_rect(colour = "white")
   ) +
   labs(
-    title = str_wrap("Risk of homelessness for Ukraine refugees is highest in <span style='color:#a50f15'>London</span>, the <span style='color:#de2d26'>South East</span>, and <span style='color:#fb6a4a'>East</span> of England", 60),
-    subtitle = str_wrap("Showing the ten Local Authorities with the largest risks. Percentages are based on individual arrivals, not households, so are likely to underestimate the true rate of homelessness risks", 60),
+    title = str_wrap("Risk of homelessness for Ukraine refugees is highest in <span style='color:#a50f15; font-weight:bold'>London</span>, the <span style='color:#de2d26; font-weight:bold'>South East</span>, and <span style='color:#fb6a4a; font-weight:bold'>East</span> of England", 60),
+    subtitle = str_wrap("Showing the ten Local Authorities with the largest risks. Percentages are based on individual arrivals, not households, so are likely to underestimate the true rate of homelessness risks", 80),
     x = NULL,
     fill = NULL,
     caption = "British Red Cross analysis of DLUHC data"
@@ -190,7 +207,7 @@ ggsave("images/risk of homelessness.png", width = 150, height = 120, units = "mm
 ihs_imd_homelessness <- 
   england_index |> 
   
-  left_join(homelessness_trends |> select(ltla21_code = lad_code, total_aug, total_july, total_june)) |> 
+  left_join(homelessness_trends |> select(ltla21_code = lad_code, total_26aug)) |> 
   
   left_join(IMD::imd_england_lad, by = c("ltla21_code" = "lad_code")) |> 
   left_join(IMD::imd_england_lad_subdomains, by = c("ltla21_code" = "lad_code")) |> 
@@ -209,7 +226,7 @@ ihs_imd_homelessness <-
     ltla21_code, 
     ltla21_name,
     
-    total_aug,
+    total_26aug,
     
     homeless_threatened = `Households assessed as threatened with homelessness per (000s)`, 
     homeless = `Households assessed as homeless per (000s)`, 
@@ -224,35 +241,36 @@ ihs_imd_homelessness <-
   )
 
 # Explore relationship between all indicators and numbers of homeless Ukrainian households
-# ihs_imd_homelessness |> 
-#   pivot_longer(cols = homeless_threatened:`IMD Wider Barriers subdomain`, values_to = "rank") |> 
-#   
-#   ggplot(aes(x = rank, y = total_aug)) +
-#   geom_point() +
-#   geom_smooth(method = "lm") +
-#   facet_wrap(~name, ncol = 3, scales = "free_x")
+ihs_imd_homelessness |>
+  pivot_longer(cols = homeless_threatened:`IMD Wider Barriers subdomain`, values_to = "rank") |>
+
+  ggplot(aes(x = rank, y = total_26aug)) +
+  geom_point() +
+  geom_smooth() +
+  facet_wrap(~name, ncol = 3, scales = "free_x")
 
 # Plot 'wider barriers' subdomain
 ihs_imd_homelessness |> 
-  ggplot(aes(x = `IMD Wider Barriers subdomain`, y = total_aug)) +
+  ggplot(aes(x = `IMD Wider Barriers subdomain`, y = total_26aug)) +
   geom_point(alpha = 0.4) +
-  geom_smooth(method = "lm", colour = "red", fill = "red") +
+  geom_smooth(method = "lm", colour = get_brc_colours()$red, fill = get_brc_colours()$red) +
   scale_x_continuous(
-    breaks = c(min(ihs_imd_homelessness$`IMD Wider Barriers subdomain`), max(ihs_imd_homelessness$`IMD Wider Barriers subdomain`)), 
-    labels = c("Fewer barriers", "Greater barriers")
+    breaks = c(min(ihs_imd_homelessness$`IMD Wider Barriers subdomain`) + 20, max(ihs_imd_homelessness$`IMD Wider Barriers subdomain`) - 30), 
+    labels = c("← Fewer barriers", "Greater barriers →")
   ) +
   scale_y_continuous(expand = expansion(mult = c(0, 0.1), add = 0)) +
   theme_classic() +
   theme(
     plot.title.position = "plot",
-    plot.subtitle = element_text(colour = "#737373")
+    plot.subtitle = element_text(colour = "#737373"),
+    axis.ticks.x = element_blank()
   ) +
   labs(
-    title = str_wrap("Homelessness for Ukraine refugees tends to be higher in places with higher barriers to housing", 60),
+    title = str_wrap("Homelessness for Ukraine refugees tends to be higher in places with higher barriers to housing", 52),
     subtitle = str_wrap("Barriers to housing include affordability, overcrowding, and Local Authority housing assistance", 60),
     x = "Barriers to housing",
     y = "Number of Ukraine refugee households\n at risk of homelessness",
     caption = "British Red Cross analysis of DLUHC data"
   )
 
-ggsave("images/homelessness - barriers.png", width = 100, height = 100, units = "mm")
+ggsave("images/homelessness - barriers.png", width = 120, height = 120, units = "mm")
