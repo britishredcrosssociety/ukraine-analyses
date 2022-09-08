@@ -4,19 +4,19 @@ library(httr)
 
 source("R/load Ukraine visa data - Local Authorities.R")
 
-# ---- Load latest homelessness management info (24 February to 29 July 2022) ----
+# ---- Load latest homelessness management info (24 February to 26 August 2022) ----
 # Source: https://www.gov.uk/government/publications/homelessness-management-information-ukrainian-nationals-england
 GET(
-  "https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/1097490/Ukraine_Homelessness_Management_Information_20220808.ods",
+  "https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/1103040/Ukraine_Management_Information_Table_we-20220826.ods",
   write_disk(tf <- tempfile(fileext = ".ods"))
 )
 
-homelessness_feb_aug_raw <- read_ods(tf, skip = 3)
+homelessness_24feb_26aug_raw <- read_ods(tf, skip = 3)
 
 # Remove empty columns
-homelessness_feb_aug_raw <- homelessness_feb_aug_raw[-c(3, 4, 10, 14, 21)]
+homelessness_24feb_26aug_raw <- homelessness_24feb_26aug_raw[-c(3, 4, 10, 14, 21)]
 
-names(homelessness_feb_aug_raw) <- c(
+names(homelessness_24feb_26aug_raw) <- c(
   "lad_code",
   "lad_name",
   "Total Ukrainian households owed a prevention or relief duty",
@@ -37,17 +37,63 @@ names(homelessness_feb_aug_raw) <- c(
   "Offer of Settled Accomodation"
 )
 
-homelessness_feb_aug_raw <- 
-  homelessness_feb_aug_raw |> 
+homelessness_24feb_26aug_raw <- 
+  homelessness_24feb_26aug_raw |> 
   as_tibble() |> 
   mutate(across(-(lad_code:lad_name), as.numeric))
 
-homelessness_feb_aug_total <- 
-  homelessness_feb_aug_raw |> 
+homelessness_24feb_26aug_total <- 
+  homelessness_24feb_26aug_raw |> 
   slice(3)
 
-homelessness_feb_aug <- 
-  homelessness_feb_aug_raw |> 
+homelessness_24feb_26aug <- 
+  homelessness_24feb_26aug_raw |> 
+  filter(str_detect(lad_code, "^E"))
+
+# ---- Load latest homelessness management info (24 February to 29 July 2022) ----
+# Source: https://www.gov.uk/government/publications/homelessness-management-information-ukrainian-nationals-england
+GET(
+  "https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/1097490/Ukraine_Homelessness_Management_Information_20220808.ods",
+  write_disk(tf <- tempfile(fileext = ".ods"))
+)
+
+homelessness_24feb_29jul_raw <- read_ods(tf, skip = 3)
+
+# Remove empty columns
+homelessness_24feb_29jul_raw <- homelessness_24feb_29jul_raw[-c(3, 4, 10, 14, 21)]
+
+names(homelessness_24feb_29jul_raw) <- c(
+  "lad_code",
+  "lad_name",
+  "Total Ukrainian households owed a prevention or relief duty",
+  "Single household (total)",
+  "Single household (%)",
+  "Household with dependent children (total)",
+  "Household with dependent children (%)",
+  "Homelessness Prevented or Relieved via Mediation",
+  "Homelessness Prevented or Relieved via Rematch",
+  "Homelessness Prevented or Relieved via Other",
+  "Family Scheme: Accommodation or arrangement broken down",
+  "Family Scheme: Accommodation not available or suitable on arrival",
+  "Homes for Ukraine Scheme: Accommodation or arrangement broken down",
+  "Homes for Ukraine Scheme: Accommodation not available or suitable on arrival",
+  "Homes for Ukraine Scheme: Rejected sponsors offer",
+  "Other/Not Known",
+  "Temporary Accommodation Snapshot",
+  "Offer of Settled Accomodation"
+)
+
+homelessness_24feb_29jul_raw <- 
+  homelessness_24feb_29jul_raw |> 
+  as_tibble() |> 
+  mutate(across(-(lad_code:lad_name), as.numeric))
+
+homelessness_24feb_29jul_total <- 
+  homelessness_24feb_29jul_raw |> 
+  slice(3)
+
+homelessness_24feb_29jul <- 
+  homelessness_24feb_29jul_raw |> 
   filter(str_detect(lad_code, "^E"))
 
 # ---- Load previous homelessness management info (24 February to 1 July 2022) ----
@@ -57,16 +103,16 @@ GET(
   write_disk(tf <- tempfile(fileext = ".ods"))
 )
 
-homelessness_feb_july_raw <- read_ods(tf, skip = 3)
+homelessness_24feb_1jul_raw <- read_ods(tf, skip = 3)
 
-# homelessness_feb_july_raw <- 
-#   homelessness_feb_july_raw |> 
+# homelessness_24feb_1jul_raw <- 
+#   homelessness_24feb_1jul_raw |> 
 #   janitor::remove_empty(which = "cols")
 
 # Remove empty columns
-homelessness_feb_july_raw <- homelessness_feb_july_raw[-c(3, 4, 10, 14, 21)]
+homelessness_24feb_1jul_raw <- homelessness_24feb_1jul_raw[-c(3, 4, 10, 14, 21)]
 
-names(homelessness_feb_july_raw) <- c(
+names(homelessness_24feb_1jul_raw) <- c(
   "lad_code",
   "lad_name",
   "Total Ukrainian households owed a prevention or relief duty",
@@ -87,17 +133,17 @@ names(homelessness_feb_july_raw) <- c(
   "Offer of Settled Accomodation"
 )
 
-homelessness_feb_july_raw <- 
-  homelessness_feb_july_raw |> 
+homelessness_24feb_1jul_raw <- 
+  homelessness_24feb_1jul_raw |> 
   as_tibble() |> 
   mutate(across(-(lad_code:lad_name), as.numeric))
 
-homelessness_feb_july_total <- 
-  homelessness_feb_july_raw |> 
+homelessness_24feb_1jul_total <- 
+  homelessness_24feb_1jul_raw |> 
   slice(3)
 
-homelessness_feb_july <- 
-  homelessness_feb_july_raw |> 
+homelessness_24feb_1jul <- 
+  homelessness_24feb_1jul_raw |> 
   filter(str_detect(lad_code, "^E"))
 
 # ---- Load previous homelessness management info (24 February to 3 June 2022) ----
@@ -107,12 +153,12 @@ GET(
   write_disk(tf <- tempfile(fileext = ".ods"))
 )
 
-homelessness_feb_june_raw <- read_ods(tf, skip = 3)
+homelessness_24feb_3jun_raw <- read_ods(tf, skip = 3)
 
 # Remove empty columns
-homelessness_feb_june_raw <- homelessness_feb_june_raw[-c(3, 4, 10, 14, 21)]
+homelessness_24feb_3jun_raw <- homelessness_24feb_3jun_raw[-c(3, 4, 10, 14, 21)]
 
-names(homelessness_feb_june_raw) <- c(
+names(homelessness_24feb_3jun_raw) <- c(
   "lad_code",
   "lad_name",
   "Total Ukrainian households owed a prevention or relief duty",
@@ -133,28 +179,29 @@ names(homelessness_feb_june_raw) <- c(
   "Offer of Settled Accomodation"
 )
 
-homelessness_feb_june_raw <- 
-  homelessness_feb_june_raw |> 
+homelessness_24feb_3jun_raw <- 
+  homelessness_24feb_3jun_raw |> 
   as_tibble() |> 
   mutate(across(-(lad_code:lad_name), as.numeric))
 
-homelessness_feb_june_total <- 
-  homelessness_feb_june_raw |> 
+homelessness_24feb_3jun_total <- 
+  homelessness_24feb_3jun_raw |> 
   slice(3)
 
-homelessness_feb_june <- 
-  homelessness_feb_june_raw |> 
+homelessness_24feb_3jun <- 
+  homelessness_24feb_3jun_raw |> 
   filter(str_detect(lad_code, "^E"))
 
 # ---- Summary of homelessness ----
 homelessness_total <- 
   bind_rows(
-    homelessness_feb_aug_total  |> mutate(Date = ymd("2022-07-29"), Date_text = "29 July"),
-    homelessness_feb_july_total |> mutate(Date = ymd("2022-07-01"), Date_text = "1 July"),
-    homelessness_feb_june_total |> mutate(Date = ymd("2022-06-03"), Date_text = "3 June")
+    homelessness_24feb_26aug_total  |> mutate(Date = ymd("2022-08-26"), Date_text = "26 August"),
+    homelessness_24feb_29jul_total  |> mutate(Date = ymd("2022-07-29"), Date_text = "29 July"),
+    homelessness_24feb_1jul_total |> mutate(Date = ymd("2022-07-01"), Date_text = "1 July"),
+    homelessness_24feb_3jun_total |> mutate(Date = ymd("2022-06-03"), Date_text = "3 June")
   ) |> 
   relocate(Date) |> 
-  mutate(Date_text = factor(Date_text, levels = c("3 June", "1 July", "29 July")))
+  mutate(Date_text = factor(Date_text, levels = c("3 June", "1 July", "29 July", "26 August")))
 
 # Calculate proportions of households at risk of homelessness in each visa scheme
 homelessness_total <- 
@@ -168,45 +215,59 @@ homelessness_total <-
   )
 
 # ---- Homelessness as a proportion of all arrivals ----
-# Wrangle number of arrivals for each date
-visas_aug <- 
+# Wrangle number of arrivals for each date - using nearest available arrivals figures
+visas_30aug <- 
+  visas_ltla21_england |> 
+  filter(Date == ymd("2022-08-30")) |> 
+  mutate(`Number of arrivals` = as.integer(str_remove(`Number of arrivals`, "<")) - 1) |> 
+  select(ltla21_code, `Number of arrivals`)
+
+visas_2aug <- 
   visas_ltla21_england |> 
   filter(Date == ymd("2022-08-02")) |> 
   mutate(`Number of arrivals` = as.integer(str_remove(`Number of arrivals`, "<")) - 1) |> 
   select(ltla21_code, `Number of arrivals`)
 
-visas_jul <- 
+visas_5jul <- 
   visas_ltla21_england |> 
   filter(Date == ymd("2022-07-05")) |> 
   mutate(`Number of arrivals` = as.integer(str_remove(`Number of arrivals`, "<")) - 1) |> 
   select(ltla21_code, `Number of arrivals`)
 
-visas_jun <- 
+visas_7jun <- 
   visas_ltla21_england |> 
   filter(Date == ymd("2022-06-07")) |> 
   mutate(`Number of arrivals` = as.integer(str_remove(`Number of arrivals`, "<")) - 1) |> 
   select(ltla21_code, `Number of arrivals`)
 
 # Calculate proportions
-homelessness_feb_aug <- 
-  homelessness_feb_aug |> 
-  left_join(visas_aug, by = c("lad_code" = "ltla21_code")) |> 
+homelessness_24feb_26aug <- 
+  homelessness_24feb_26aug |> 
+  left_join(visas_30aug, by = c("lad_code" = "ltla21_code")) |> 
   mutate(
     `% at risk of homelessness` = `Total Ukrainian households owed a prevention or relief duty` / `Number of arrivals`,
     `% in temporary accommodation` = `Temporary Accommodation Snapshot` / `Number of arrivals`
   )
 
-homelessness_feb_july <- 
-  homelessness_feb_july |> 
-  left_join(visas_jul, by = c("lad_code" = "ltla21_code")) |> 
+homelessness_24feb_29jul <- 
+  homelessness_24feb_29jul |> 
+  left_join(visas_2aug, by = c("lad_code" = "ltla21_code")) |> 
   mutate(
     `% at risk of homelessness` = `Total Ukrainian households owed a prevention or relief duty` / `Number of arrivals`,
     `% in temporary accommodation` = `Temporary Accommodation Snapshot` / `Number of arrivals`
   )
 
-homelessness_feb_june <- 
-  homelessness_feb_june |> 
-  left_join(visas_jun, by = c("lad_code" = "ltla21_code")) |> 
+homelessness_24feb_1jul <- 
+  homelessness_24feb_1jul |> 
+  left_join(visas_5jul, by = c("lad_code" = "ltla21_code")) |> 
+  mutate(
+    `% at risk of homelessness` = `Total Ukrainian households owed a prevention or relief duty` / `Number of arrivals`,
+    `% in temporary accommodation` = `Temporary Accommodation Snapshot` / `Number of arrivals`
+  )
+
+homelessness_24feb_3jun <- 
+  homelessness_24feb_3jun |> 
+  left_join(visas_7jun, by = c("lad_code" = "ltla21_code")) |> 
   mutate(
     `% at risk of homelessness` = `Total Ukrainian households owed a prevention or relief duty` / `Number of arrivals`,
     `% in temporary accommodation` = `Temporary Accommodation Snapshot` / `Number of arrivals`
@@ -215,38 +276,50 @@ homelessness_feb_june <-
 # ---- Make single tibble of longitudinal homelessness data ---- 
 homelessness_trends <- 
   left_join(
-    homelessness_feb_june |> 
+    homelessness_24feb_3jun |> 
       select(
         lad_code, 
         lad_name, 
-        `Number of arrivals (June)` = `Number of arrivals`,
-        total_june = `Total Ukrainian households owed a prevention or relief duty`, 
-        percent_june = `% at risk of homelessness`,
-        temp_june = `Temporary Accommodation Snapshot`, 
-        temp_percent_june = `% in temporary accommodation`
+        `Number of arrivals (7 June)` = `Number of arrivals`,
+        total_3jun = `Total Ukrainian households owed a prevention or relief duty`, 
+        percent_3jun = `% at risk of homelessness`,
+        temp_3jun = `Temporary Accommodation Snapshot`, 
+        temp_percent_3jun = `% in temporary accommodation`
       ),
     
-    homelessness_feb_july |> 
+    homelessness_24feb_1jul |> 
       select(
         lad_code, 
         lad_name, 
-        `Number of arrivals (July)` = `Number of arrivals`,
-        total_july = `Total Ukrainian households owed a prevention or relief duty`, 
-        percent_july = `% at risk of homelessness`,
-        temp_july = `Temporary Accommodation Snapshot`, 
-        temp_percent_july = `% in temporary accommodation`
+        `Number of arrivals (5 July)` = `Number of arrivals`,
+        total_1jul = `Total Ukrainian households owed a prevention or relief duty`, 
+        percent_1jul = `% at risk of homelessness`,
+        temp_1jul = `Temporary Accommodation Snapshot`, 
+        temp_percent_1jul = `% in temporary accommodation`
       )
   ) |> 
   left_join(
-    homelessness_feb_aug |> 
+    homelessness_24feb_29jul |> 
       select(
         lad_code, 
         lad_name, 
-        `Number of arrivals (August)` = `Number of arrivals`,
-        total_aug = `Total Ukrainian households owed a prevention or relief duty`, 
-        percent_aug = `% at risk of homelessness`,
-        temp_aug = `Temporary Accommodation Snapshot`, 
-        temp_percent_aug = `% in temporary accommodation`
+        `Number of arrivals (2 August)` = `Number of arrivals`,
+        total_29jul = `Total Ukrainian households owed a prevention or relief duty`, 
+        percent_29jul = `% at risk of homelessness`,
+        temp_29jul = `Temporary Accommodation Snapshot`, 
+        temp_percent_29jul = `% in temporary accommodation`
+      )
+  ) |> 
+  left_join(
+    homelessness_24feb_26aug |> 
+      select(
+        lad_code, 
+        lad_name, 
+        `Number of arrivals (30 August)` = `Number of arrivals`,
+        total_26aug = `Total Ukrainian households owed a prevention or relief duty`, 
+        percent_26aug = `% at risk of homelessness`,
+        temp_26aug = `Temporary Accommodation Snapshot`, 
+        temp_percent_26aug = `% in temporary accommodation`
       )
   )
 
@@ -254,32 +327,38 @@ homelessness_trends <-
   homelessness_trends |> 
   left_join(geographr::lookup_ltla21_region21, by = c("lad_code" = "ltla21_code")) |> 
   replace_na(list(
-    total_june = 0, 
-    percent_june = 0, 
-    temp_june = 0, 
-    temp_percent_june = 0, 
+    total_3jun = 0, 
+    percent_3jun = 0, 
+    temp_3jun = 0, 
+    temp_percent_3jun = 0, 
     
-    total_july = 0, 
-    percent_july = 0, 
-    temp_july = 0,
-    temp_percent_july = 0,
+    total_1jul = 0, 
+    percent_1jul = 0, 
+    temp_1jul = 0,
+    temp_percent_1jul = 0,
     
-    total_aug = 0, 
-    percent_aug = 0, 
-    temp_aug = 0,
-    temp_percent_aug = 0
+    total_29jul = 0, 
+    percent_29jul = 0, 
+    temp_29jul = 0,
+    temp_percent_29jul = 0,
+    
+    total_26aug = 0, 
+    percent_26aug = 0, 
+    temp_26aug = 0,
+    temp_percent_26aug = 0
   )) |> 
   mutate(
-    total_delta = total_aug - total_june,
-    percent_delta = percent_aug - percent_june,
-    temp_delta = temp_aug - temp_june,
-    temp_percent_delta = temp_percent_aug - temp_percent_june
+    total_delta = total_26aug - total_3jun,
+    percent_delta = percent_26aug - percent_3jun,
+    temp_delta = temp_26aug - temp_3jun,
+    temp_percent_delta = temp_percent_26aug - temp_percent_3jun
   )
 
 # ---- Save wrangled data ----
-write_csv(homelessness_feb_june, "data/homelessness/ukraine-homelessness-3-june.csv")
-write_csv(homelessness_feb_july, "data/homelessness/ukraine-homelessness-1-july.csv")
-write_csv(homelessness_feb_aug, "data/homelessness/ukraine-homelessness-29-july.csv")
+write_csv(homelessness_24feb_3jun, "data/homelessness/ukraine-homelessness-3-june.csv")
+write_csv(homelessness_24feb_1jul, "data/homelessness/ukraine-homelessness-1-july.csv")
+write_csv(homelessness_24feb_29jul, "data/homelessness/ukraine-homelessness-29-july.csv")
+write_csv(homelessness_24feb_26aug, "data/homelessness/ukraine-homelessness-26-august.csv")
 
 write_csv(homelessness_total, "data/homelessness/ukraine-homelessness-summary.csv")
 
