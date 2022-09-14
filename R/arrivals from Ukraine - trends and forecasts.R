@@ -90,15 +90,6 @@ weekly_visas_by_scheme <- bind_rows(weekly_sponsorship_scheme_visas, weekly_fami
   # Convert week number to date; source: https://stackoverflow.com/a/46183403
   mutate(Date = ymd("2022-01-03") + weeks(Week - 1)) |> 
   relocate(Date)
-  
-# Scraped data goes further back in time, so use that until 17th May, then use LA data for the following weeks
-# weekly_visas <- 
-#   full_join(weekly_arrivals_from_LA_data, weekly_arrivals_from_scraped_data, by = "Week") |> 
-#   
-#   mutate(`Weekly arrivals` = if_else(Week <= 20, `Weekly arrivals (scraped)`, `Weekly arrivals (LA)`)) |> 
-#   
-#   # Convert week number to date; source: https://stackoverflow.com/a/46183403  
-#   mutate(Date = ymd("2022-01-03") + weeks(Week - 1))
 
 ## Make a dataframe containing cumulative visa data ----
 # Containing total applications, visas issued, and arrivals for:
@@ -158,7 +149,6 @@ write_csv(cumulative_visas_by_scheme, glue::glue("data/cumulative-visas/cumulati
 ####
 
 ## Calculate historical weekly processing rates ----
-# Rates for Family scheme
 historical_processing_rates <- 
   visas_scraped |> 
   select(-Visas, -Date) |> 
