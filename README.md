@@ -11,7 +11,8 @@ We developed a sophisticated and novel approach that simulates the entire visa p
 
 The outputs from the simulation are stored in `output-data/simulations`.
 
-- [`R/arrivals from Ukraine - trends and forecasts.R`](R/arrivals%20from%20Ukraine%20-%20trends%20and%20forecasts.R): The main R script that initialises and runs the simulation to predict arrivals under a baseline scenario and a scenario in which arrivals would surge.
+- [`R/arrivals from Ukraine - trends and forecasts.R`](R/arrivals%20from%20Ukraine%20-%20trends%20and%20forecasts.R): The main R script that initialises and runs the simulation to forecast arrivals under a baseline scenario and a scenario in which arrivals would surge.
+- [`R/arrivals from Ukraine - regional forecasts.R`](R/arrivals%20from%20Ukraine%20-%20regional%20forecasts.R): Forecast arrivals by British Red Cross region.
 - [`R/arrivals from Ukraine - check simulated arrivals against newly observed data.R`](R/check%20simulated%20arrivals%20against%20newly%20observed%20data.R): Check our predictions against the [latest DLUHC data](https://www.gov.uk/government/publications/ukraine-family-scheme-application-data).
 - [`R/arrivals from Ukraine - projection from current visa backlog.R`](R/projection%20from%20current%20visa%20backlog.R): Models a scenario in which there are no new visa applications: how many arrivals would we expect purely based on the current backlog of visas issued?
 
