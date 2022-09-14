@@ -77,7 +77,7 @@ weekly_visas <-
 
 # ---- Load simulated data (baseline scenario) ----
 # Load predictions for the most recently published DLUHC data
-simulated_visas_baseline <- read_csv("output-data/simulations/simulation-baseline-2022-08-29.csv")
+simulated_visas_baseline <- read_csv("output-data/simulations/simulation-baseline-2022-09-05.csv")
 
 # Load all simulation data into a `sim_data` tibble
 i <- 1
@@ -100,7 +100,7 @@ for (sim_file in sim_files) {
 # Convert list of tibbles to one flat tibble
 sim_data <- bind_rows(sim_data)
 
-# ---- How closely did we predict the most recent arrivals? ----
+# ---- How closely did we predict the total number of most recent arrivals? ----
 # predicted_arrivals <- 
 #   simulated_visas_baseline |> 
 #   filter(Date == max(cumulative_visas_by_scheme$Date)) |> 
@@ -284,7 +284,7 @@ predicted_arrivals |>
     shape = 4,
     size = 1.5
   ) +
-  scale_y_continuous(labels = scales::comma) +
+  scale_y_continuous(labels = scales::comma, limits = c(0, NA)) +
   theme_classic() +
   theme(
     legend.position = "top",
@@ -294,7 +294,7 @@ predicted_arrivals |>
     title = "How close were our predictions?",
     subtitle = str_wrap("Dots and lines show predictions with upper/lower bounds, coloured by when the prediction was made. 'X's are the actual number of arrivals in a given week.", 80),
     colour = "Date prediction made",
-    x = NULL,
+    x = "Week number",
     y = "Weekly arrivals (actual and predicted)"
   )
 
