@@ -77,7 +77,7 @@ weekly_visas <-
 
 # ---- Load simulated data (baseline scenario) ----
 # Load predictions for the most recently published DLUHC data
-simulated_visas_baseline <- read_csv("output-data/simulations/simulation-baseline-2022-09-05.csv")
+simulated_visas_baseline <- read_csv("output-data/simulations/simulation-baseline-2022-09-12.csv")
 
 # Load all simulation data into a `sim_data` tibble
 i <- 1

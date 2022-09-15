@@ -1133,3 +1133,31 @@ weekly_visas_by_scheme |>
   )
 
 ggsave("images/simulation/weekly applications.png", width = 115, height = 100, units = "mm")
+
+## Plot weekly applications by scheme ----
+weekly_visas_by_scheme |> 
+  mutate(Scheme = factor(Scheme, levels = c("Sponsored by individuals", "Ukraine Family Scheme", "Government 'super sponsored'"))) |> 
+  
+  ggplot(aes(x = Date, y = `Weekly visas issued`)) +
+  geom_line(aes(colour = Scheme), size = 1.1) +
+  geom_smooth(aes(colour = Scheme, fill = Scheme), method = "lm") +
+  facet_wrap(~Scheme) +
+  scale_y_continuous(labels = scales::comma) +
+  scale_color_brewer(palette = "Set2") +
+  scale_fill_brewer(palette = "Set2") +
+  theme_classic() +
+  theme(
+    legend.position = "none",
+    plot.title.position = "plot",
+    panel.grid.major.y = element_line(colour = "lightgrey", linetype = 2)
+  ) +
+  labs(
+    title = "Visas issued each week",
+    x = NULL,
+    y = "Number of visas issued each week",
+    colour = NULL,
+    fill = NULL,
+    caption = "Source: British Red Cross analysis of DLUHC data"
+  )
+
+ggsave("images/simulation/weekly visas issued.png", width = 150, height = 100, units = "mm")

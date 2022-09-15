@@ -1,10 +1,7 @@
-
 # - Arrival rates vary by region
-
+#
 # Assumptions:
 # - Application processing rates do not vary by region (since they are centrally administered)
-
-
 library(tidyverse)
 library(lubridate)
 library(geographr)
