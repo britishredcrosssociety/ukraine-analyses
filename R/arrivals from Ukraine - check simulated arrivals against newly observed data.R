@@ -77,7 +77,7 @@ weekly_visas <-
 
 # ---- Load simulated data (baseline scenario) ----
 # Load predictions for the most recently published DLUHC data
-simulated_visas_baseline <- read_csv("output-data/simulations/simulation-baseline-2022-09-12.csv")
+simulated_visas_baseline <- read_csv("output-data/simulations/simulation-baseline-2022-09-19.csv")
 
 # Load all simulation data into a `sim_data` tibble
 i <- 1
@@ -129,7 +129,7 @@ date_text <- str_glue("{day(date_to_focus_on)} {month.name[month(date_to_focus_o
 
 cumulative_visas_by_scheme |> 
   ggplot(aes(x = Date, y = `Number of arrivals`)) +
-  geom_col(position = "stack", colour = "white", fill = "grey60") +
+  geom_col(position = "stack", colour = "grey60", fill = "grey60") +
   
   # Add simulated arrivals
   geom_ribbon(

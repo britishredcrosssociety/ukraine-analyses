@@ -27,7 +27,7 @@ weekly_visas_by_region <-
   # Drop counties
   filter(!str_detect(ltla21_code, "^E10")) |> 
   
-  left_join(lookup_ltla21_brc) |> 
+  left_join(geographr::lookup_ltla21_brc) |> 
   
   arrange(Date) |> 
 
@@ -96,7 +96,7 @@ cumulative_visas_by_region <-
   # Drop counties
   filter(!str_detect(ltla21_code, "^E10")) |> 
   
-  left_join(lookup_ltla21_brc) |> 
+  left_join(geographr::lookup_ltla21_brc) |> 
   
   arrange(Date) |> 
   
