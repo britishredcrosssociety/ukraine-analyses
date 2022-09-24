@@ -801,6 +801,9 @@ simulated_visas_baseline[simulated_visas_baseline$Week > sim_start_week, ]$`Arri
 simulated_visas_baseline[simulated_visas_baseline$Week > sim_start_week, ]$`Arrival rate - Family Scheme (upper bound)` <- predicted_arrivals_family_scheme$.upper
 simulated_visas_baseline[simulated_visas_baseline$Week > sim_start_week, ]$`Arrival rate - Super Sponsor (upper bound)` <- predicted_arrivals_family_scheme$.upper
 
+## Make a copy of the sim dataset to use in the next scenario before running this one
+simulated_visas_no_more_applications <- simulated_visas_baseline
+
 ## Run the simulation ----
 simulated_visas_baseline <- 
   run_visa_simulation(simulated_visas_baseline)
@@ -875,6 +878,29 @@ ggsave(plot = plt_sim_baseline, filename = "images/forecast arrivals.png", heigh
 #   )
 # 
 # ggsave("images/forecast arrivals - testing the simulation.png", height = 150, width = 180, units = "mm")
+
+
+####
+####
+# Scenario: No new applications ----
+# Same as baseline scenario but without any new visa applications
+####
+####
+
+## No new applications ----
+simulated_visas_no_more_applications <- 
+  simulated_visas_no_more_applications |> 
+  mutate(
+    `Weekly applications - Homes for Ukraine` = 0, 
+    `Weekly applications - Family Scheme` = 0
+  )
+
+## Run the simulation ----
+simulated_visas_no_more_applications <- 
+  run_visa_simulation(simulated_visas_no_more_applications)
+
+write_csv(simulated_visas_no_more_applications, glue::glue("output-data/simulations/simulation-no-more-applications-{min(simulated_visas_no_more_applications$Date)}.csv"))
+
 
 ####
 ####
@@ -974,7 +1000,7 @@ simulated_visas_surge <-
 
 write_csv(simulated_visas_surge, glue::glue("output-data/simulations/simulation-surge-{min(simulated_visas_baseline$Date)}.csv"))
 
-## Plot historical and simulated arrivals for both scenarios ----
+# Plot historical and simulated arrivals for all scenarios ----
 cumulative_visas_by_scheme |> 
   ggplot(aes(x = Date, y = `Number of arrivals`)) +
   geom_col(aes(fill = Scheme), position = "stack", colour = "white") +
@@ -1008,6 +1034,37 @@ cumulative_visas_by_scheme |>
     mapping = aes(x = Date, y = `Total arrivals`),
     colour = "grey60"
   ) +
+  
+  # Add simulated arrivals - no new applications scenario
+  #!! This scenario's forecasts are essentially the same as those of the baseline scenario - so we won't include this after all
+  # geom_ribbon(
+  #   data = simulated_visas_no_more_applications,
+  #   inherit.aes = FALSE,
+  #   mapping = aes(x = Date, ymin = `Total arrivals (lower bound)`, ymax = `Total arrivals (upper bound)`),
+  #   fill = "#a6dba0",
+  #   alpha = 0.4
+  # ) +
+  # geom_line(
+  #   data = simulated_visas_no_more_applications,
+  #   inherit.aes = FALSE,
+  #   mapping = aes(x = Date, y = `Total arrivals (lower bound)`),
+  #   colour = "#5aae61",
+  #   lty = 2
+  # ) +
+  # geom_line(
+  #   data = simulated_visas_no_more_applications,
+  #   inherit.aes = FALSE,
+  #   mapping = aes(x = Date, y = `Total arrivals (upper bound)`),
+  #   colour = "#5aae61",
+  #   lty = 2
+  # ) +
+  # geom_line(
+  #   data = simulated_visas_no_more_applications,
+  #   inherit.aes = FALSE,
+  #   mapping = aes(x = Date, y = `Total arrivals`),
+  #   colour = "#5aae61",
+  #   lty = 2
+  # ) +
   
   # Add simulated arrivals - winter surge scenario
   geom_ribbon(
