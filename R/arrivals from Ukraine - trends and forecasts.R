@@ -15,6 +15,7 @@ library(tidyverse)
 library(lubridate)
 library(patchwork)
 library(broom)
+library(earth)
 library(zoo)
 
 ####
@@ -654,6 +655,19 @@ predicted_applications_homes_scheme <-
   broom::augment(newdata = predicted_weeks) |> 
   mutate(.fitted = if_else(.fitted < 0, 0, .fitted))
 
+# mod_applications_homes_scheme <- earth(`Weekly applications` ~ Week, data = weekly_visas_by_scheme |> filter(Scheme == "Sponsored by individuals") |> na.omit())
+# predict(mod_applications_homes_scheme) |> as_tibble()
+# 
+# weekly_visas_by_scheme |> 
+#   filter(Scheme == "Sponsored by individuals") |> 
+#   na.omit() |> 
+#   bind_cols(predict(mod_applications_homes_scheme) |> as_tibble()) |> 
+#   
+#   ggplot(aes(x = Week, y = `Weekly applications...4`)) +
+#   geom_point() +
+#   geom_line() +
+#   geom_line(aes(y = `Weekly applications...9`), colour = "red")
+
 # Predict number of applications for the family scheme
 predicted_applications_family_scheme <- 
   lm(`Weekly applications` ~ Week, data = weekly_visas_by_scheme |> filter(Scheme == "Ukraine Family Scheme")) |> 
@@ -665,32 +679,112 @@ simulated_visas_baseline[simulated_visas_baseline$Week > sim_start_week, ]$`Week
 simulated_visas_baseline[simulated_visas_baseline$Week > sim_start_week, ]$`Weekly applications - Family Scheme` <- predicted_applications_family_scheme$.fitted
 
 ## Predict weekly arrival rates from historical trends ----
+# predicted_arrivals_homes_scheme <- 
+#   lm(`% issued visas arriving this week` ~ Week, data = arrival_rates |> filter(Scheme == "Sponsored by individuals")) |> 
+#   # tidy(conf.int = TRUE)
+#   broom::augment(newdata = predicted_weeks, interval = "confidence") |> 
+#   mutate(
+#     .fitted = if_else(.fitted < 0, 0, .fitted),
+#     .lower = if_else(.lower < 0, 0, .lower),
+#     .upper = if_else(.upper < 0, 0, .upper)
+#   )
+
+mod_arrivals_homes_scheme <- 
+  earth(
+    `% issued visas arriving this week` ~ Week, 
+    varmod.method = "lm",
+    nfold = 10, 
+    ncross = 30, 
+    data = arrival_rates |> filter(Scheme == "Sponsored by individuals") |> na.omit()
+  )
+
+# summary(mod_arrivals_homes_scheme)
+# predict(mod_arrivals_homes_scheme, interval = "cint") |> as_tibble()
+# 
+# arrival_rates |> 
+#   filter(Scheme == "Sponsored by individuals") |> 
+#   na.omit() |> 
+#   bind_cols(predict(mod_arrivals_homes_scheme, interval = "cint") |> as_tibble()) |> 
+#   
+#   ggplot(aes(x = Week, y = `% issued visas arriving this week`)) +
+#   geom_point() +
+#   geom_line() +
+#   geom_line(aes(y = fit), colour = "red") +
+#   geom_ribbon(aes(ymin = lwr, max = upr), fill = "red", alpha = 0.3)
+
 predicted_arrivals_homes_scheme <- 
-  lm(`% issued visas arriving this week` ~ Week, data = arrival_rates |> filter(Scheme == "Sponsored by individuals")) |> 
-  # tidy(conf.int = TRUE)
-  broom::augment(newdata = predicted_weeks, interval = "confidence") |> 
+  predict(
+    mod_arrivals_homes_scheme, 
+    newdata = predicted_weeks, 
+    interval = "pint"
+  ) |>
+  as_tibble() |> 
   mutate(
-    .fitted = if_else(.fitted < 0, 0, .fitted),
-    .lower = if_else(.lower < 0, 0, .lower),
-    .upper = if_else(.upper < 0, 0, .upper)
+    .fitted = if_else(fit < 0, 0, fit),
+    .lower = if_else(lwr < 0, 0, lwr),
+    .upper = if_else(upr < 0, 0, upr)
+  )
+
+# predicted_arrivals_family_scheme <- 
+#   lm(`% issued visas arriving this week` ~ Week, data = arrival_rates |> filter(Scheme == "Ukraine Family Scheme")) |> 
+#   broom::augment(newdata = predicted_weeks, interval = "confidence") |> 
+#   mutate(
+#     .fitted = if_else(.fitted < 0, 0, .fitted),
+#     .lower = if_else(.lower < 0, 0, .lower),
+#     .upper = if_else(.upper < 0, 0, .upper)
+#   )
+
+mod_arrivals_family_scheme <- 
+  earth(
+    `% issued visas arriving this week` ~ Week, 
+    varmod.method = "lm",
+    nfold = 10, 
+    ncross = 30, 
+    data = arrival_rates |> filter(Scheme == "Ukraine Family Scheme") |> na.omit()
   )
 
 predicted_arrivals_family_scheme <- 
-  lm(`% issued visas arriving this week` ~ Week, data = arrival_rates |> filter(Scheme == "Ukraine Family Scheme")) |> 
-  broom::augment(newdata = predicted_weeks, interval = "confidence") |> 
+  predict(
+    mod_arrivals_family_scheme, 
+    newdata = predicted_weeks, 
+    interval = "pint"
+  ) |>
+  as_tibble() |> 
   mutate(
-    .fitted = if_else(.fitted < 0, 0, .fitted),
-    .lower = if_else(.lower < 0, 0, .lower),
-    .upper = if_else(.upper < 0, 0, .upper)
+    .fitted = if_else(fit < 0, 0, fit),
+    .lower = if_else(lwr < 0, 0, lwr),
+    .upper = if_else(upr < 0, 0, upr)
+  )
+
+# predicted_arrivals_govt_scheme <- 
+#   lm(`% issued visas arriving this week` ~ Week, data = arrival_rates |> filter(Scheme == "Government 'super sponsored'")) |> 
+#   broom::augment(newdata = predicted_weeks, interval = "confidence") |> 
+#   mutate(
+#     .fitted = if_else(.fitted < 0, 0, .fitted),
+#     .lower = if_else(.lower < 0, 0, .lower),
+#     .upper = if_else(.upper < 0, 0, .upper)
+#   )
+
+mod_arrivals_govt_scheme <- 
+  earth(
+    `% issued visas arriving this week` ~ Week, 
+    varmod.method = "lm",
+    nfold = 10, 
+    ncross = 30, 
+    data = arrival_rates |> filter(Scheme == "Government 'super sponsored'") |> na.omit()
   )
 
 predicted_arrivals_govt_scheme <- 
-  lm(`% issued visas arriving this week` ~ Week, data = arrival_rates |> filter(Scheme == "Government 'super sponsored'")) |> 
-  broom::augment(newdata = predicted_weeks, interval = "confidence") |> 
+  predict(
+    mod_arrivals_govt_scheme, 
+    newdata = predicted_weeks, 
+    interval = "pint"
+  ) |>
+  as_tibble() |> 
   mutate(
-    .fitted = if_else(.fitted < 0, 0, .fitted),
-    .lower = if_else(.lower < 0, 0, .lower),
-    .upper = if_else(.upper < 0, 0, .upper)
+    .fitted = if_else(fit < 0, 0, fit),
+    .lower = if_else(lwr < 0, 0, lwr),
+    .upper = if_else(upr < 0, 0, upr)
   )
 
 # Put the predicted numbers of applications in the simulation tibble
@@ -1105,6 +1199,60 @@ arrival_rates |>
   )
 
 ggsave("images/simulation/Weekly arrivals as a proportion of the backlog of issued visas.png", width = 110, height = 100, units = "mm")
+
+## Plot weekly arrivals as a proportion of the backlog of issued visas - using MARS models ----
+# Combine predictions for each MARS model
+arrival_rates_mars <- 
+  bind_rows(
+    arrival_rates |>
+      filter(Scheme == "Sponsored by individuals") |>
+      na.omit() |>
+      bind_cols(predict(mod_arrivals_homes_scheme, interval = "cint") |> as_tibble()),
+    
+    arrival_rates |>
+      filter(Scheme == "Ukraine Family Scheme") |>
+      na.omit() |>
+      bind_cols(predict(mod_arrivals_family_scheme, interval = "cint") |> as_tibble()),
+    
+    arrival_rates |>
+      filter(Scheme == "Government 'super sponsored'") |>
+      na.omit() |>
+      bind_cols(predict(mod_arrivals_govt_scheme, interval = "cint") |> as_tibble())
+  )
+
+# Plot the non-linear models
+arrival_rates_mars |> 
+  mutate(Scheme = factor(Scheme, levels = c("Sponsored by individuals", "Ukraine Family Scheme", "Government 'super sponsored'"))) |> 
+  
+  ggplot(aes(x = Week, y = `% issued visas arriving this week`)) +
+  geom_line(aes(colour = Scheme), size = 1.1) +
+  
+  geom_line(aes(y = fit, colour = Scheme), lty = 2) +
+  geom_ribbon(aes(ymin = lwr, max = upr, colour = Scheme, fill = Scheme), alpha = 0.3) +
+  
+  scale_y_continuous(labels = scales::percent, limits = c(0, NA)) +
+  scale_color_brewer(palette = "Set2") +
+  scale_fill_brewer(palette = "Set2") +
+  guides(
+    colour = guide_legend(
+      ncol = 1
+    )
+  ) +
+  theme_classic() +
+  theme(
+    plot.title = element_text(size = rel(1)),
+    plot.title.position = "plot",
+    legend.position = "top",
+    # legend.box = "vertical", 
+    # legend.margin = margin()
+  ) +
+  labs(
+    title = "Weekly arrivals as a proportion of the backlog of issued visas",
+    colour = NULL,
+    fill = NULL
+  )
+
+ggsave("images/simulation/Weekly arrivals as a proportion of the backlog of issued visas - nonlinear models.png", width = 110, height = 100, units = "mm")
 
 ## Plot weekly applications by scheme ----
 weekly_visas_by_scheme |> 
