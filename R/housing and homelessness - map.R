@@ -10,7 +10,7 @@ source("R/load Ukraine visa data - Local Authorities.R")
 
 visas_aug <- 
   visas_ltla21_uk |> 
-  filter(Date == ymd("2022-08-02")) |> 
+  filter(Date == ymd("2022-08-23")) |> 
   mutate(`Number of arrivals` = as.integer(str_remove(`Number of arrivals`, "<")) - 1) |> 
   select(ltla21_code, `Number of arrivals`)
 
@@ -133,6 +133,148 @@ geographr::boundaries_ltla21 |>
   )
 
 ggsave("images/homelessness map - whole UK.png", width = 180, height = 160, units = "mm")
+
+# - Separate maps for devolved nations -
+# Scotland
+geographr::boundaries_ltla21 |> 
+  left_join(LAs_to_map_from_index, by = "ltla21_code") |> 
+  filter(str_detect(ltla21_code, "^S")) |> 
+  
+  ggplot() +
+  geom_sf(
+    aes(fill = `Number of arrivals`),
+    colour = "grey80"
+  ) +
+  geom_sf_label_repel(
+    aes(label = ltla21_name.y),
+    # nudge_y = .25,
+    # direction = "x",
+    force_pull = 0,
+    force = 2,
+    label.size = .4
+  ) +
+  scale_fill_viridis(
+    na.value = "transparent",
+    option = "magma",
+    alpha = 0.7,
+    begin = 0.1,
+    end = 0.9,
+    discrete = FALSE,
+    direction = -1
+  ) +
+  theme_void() +
+  theme(
+    plot.background = element_rect(fill = "#ffffff", color = NA),
+    panel.background = element_rect(fill = "#ffffff", color = NA),
+    legend.position = "top",
+    plot.title = element_text(hjust = 0.5),
+    plot.subtitle = element_text(
+      hjust = 0.5,
+      margin = margin(
+        b = 0.3,
+        t = 0.2,
+        l = 2,
+        unit = "cm"
+      )
+    ),
+    plot.caption = element_text(hjust = 0.5)
+  )
+
+ggsave("images/homelessness map - Scotland.png", width = 100, height = 120, units = "mm")
+
+# Wales
+geographr::boundaries_ltla21 |> 
+  left_join(LAs_to_map_from_index, by = "ltla21_code") |> 
+  filter(str_detect(ltla21_code, "^W")) |> 
+  
+  ggplot() +
+  geom_sf(
+    aes(fill = `Number of arrivals`),
+    colour = "grey80"
+  ) +
+  geom_sf_label_repel(
+    aes(label = ltla21_name.y),
+    # nudge_y = .25,
+    # direction = "x",
+    force_pull = 0,
+    force = 2,
+    label.size = .4
+  ) +
+  scale_fill_viridis(
+    na.value = "transparent",
+    option = "magma",
+    alpha = 0.7,
+    begin = 0.1,
+    end = 0.9,
+    discrete = FALSE,
+    direction = -1
+  ) +
+  theme_void() +
+  theme(
+    plot.background = element_rect(fill = "#ffffff", color = NA),
+    panel.background = element_rect(fill = "#ffffff", color = NA),
+    legend.position = "top",
+    plot.title = element_text(hjust = 0.5),
+    plot.subtitle = element_text(
+      hjust = 0.5,
+      margin = margin(
+        b = 0.3,
+        t = 0.2,
+        l = 2,
+        unit = "cm"
+      )
+    ),
+    plot.caption = element_text(hjust = 0.5)
+  )
+
+ggsave("images/homelessness map - Wales.png", width = 100, height = 120, units = "mm")
+
+# Northern Ireland
+geographr::boundaries_ltla21 |> 
+  left_join(LAs_to_map_from_index, by = "ltla21_code") |> 
+  filter(str_detect(ltla21_code, "^N")) |> 
+  
+  ggplot() +
+  geom_sf(
+    aes(fill = `Number of arrivals`),
+    colour = "grey80"
+  ) +
+  geom_sf_label_repel(
+    aes(label = ltla21_name.y),
+    # nudge_y = .25,
+    # direction = "x",
+    force_pull = 0,
+    force = 2,
+    label.size = .4
+  ) +
+  scale_fill_viridis(
+    na.value = "transparent",
+    option = "magma",
+    alpha = 0.7,
+    begin = 0.1,
+    end = 0.9,
+    discrete = FALSE,
+    direction = -1
+  ) +
+  theme_void() +
+  theme(
+    plot.background = element_rect(fill = "#ffffff", color = NA),
+    panel.background = element_rect(fill = "#ffffff", color = NA),
+    legend.position = "top",
+    plot.title = element_text(hjust = 0.5),
+    plot.subtitle = element_text(
+      hjust = 0.5,
+      margin = margin(
+        b = 0.3,
+        t = 0.2,
+        l = 2,
+        unit = "cm"
+      )
+    ),
+    plot.caption = element_text(hjust = 0.5)
+  )
+
+ggsave("images/homelessness map - NI.png", width = 100, height = 100, units = "mm")
 
 # ---- Draw hex cartogram ----
 # Load lower tier LA hex cartogram

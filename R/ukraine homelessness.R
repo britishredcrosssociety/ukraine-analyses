@@ -12,6 +12,7 @@ library(viridis)
 library(ggsflabel)
 
 conflicted::conflict_prefer("lag", "dplyr")
+conflicted::conflict_prefer("filter", "dplyr")
 
 # ---- Load data ----
 source("R/load Ukraine visa data - Local Authorities.R")
@@ -19,6 +20,7 @@ source("R/load Ukraine visa data - Local Authorities.R")
 homelessness_feb_june <- read_csv("data/homelessness/ukraine-homelessness-3-june.csv")
 homelessness_feb_july <- read_csv("data/homelessness/ukraine-homelessness-1-july.csv")
 homelessness_feb_aug <- read_csv("data/homelessness/ukraine-homelessness-29-july.csv")
+homelessness_24feb_26aug <- read_csv("data/homelessness/ukraine-homelessness-26-august.csv")
 
 homelessness_total <- read_csv("data/homelessness/ukraine-homelessness-summary.csv")
 
@@ -71,6 +73,27 @@ homelessness_total |>
   )
 
 ggsave("images/homelessness - totals.png", width = 70, height = 30, units = "mm")
+
+homelessness_total |> 
+  mutate(Date_text = factor(Date_text, levels = c("3 June", "1 July", "29 July", "26 August"))) |> 
+  
+  ggplot(aes(x = Date_text, y = `Total Ukrainian households owed a prevention or relief duty`)) +
+  geom_line(aes(group = 1), colour = "red") +
+  geom_point(aes(size = `Total Ukrainian households owed a prevention or relief duty`), show.legend = FALSE, alpha = 0.4, colour = "red") +
+  geom_text(aes(label = scales::comma(`Total Ukrainian households owed a prevention or relief duty`)), show.legend = FALSE, size = rel(4)) +
+  scale_y_continuous(limits = c(0, NA), labels = scales::comma) +
+  theme_classic() +
+  theme(
+    plot.title.position = "plot",
+    plot.title = element_text(size = rel(1))
+  ) +
+  labs(
+    title = "Ukrainian households owed a prevention or relief duty",
+    x = NULL,
+    y = NULL
+  )
+
+ggsave("images/homelessness - totals - line graph.png", width = 100, height = 70, units = "mm")
 
 # ---- Show top tens ----
 homelessness_feb_aug |> 
@@ -306,10 +329,10 @@ ggsave("images/temporary accommodation - trends.png", width = 160, height = 100,
 # - Number of households at risk of homelessness -
 risk_trends <- 
   homelessness_trends |> 
-  filter(total_june > 0 & total_july > 0 & total_aug > 0) |> 
-  select(lad_name, region21_name, `3 June` = total_june, `1 July` = total_july, `29 July` = total_aug) |> 
+  filter(total_3jun > 0 & total_1jul > 0 & total_29jul > 0 & total_26aug > 0) |> 
+  select(lad_name, region21_name, `3 June` = total_3jun, `1 July` = total_1jul, `29 July` = total_29jul, `26 August` = total_26aug) |> 
   pivot_longer(cols = -contains("_name"), names_to = "date", values_to = "count") |> 
-  mutate(date = factor(date, levels = c("3 June", "1 July", "29 July")))
+  mutate(date = factor(date, levels = c("3 June", "1 July", "29 July", "26 August")))
 
 # What regions are the LAs with the 10 highest risk of homelessness in?
 risk_trends |> 
@@ -319,7 +342,7 @@ risk_trends |>
 # Label the top three LAs in each region
 risk_trends_labels <- 
   risk_trends |> 
-  filter(date == "29 July") |> 
+  filter(date == "26 August") |> 
   group_by(region21_name) |>
   slice_max(count, n = 3) |> 
   ungroup() |> 
@@ -330,7 +353,7 @@ risk_trends |>
   left_join(risk_trends_labels) |> 
   mutate(
     colour = if_else(!is.na(label), "red", "grey"),
-    label = if_else(date == "29 July", label, NA_character_)
+    label = if_else(date == "26 August", label, NA_character_)
   ) |> 
   
   ggplot(aes(x = date, y = count, group = lad_name)) +
