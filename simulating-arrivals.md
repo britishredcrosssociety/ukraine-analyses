@@ -40,11 +40,11 @@ There is also a backlog of visas that have been issued but the visa holders are 
 
 ## 4. Arrival rates
 
-The weekly proportion of people arriving in the UK from the visa-issued backlog fluctuates within and between schemes. We fit linear regressions (one per visa scheme) to predict arrival rates and use these predicted rates for future, simulated weeks.
+The weekly proportion of people arriving in the UK from the visa-issued backlog fluctuates within and between schemes. We fit MARS models - [multivariate adaptive regression splines](https://en.wikipedia.org/wiki/Multivariate_adaptive_regression_spline) - to predict arrival rates (per visa scheme) and use these predicted rates for future, simulated weeks.
 
-The trend line for the 'super sponsor' schemes is a bit less certain so we just use the Ukraine Family Scheme's predicted arrival rates for the Government schemes.
+The trend line for the 'super sponsor' schemes closely matches that for the the Ukraine Family Scheme, so we just predict arrival rates for both schemes based on the Family Scheme.
 
-![](images/simulation/Weekly%20arrivals%20as%20a%20proportion%20of%20the%20backlog%20of%20issued%20visas.png)
+![](images/simulation/Weekly%20arrivals%20as%20a%20proportion%20of%20the%20backlog%20of%20issued%20visas%20-%20nonlinear%20models.png)
 
 ## 5. New visa applications
 
