@@ -307,6 +307,10 @@ underdoctored_lads |>
 sum(underdoctored_lads$`Number of arrivals`)
 scales::percent(sum(underdoctored_lads$`Number of arrivals`) / sum(visas_ltla21_uk$`Number of arrivals`, na.rm = TRUE), accuracy = 0.1)
 
+# Wales figures
+underdoctored_lads_wales <- underdoctored_lads |> filter(str_detect(ltla21_code, "W"))
+scales::percent(sum(underdoctored_lads_wales$`Number of arrivals`) / sum(visas_ltla21_wales$`Number of arrivals`, na.rm = TRUE), accuracy = 0.1)
+
 # List LAs
 underdoctored_lads |> 
   select(region, ltla21_name) |> 
@@ -315,7 +319,7 @@ underdoctored_lads |>
 
 # ---- Map under-doctored areas, shaded by number of arrivals from Ukraine ----
 geographr::boundaries_ltla21 |> 
-  # filter(str_detect(ltla21_code, "^E|^S|^W")) |> 
+  filter(str_detect(ltla21_code, "^W")) |> 
   left_join(underdoctored_lads, by = "ltla21_code") |> 
   
   ggplot() +
@@ -364,3 +368,4 @@ geographr::boundaries_ltla21 |>
   )
 
 ggsave("images/under-doctored areas.png", width = 180, height = 200, units = "mm")
+ggsave("images/under-doctored areas - Wales.png", width = 180, height = 150, units = "mm")
