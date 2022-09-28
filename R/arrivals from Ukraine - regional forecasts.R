@@ -514,3 +514,73 @@ cumulative_visas_by_region |>
 ggsave(filename = "images/forecast arrivals by region.png", height = 200, width = 230, units = "mm")
 
 write_csv(simulated_visas_by_region, glue::glue("output-data/simulations/simulation-by-region-{min(simulated_visas_by_region$Date)}.csv"))
+
+# Wales only
+simulated_visas_by_region_wales <- 
+  simulated_visas_by_region |> 
+  filter(Region == "Wales")
+
+cumulative_visas_by_region |> 
+  rename(Region = brc_area) |> 
+  filter(Region == "Wales") |> 
+  
+  ggplot(aes(x = Date, y = `Number of arrivals`)) +
+  geom_col(aes(fill = Region), colour = "white") +
+  
+  # Add simulated arrivals
+  geom_ribbon(
+    data = simulated_visas_by_region_wales,
+    inherit.aes = FALSE,
+    mapping = aes(x = Date, ymin = `Total arrivals (lower bound)`, ymax = `Total arrivals (upper bound)`),
+    fill = "grey80",
+    alpha = 0.4
+  ) +
+  geom_line(
+    data = simulated_visas_by_region_wales,
+    inherit.aes = FALSE,
+    mapping = aes(x = Date, y = `Total arrivals (lower bound)`, group = Region),
+    colour = "grey60",
+    lty = 2
+  ) +
+  geom_line(
+    data = simulated_visas_by_region_wales,
+    inherit.aes = FALSE,
+    mapping = aes(x = Date, y = `Total arrivals (upper bound)`, group = Region),
+    colour = "grey60",
+    lty = 2
+  ) +
+  
+  # Central estimate
+  geom_line(
+    data = simulated_visas_by_region_wales,
+    inherit.aes = FALSE,
+    mapping = aes(x = Date, y = `Total arrivals`, group = Region)
+  ) +
+  
+  geom_vline(xintercept = min(simulated_visas_by_region_wales$Date), lty = 2, colour = "grey") +
+  annotate(
+    "text", x = min(simulated_visas_by_region_wales$Date) + 50, y = max(simulated_visas_by_region_wales$`Total arrivals (upper bound)` + 100),
+    label = "→ Forecast", colour = "grey", size = 3.5
+  ) +
+  
+  facet_wrap(~Region) +
+  
+  scale_y_continuous(labels = scales::comma, expand = expansion(mult = c(0, .1))) +
+  scale_fill_brewer(palette = "Set2") +
+  
+  theme_classic() +
+  theme(
+    legend.position = "none",
+    plot.title.position = "plot"
+  ) +
+  labs(
+    title = "Historical and predicted arrivals into Wales from Ukraine",
+    x = NULL,
+    caption = "Source: British Red Cross analysis and simulation of DLUHC data"
+  )
+
+ggsave(filename = "images/forecast arrivals by region - Wales.png", height = 100, width = 130, units = "mm")
+
+simulated_visas_by_region_wales |> 
+  filter(Week == max(Week) | Week == min(Week) + 12) |> 
+  select(Week, starts_with("Total"))
