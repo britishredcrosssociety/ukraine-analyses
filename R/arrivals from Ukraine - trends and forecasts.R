@@ -1151,6 +1151,29 @@ simulated_totals <-
   
   mutate(total_diff = surge_total - baseline_total)
 
+simulated_totals <- 
+  left_join(
+    simulated_visas_surge |> 
+      filter(Week == max(Week)) |> 
+      select(
+        Week,
+        surge_total = `Total arrivals`, 
+        surge_upper = `Total arrivals (upper bound)`, 
+        surge_lower = `Total arrivals (lower bound)`
+      ), 
+    
+    simulated_visas_baseline |> 
+      filter(Week == max(simulated_visas_surge$Week)) |> 
+      select(
+        Week,
+        baseline_total = `Total arrivals`, 
+        baseline_upper = `Total arrivals (upper bound)`,
+        baseline_lower = `Total arrivals (lower bound)`
+      )
+  ) |> 
+  
+  mutate(total_diff = surge_total - baseline_total)
+
 # How many people have arrived in the UK, as of the most recently observed week?
 observed_total <- 
   cumulative_visas_by_scheme |> 
@@ -1366,3 +1389,40 @@ weekly_visas_by_scheme |>
   )
 
 ggsave("images/simulation/weekly visas issued.png", width = 150, height = 100, units = "mm")
+
+## Plot weekly applications, issuance, and arrivals for whole UK
+weekly_visas_by_scheme |> 
+  group_by(Date) |> 
+  summarise(
+    `Weekly applications` = sum(`Weekly applications`, na.rm = TRUE),
+    `Weekly visas issued` = sum(`Weekly visas issued`, na.rm = TRUE),
+    `Weekly arrivals` = sum(`Weekly arrivals`, na.rm = TRUE),
+  ) |> 
+  ungroup() |> 
+  
+  mutate(`Weekly applications` = if_else(`Weekly applications` < 0, NA_real_, `Weekly applications`)) |> 
+  
+  pivot_longer(cols = -Date) |> 
+  mutate(name = factor(name, levels = c("Weekly applications", "Weekly visas issued", "Weekly arrivals"))) |> 
+  
+  ggplot(aes(x = Date, y = value)) +
+  geom_line(aes(colour = name), size = 1.1) +
+  facet_wrap(~name, ncol = 3) +
+  
+  scale_y_continuous(labels = scales::comma) +
+  
+  theme_classic() +
+  theme(
+    legend.position = "none",
+    plot.title.position = "plot",
+    panel.grid.major.y = element_line(colour = "lightgrey", linetype = 2)
+  ) +
+  labs(
+    title = "Visa applications, visas issued, and arrivals each week",
+    x = NULL,
+    y = "Number of applications, visas issued, and arrivals",
+    colour = NULL,
+    caption = "Source: British Red Cross analysis of DLUHC data"
+  )
+
+ggsave("images/simulation/weekly visas.png", width = 150, height = 100, units = "mm")
