@@ -86,3 +86,19 @@ We can test the simulation by checking how well it predicts already-observed num
 The simulation nicely predicts the observed data from as far back as week 20: three months in the past, at the time of writing. Observed arrivals are towards the upper end of the predicted range; this is most likely because the simulation uses rates of applications and arrivals that decline faster than the observed decline three months ago.
 
 ![](images/forecast%20arrivals%20-%20testing%20the%20simulation.png)
+
+## Updating the simulation
+DLUHC updates two sets of visa data every Thursday at 9.30am (GMT):
+
+1. Local Authority-level data on applications, visas issued, and arrivals under the Individual Sponsorship Scheme
+2. UK-wide data for the Ukraine Family Scheme and the Ukraine Sponsorship Scheme
+
+New data for (1) is automatically downloaded whenever `R/load Ukraine visa data - Local Authorities.R` is run.
+
+The UK-wide data (2) requires manually updating. To do so, open the [Government visa data webpage](https://www.gov.uk/government/publications/ukraine-family-scheme-application-data) and the R script in `R/load Ukraine visa data - scraped.R` and do the following:
+
+![](images/simulation/update-scraped-visa-data.png)
+
+Once the latest data has been added, run the code in `R/arrivals from Ukraine - check simulated arrivals against newly observed data.R`, which updates the charts comparing our predictions against observed arrivals.
+
+Finally, generate new predictions based on the latest observed data by running `R/arrivals from Ukraine - trends and forecasts.R`.
