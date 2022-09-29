@@ -2,6 +2,7 @@
 library(tidyverse)
 library(readxl)
 library(hrbrthemes)
+library(lubridate)
 
 # ---- Load BRC data ----
 cr <- read_excel(
@@ -14,7 +15,9 @@ cr <- read_excel(
   ) |>
   group_by(week) |>
   summarise(people = sum(people)) |>
-  mutate(cumsum_people = cumsum(people))
+  mutate(cumsum_people = cumsum(people)) |>
+  mutate(date = ymd("2022-01-01") + weeks(week - 1)) |>
+  relocate(date)
 
 rsrflat <-
   read_excel(
@@ -35,7 +38,9 @@ rsrflat <-
   mutate(
     cumsum_clients = cumsum(clients),
     cumsum_dependents = cumsum(dependents)
-  )
+  ) |>
+  mutate(date = ymd("2022-01-01") + weeks(week - 1)) |>
+  relocate(date)
 
 nsl <-
   read_excel(
@@ -55,31 +60,33 @@ nsl <-
   mutate(
     cumsum_calls_abandoned = cumsum(calls_abandoned),
     cumsum_calls_answered = cumsum(calls_answered)
-  )
+  ) |>
+  mutate(date = ymd("2022-01-01") + weeks(week - 1)) |>
+  relocate(date)
 
 # ---- Load visa data ----
 historic <-
-  read_csv("data/cumulative-visas/cumulative-visas-2022-08-15.csv") |>
+  read_csv("data/cumulative-visas/cumulative-visas-2022-09-26.csv") |>
   rename(week = Week) |>
   group_by(week) |>
   summarise(arrivals = sum(`Number of arrivals`, na.rm = TRUE))
 
 simulated_baseline <-
-  read_csv("data/simulations/simulation-baseline-cash-2022-08-22.csv") |>
+  read_csv("output-data/simulations/simulation-baseline-2022-10-03.csv") |>
   select(
     week = Week,
-    arrivals = Arrivals,
-    arrivals_lower = `Arrivals (lower bound)`,
-    arrivals_upper = `Arrivals (upper bound)`
+    arrivals = `Weekly arrivals`,
+    arrivals_lower = `Weekly arrivals (lower bound)`,
+    arrivals_upper = `Weekly arrivals (upper bound)`
   )
 
 simulated_surge <-
-  read_csv("data/simulations/simulation-surge-cash-2022-08-22.csv") |>
+  read_csv("output-data/simulations/simulation-surge-2022-10-03.csv") |>
   select(
     week = Week,
-    arrivals = Arrivals,
-    arrivals_lower = `Arrivals (lower bound)`,
-    arrivals_upper = `Arrivals (upper bound)`
+    arrivals = `Weekly arrivals`,
+    arrivals_lower = `Weekly arrivals (lower bound)`,
+    arrivals_upper = `Weekly arrivals (upper bound)`
   )
 
 # ---- Calculate cumulative conversion rates ----
@@ -93,7 +100,8 @@ total_arrivals <-
 cr_max <-
   cr |>
   filter(cumsum_people == max(cumsum_people)) |>
-  pull(cumsum_people)
+  pull(cumsum_people) |>
+  unique()
 
 rsrflat_clients_max <-
   rsrflat |>
@@ -159,7 +167,9 @@ cr_baseline <-
     cumsum_cr = cumsum(cr) + cr_max,
     cumsum_cr_lower = cumsum(cr_lower) + cr_max,
     cumsum_cr_upper = cumsum(cr_upper) + cr_max
-  )
+  ) |>
+  mutate(date = ymd("2022-01-01") + weeks(week - 1)) |>
+  relocate(date)
 
 cr_surge <-
   simulated_surge |>
@@ -172,10 +182,12 @@ cr_surge <-
     cumsum_cr = cumsum(cr) + (cr_baseline |> filter(week == 51) |> pull(cumsum_cr)),
     cumsum_cr_lower = cumsum(cr_lower) + (cr_baseline |> filter(week == 51) |> pull(cumsum_cr_lower)),
     cumsum_cr_upper = cumsum(cr_upper) + (cr_baseline |> filter(week == 51) |> pull(cumsum_cr_upper))
-  )
+  ) |>
+  mutate(date = ymd("2022-01-01") + weeks(week - 1)) |>
+  relocate(date)
 
 cr_baseline |>
-  ggplot(aes(x = week)) +
+  ggplot(aes(x = date)) +
   geom_line(
     data = cr,
     aes(y = cumsum_people)
@@ -183,7 +195,7 @@ cr_baseline |>
   geom_ribbon(
     data = cr_baseline,
     mapping = aes(
-      x = week,
+      x = date,
       ymin = cumsum_cr_lower,
       ymax = cumsum_cr_upper
     ),
@@ -208,7 +220,7 @@ cr_baseline |>
   geom_ribbon(
     data = cr_surge,
     mapping = aes(
-      x = week,
+      x = date,
       ymin = cumsum_cr_lower,
       ymax = cumsum_cr_upper
     ),
@@ -233,9 +245,9 @@ cr_baseline |>
     lty = 2
   ) +
   scale_y_continuous(labels = scales::comma) +
-  scale_x_continuous(breaks = scales::breaks_width(10)) +
+  scale_x_date(date_breaks = "3 month", date_labels = "%b %y") +
   labs(
-    x = "Week number",
+    x = "Date",
     y = "Number of people helped",
     title = "Historic and predicted number of people supported by CR in the Ukraine reponse.",
     subtitle = "Grey area shows predicted people in the baseline scenario. Blue area shows predicted people during a 'winter surge' scenario. \nDotted lines show the lower and upper bounds of predictions."
@@ -260,7 +272,9 @@ rsrflat_baseline <-
     cumsum_dependents = cumsum(dependents) + rsrflat_dependents_max,
     cumsum_dependents_lower = cumsum(dependents_lower) + rsrflat_dependents_max,
     cumsum_dependents_upper = cumsum(dependents_upper) + rsrflat_dependents_max
-  )
+  ) |>
+  mutate(date = ymd("2022-01-01") + weeks(week - 1)) |>
+  relocate(date)
 
 rsrflat_surge <-
   simulated_surge |>
@@ -279,11 +293,13 @@ rsrflat_surge <-
     cumsum_dependents = cumsum(dependents) + (rsrflat_baseline |> filter(week == 51) |> pull(cumsum_dependents)),
     cumsum_dependents_lower = cumsum(dependents_lower) + (rsrflat_baseline |> filter(week == 51) |> pull(cumsum_dependents_lower)),
     cumsum_dependents_upper = cumsum(dependents_upper) + (rsrflat_baseline |> filter(week == 51) |> pull(cumsum_dependents_upper))
-  )
+  ) |>
+  mutate(date = ymd("2022-01-01") + weeks(week - 1)) |>
+  relocate(date)
 
 # Main clients
 rsrflat_baseline |>
-  ggplot(aes(x = week)) +
+  ggplot(aes(x = date)) +
   geom_line(
     data = rsrflat,
     aes(y = cumsum_clients)
@@ -291,7 +307,7 @@ rsrflat_baseline |>
   geom_ribbon(
     data = rsrflat_baseline,
     mapping = aes(
-      x = week,
+      x = date,
       ymin = cumsum_clients_lower,
       ymax = cumsum_clients_upper
     ),
@@ -316,7 +332,7 @@ rsrflat_baseline |>
   geom_ribbon(
     data = rsrflat_surge,
     mapping = aes(
-      x = week,
+      x = date,
       ymin = cumsum_clients_lower,
       ymax = cumsum_clients_upper
     ),
@@ -341,9 +357,9 @@ rsrflat_baseline |>
     lty = 2
   ) +
   scale_y_continuous(labels = scales::comma) +
-  scale_x_continuous(breaks = scales::breaks_width(10)) +
+  scale_x_date(date_breaks = "3 month", date_labels = "%b %y") +
   labs(
-    x = "Week number",
+    x = "Date",
     y = "Number of main clients",
     title = "Historic and predicted number of main clients supported by Refugee Support in the Ukraine reponse",
     subtitle = "Grey area shows predicted clients in the baseline scenario. Blue area shows predicted clients during a 'winter surge' scenario. \nDotted lines show the lower and upper bounds of predictions."
@@ -352,7 +368,7 @@ rsrflat_baseline |>
 
 # Dependents
 rsrflat_baseline |>
-  ggplot(aes(x = week)) +
+  ggplot(aes(x = date)) +
   geom_line(
     data = rsrflat,
     aes(y = cumsum_dependents)
@@ -360,7 +376,7 @@ rsrflat_baseline |>
   geom_ribbon(
     data = rsrflat_baseline,
     mapping = aes(
-      x = week,
+      x = date,
       ymin = cumsum_dependents_lower,
       ymax = cumsum_dependents_upper
     ),
@@ -385,7 +401,7 @@ rsrflat_baseline |>
   geom_ribbon(
     data = rsrflat_surge,
     mapping = aes(
-      x = week,
+      x = date,
       ymin = cumsum_dependents_lower,
       ymax = cumsum_dependents_upper
     ),
@@ -410,9 +426,9 @@ rsrflat_baseline |>
     lty = 2
   ) +
   scale_y_continuous(labels = scales::comma) +
-  scale_x_continuous(breaks = scales::breaks_width(10)) +
+  scale_x_date(date_breaks = "3 month", date_labels = "%b %y") +
   labs(
-    x = "Week number",
+    x = "Date",
     y = "Number of dependents",
     title = "Historic and predicted number of dependents supported by Refugee Support in the Ukraine reponse",
     subtitle = "Grey area shows predicted dependents in the baseline scenario. Blue area shows predicted dependents during a 'winter surge' scenario. \nDotted lines show the lower and upper bounds of predictions."
@@ -437,7 +453,9 @@ rsrflat_baseline |>
 #     cumsum_answered = cumsum(answered) + nsl_answered_max,
 #     cumsum_answered_lower = cumsum(answered_lower) + nsl_answered_max,
 #     cumsum_answered_upper = cumsum(answered_upper) + nsl_answered_max
-#   )
+#   ) |>
+#   mutate(date = ymd("2022-01-01") + weeks(week - 1)) |>
+#   relocate(date)
 
 # nsl_surge <-
 #   simulated_surge |>
@@ -456,10 +474,12 @@ rsrflat_baseline |>
 #     cumsum_answered = cumsum(answered) + (nsl_baseline |> filter(week == 51) |> pull(cumsum_answered)),
 #     cumsum_answered_lower = cumsum(answered_lower) + (nsl_baseline |> filter(week == 51) |> pull(cumsum_answered_lower)),
 #     cumsum_answered_upper = cumsum(answered_upper) + (nsl_baseline |> filter(week == 51) |> pull(cumsum_answered_upper))
-#   )
+#   ) |>
+#   mutate(date = ymd("2022-01-01") + weeks(week-1))  |>
+#   relocate(date)
 
 # nsl_baseline |>
-#   ggplot(aes(x = week)) +
+#   ggplot(aes(x = date)) +
 #   geom_line(
 #     data = nsl,
 #     aes(y = cumsum_calls_abandoned),
@@ -468,7 +488,7 @@ rsrflat_baseline |>
 #   geom_ribbon(
 #     data = nsl_baseline,
 #     mapping = aes(
-#       x = week,
+#       x = date,
 #       ymin = cumsum_abandoned_lower,
 #       ymax = cumsum_abandoned_upper
 #     ),
@@ -493,7 +513,7 @@ rsrflat_baseline |>
 #   geom_ribbon(
 #     data = nsl_surge,
 #     mapping = aes(
-#       x = week,
+#       x = date,
 #       ymin = cumsum_abandoned_lower,
 #       ymax = cumsum_abandoned_upper
 #     ),
@@ -525,7 +545,7 @@ rsrflat_baseline |>
 #   geom_ribbon(
 #     data = nsl_baseline,
 #     mapping = aes(
-#       x = week,
+#       x = date,
 #       ymin = cumsum_answered_lower,
 #       ymax = cumsum_answered_upper
 #     ),
@@ -550,7 +570,7 @@ rsrflat_baseline |>
 #   geom_ribbon(
 #     data = nsl_surge,
 #     mapping = aes(
-#       x = week,
+#       x = date,
 #       ymin = cumsum_answered_lower,
 #       ymax = cumsum_answered_upper
 #     ),
@@ -575,9 +595,9 @@ rsrflat_baseline |>
 #     lty = 2
 #   ) +
 #   scale_y_continuous(labels = scales::comma) +
-#   scale_x_continuous(breaks = scales::breaks_width(10)) +
+#   scale_x_date(date_breaks = "3 month", date_labels =  "%b %y") +
 #   labs(
-#     x = "Week number",
+#     x = "Date",
 #     y = "Number of calls",
 #     title = "Historic and predicted number of Ukraine National Support Line calls",
 #     subtitle = "Grey areas show predicted arrivals in the baseline scenario. Blue areas show predicted arrivals during a 'winter surge' scenario. \nDotted lines show the lower and upper bounds of predictions."
