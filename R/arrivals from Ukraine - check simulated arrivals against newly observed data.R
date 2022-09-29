@@ -76,9 +76,6 @@ weekly_visas <-
   select(Week, starts_with("Weekly"))
 
 # ---- Load simulated data (baseline scenario) ----
-# Load predictions for the most recently published DLUHC data
-simulated_visas_baseline <- read_csv("output-data/simulations/simulation-baseline-2022-09-19.csv")
-
 # Load all simulation data into a `sim_data` tibble
 i <- 1
 sim_data <- list()
@@ -99,6 +96,12 @@ for (sim_file in sim_files) {
 
 # Convert list of tibbles to one flat tibble
 sim_data <- bind_rows(sim_data)
+
+# Load predictions for the most recently published DLUHC data
+# simulated_visas_baseline <- read_csv("output-data/simulations/simulation-baseline-2022-09-26.csv")
+simulated_visas_baseline <- 
+  sim_data |> 
+  filter(`Simulation date` == max(`Simulation date`))
 
 # ---- How closely did we predict the total number of most recent arrivals? ----
 # predicted_arrivals <- 
