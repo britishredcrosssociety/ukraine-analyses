@@ -5,7 +5,7 @@ library(rvest)
 library(httr)
 library(xml2)
 
-visa_path <- "data/visas"
+visa_path <- "data-raw/visas"
 
 # ---- Scrape URLs for visa data and download files ----
 visa_url <- "https://www.gov.uk/guidance/ukraine-sponsorship-scheme-visa-data-by-country-upper-and-lower-tier-local-authority"
