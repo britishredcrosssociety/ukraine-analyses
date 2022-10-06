@@ -102,3 +102,7 @@ The UK-wide data (2) requires manually updating. To do so, open the [Government 
 Once the latest data has been added, run the code in `R/arrivals from Ukraine - check simulated arrivals against newly observed data.R`, which updates the charts comparing our predictions against observed arrivals.
 
 Finally, generate new predictions based on the latest observed data by running `R/arrivals from Ukraine - trends and forecasts.R`.
+
+### Updating the Shiny app
+
+See instructions in the GitHub repo: https://github.com/britishredcrosssociety/ukraine-forecasts/blob/main/README.md#updating-the-underlying-data
