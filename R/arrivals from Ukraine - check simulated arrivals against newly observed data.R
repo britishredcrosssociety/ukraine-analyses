@@ -10,69 +10,59 @@ source("R/load Ukraine visa data - scraped.R")
 # - Homes for Ukraine / individual sponsorship (from LA-level data)
 # - Super sponsor / government sponsorship (from LA-level data)
 
-cumulative_family_scheme_visas <- 
-  visas_scraped |> 
-  arrange(Date) |> 
-  filter(str_detect(Stage, "arrival|visas issued|visa applications received")) |> 
-  filter(Scheme == "Ukraine Family Scheme") |> 
-  
-  select(-Date, -Visas) |> 
-  
-  pivot_wider(names_from = Stage, values_from = Visas_imputed) |> 
+cumulative_family_scheme_visas <-
+  visas_scraped |>
+  arrange(Date) |>
+  filter(str_detect(Stage, "arrival|visas issued|visa applications received")) |>
+  filter(Scheme == "Ukraine Family Scheme") |>
+  select(-Date, -Visas) |>
+  pivot_wider(names_from = Stage, values_from = Visas_imputed) |>
   rename(
     `Number of visa applications` = `visa applications received`,
     `Number of visas issued` = `visas issued`,
     `Number of arrivals` = `arrivals of visa-holders in the UK`,
   )
 
-cumulative_sponsorship_scheme_visas <- 
-  visas_ltla21_summary |> 
-  arrange(Date) |> 
-  filter(str_detect(Type, "^Sponsored")) |> 
+cumulative_sponsorship_scheme_visas <-
+  visas_ltla21_summary |>
+  arrange(Date) |>
+  filter(str_detect(Type, "^Sponsored")) |>
   mutate(Scheme = if_else(str_detect(Type, "Government"), "Government 'super sponsored'", Type)) |>
-  
   # Calculate UK weekly totals
-  mutate(Week = week(Date)) |> 
-  group_by(Week, Scheme) |> 
+  mutate(Week = week(Date)) |>
+  group_by(Week, Scheme) |>
   summarise(
     `Number of visa applications` = sum(`Number of visa applications`),
     `Number of visas issued` = sum(`Number of visas issued`),
     `Number of arrivals` = sum(`Number of arrivals in the UK by sponsor location`)
-  ) |> 
+  ) |>
   ungroup()
 
-cumulative_visas_by_scheme <- bind_rows(cumulative_sponsorship_scheme_visas, cumulative_family_scheme_visas) |> 
-  arrange(Week, Scheme) |> 
-  
+cumulative_visas_by_scheme <- bind_rows(cumulative_sponsorship_scheme_visas, cumulative_family_scheme_visas) |>
+  arrange(Week, Scheme) |>
   mutate(
     `% applications --> issued` = `Number of visas issued` / `Number of visa applications`,
     `% issued --> arrivals` = `Number of arrivals` / `Number of visas issued`
-  ) |> 
-  
+  ) |>
   # Convert week number to date; source: https://stackoverflow.com/a/46183403
-  mutate(Date = ymd("2022-01-03") + weeks(Week - 1)) |> 
+  mutate(Date = ymd("2022-01-03") + weeks(Week - 1)) |>
   relocate(Date)
 
 # ---- Make a dataframe containing weekly visa data ----
-weekly_visas <- 
-  visas_scraped |> 
-  arrange(Date) |> 
-  filter(str_detect(Stage, "arrivals")) |> 
-  
-  select(-Date, -Visas) |> 
-  
-  pivot_wider(names_from = Stage, values_from = Visas_imputed) |> 
-  
-  group_by(Week) |> 
+weekly_visas <-
+  visas_scraped |>
+  arrange(Date) |>
+  filter(str_detect(Stage, "arrivals")) |>
+  select(-Date, -Visas) |>
+  pivot_wider(names_from = Stage, values_from = Visas_imputed) |>
+  group_by(Week) |>
   summarise(
     `arrivals of visa-holders in the UK` = sum(`arrivals of visa-holders in the UK`, na.rm = TRUE)
-  ) |> 
-  
+  ) |>
   # Calculate week-on-week changes
   mutate(
     `Weekly arrivals` = `arrivals of visa-holders in the UK` - lag(`arrivals of visa-holders in the UK`)
-  ) |> 
-  
+  ) |>
   select(Week, starts_with("Weekly"))
 
 # ---- Load simulated data (baseline scenario) ----
@@ -85,12 +75,12 @@ for (sim_file in sim_files) {
   # Extract date from filename
   # Regex taken from https://regexland.com/regex-dates/
   sim_date <- str_extract(sim_file, "\\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])")
-  
+
   # Load simulated data and pre-pend the simulation date
-  sim_data[[i]] <- read_csv(sim_file) |> 
-    mutate(`Simulation date` = ymd(sim_date)) |> 
+  sim_data[[i]] <- read_csv(sim_file) |>
+    mutate(`Simulation date` = ymd(sim_date)) |>
     relocate(`Simulation date`)
-  
+
   i <- i + 1
 }
 
@@ -99,27 +89,27 @@ sim_data <- bind_rows(sim_data)
 
 # Load predictions for the most recently published DLUHC data
 # simulated_visas_baseline <- read_csv("output-data/simulations/simulation-baseline-2022-09-26.csv")
-simulated_visas_baseline <- 
-  sim_data |> 
+simulated_visas_baseline <-
+  sim_data |>
   filter(`Simulation date` == max(`Simulation date`))
 
 # ---- How closely did we predict the total number of most recent arrivals? ----
-# predicted_arrivals <- 
-#   simulated_visas_baseline |> 
-#   filter(Date == max(cumulative_visas_by_scheme$Date)) |> 
+# predicted_arrivals <-
+#   simulated_visas_baseline |>
+#   filter(Date == max(cumulative_visas_by_scheme$Date)) |>
 #   pull(`Total arrivals`)
 
 # Fetch total arrivals from the most recently run simulation that covers the most up-to-date visa data
-predicted_arrivals <- 
-  sim_data |> 
-  filter(Date == max(cumulative_visas_by_scheme$Date)) |> 
-  filter(`Simulation date` == max(`Simulation date`)) |> 
+predicted_arrivals <-
+  sim_data |>
+  filter(Date == max(cumulative_visas_by_scheme$Date)) |>
+  filter(`Simulation date` == max(`Simulation date`)) |>
   pull(`Total arrivals`)
 
-observed_arrivals <- 
-  cumulative_visas_by_scheme |> 
-  filter(Date == max(Date)) |> 
-  summarise(total = sum(`Number of arrivals`)) |> 
+observed_arrivals <-
+  cumulative_visas_by_scheme |>
+  filter(Date == max(Date)) |>
+  summarise(total = sum(`Number of arrivals`)) |>
   pull(total)
 
 scales::comma(predicted_arrivals)
@@ -127,13 +117,16 @@ scales::comma(observed_arrivals)
 abs(observed_arrivals - predicted_arrivals)
 
 # ---- Plot historical and simulated arrivals ----
-date_to_focus_on <- cumulative_visas_by_scheme |> filter(Date == max(Date)) |> distinct(Date) |> pull(Date)
+date_to_focus_on <- cumulative_visas_by_scheme |>
+  filter(Date == max(Date)) |>
+  distinct(Date) |>
+  pull(Date)
 date_text <- str_glue("{day(date_to_focus_on)} {month.name[month(date_to_focus_on)]} {year(date_to_focus_on)}")
 
-cumulative_visas_by_scheme |> 
+cumulative_visas_by_scheme |>
   ggplot(aes(x = Date, y = `Number of arrivals`)) +
   geom_col(position = "stack", colour = "grey60", fill = "grey60") +
-  
+
   # Add simulated arrivals
   geom_ribbon(
     data = simulated_visas_baseline,
@@ -156,14 +149,14 @@ cumulative_visas_by_scheme |>
     colour = "grey60",
     lty = 2
   ) +
-  
+
   # Central estimate
   geom_line(
     data = simulated_visas_baseline,
     inherit.aes = FALSE,
     mapping = aes(x = Date, y = `Total arrivals`)
   ) +
-  
+
   # Highlight prediction and observation
   geom_rect(
     data = tibble(
@@ -189,10 +182,8 @@ cumulative_visas_by_scheme |>
     ),
     ylim = c(90000, 150000)
   ) +
-  
   scale_y_continuous(labels = scales::comma, expand = expansion(mult = c(0, .1))) +
   scale_fill_brewer(palette = "Set2") +
-  
   theme_classic() +
   theme(
     legend.position = "bottom",
@@ -209,27 +200,27 @@ ggsave("images/forecast arrivals - testing the simulation on newly observed data
 
 # ---- Plot predictions 1, 2, ...n weeks ahead against observed data ----
 # When did our predictions start?
-sim_start_week <- 
-  sim_data |> 
-  filter(month(`Simulation date`) >= 8) |> 
-  filter(Date == min(Date)) |> 
+sim_start_week <-
+  sim_data |>
+  filter(month(`Simulation date`) >= 8) |>
+  filter(Date == min(Date)) |>
   pull(Date)
 
 # Get actual arrival figures, starting from when we made our first prediction
-observed_arrivals <- 
-  cumulative_visas_by_scheme |> 
-  filter(Date >= sim_start_week) |> 
-  group_by(Date) |> 
+observed_arrivals <-
+  cumulative_visas_by_scheme |>
+  filter(Date >= sim_start_week) |>
+  group_by(Date) |>
   summarise(`Actual arrivals` = sum(`Number of arrivals`))
 
 # Get predicted arrivals over the same period
-predicted_arrivals <- 
-  sim_data |> 
-  filter(Date %in% observed_arrivals$Date) |> 
+predicted_arrivals <-
+  sim_data |>
+  filter(Date %in% observed_arrivals$Date) |>
   select(Date, `Simulation date`, `Total arrivals`, `Total arrivals (lower bound)`, `Total arrivals (upper bound)`)
 
 # Plot series of predictions against observed data
-predicted_arrivals |> 
+predicted_arrivals |>
   ggplot(aes(x = factor(Date), y = `Total arrivals`)) +
   geom_pointrange(aes(ymin = `Total arrivals (lower bound)`, ymax = `Total arrivals (upper bound)`, colour = factor(`Simulation date`)), position = position_dodge(width = 0.2)) +
   geom_point(
@@ -257,27 +248,27 @@ ggsave("images/simulation/How close were our predictions.png", width = 150, heig
 
 # ---- Plot predictions 1, 2, ...n weeks ahead against observed data - using weekly data ----
 # When did our predictions start?
-sim_start_week <- 
-  sim_data |> 
-  filter(month(`Simulation date`) >= 8) |> 
-  filter(Week == min(Week)) |> 
+sim_start_week <-
+  sim_data |>
+  filter(month(`Simulation date`) >= 8) |>
+  filter(Week == min(Week)) |>
   pull(Week)
 
 # Get actual arrival figures, starting from when we made our first prediction
-observed_arrivals <- 
-  weekly_visas |> 
-  filter(Week >= sim_start_week) |> 
-  group_by(Week) |> 
+observed_arrivals <-
+  weekly_visas |>
+  filter(Week >= sim_start_week) |>
+  group_by(Week) |>
   summarise(`Actual arrivals` = sum(`Weekly arrivals`))
 
 # Get predicted arrivals over the same period
-predicted_arrivals <- 
-  sim_data |> 
-  filter(Week %in% observed_arrivals$Week) |> 
+predicted_arrivals <-
+  sim_data |>
+  filter(Week %in% observed_arrivals$Week) |>
   select(Week, `Simulation date`, `Weekly arrivals`, `Weekly arrivals (lower bound)`, `Weekly arrivals (upper bound)`)
 
 # Plot series of predictions against observed data
-predicted_arrivals |> 
+predicted_arrivals |>
   ggplot(aes(x = factor(Week), y = `Weekly arrivals`)) +
   geom_pointrange(aes(ymin = `Weekly arrivals (lower bound)`, ymax = `Weekly arrivals (upper bound)`, colour = factor(`Simulation date`)), position = position_dodge(width = 0.2)) +
   geom_point(
@@ -305,25 +296,23 @@ ggsave("images/simulation/How close were our predictions - weekly arrivals.png",
 
 # ---- How well do we predict arrivals one week ahead of time (calculate Root Mean Square Error)? ----
 # Keep only simulations that are nearest to the observed data date (those are the sims we ran a week in advance)
-predicted_arrivals |> 
-  #filter(Date == `Simulation date`) |> 
-  filter(month(`Simulation date`) >= 8) |> 
-  left_join(observed_arrivals) |> 
+predicted_arrivals |>
+  # filter(Date == `Simulation date`) |>
+  filter(month(`Simulation date`) >= 8) |>
+  left_join(observed_arrivals) |>
   yardstick::rmse(`Actual arrivals`, `Weekly arrivals`)
 
 # ---- How have our predictions changed over time? ----
 # Which weeks do we have multiple predictions for?
-sim_multiple_weeks <- 
-  sim_data |> 
-  count(Week) |> 
+sim_multiple_weeks <-
+  sim_data |>
+  count(Week) |>
   filter(n > 1)
 
-sim_data |> 
-  filter(Week %in% sim_multiple_weeks$Week) |> 
-  
+sim_data |>
+  filter(Week %in% sim_multiple_weeks$Week) |>
   ggplot(aes(x = Date, y = `Total arrivals`)) +
   geom_pointrange(aes(ymin = `Total arrivals (lower bound)`, ymax = `Total arrivals (upper bound)`, colour = factor(`Simulation date`)), position = position_dodge(width = 4)) +
-  
   scale_y_continuous(labels = scales::comma) +
   theme_classic() +
   theme(
