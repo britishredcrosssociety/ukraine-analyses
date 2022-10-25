@@ -21,6 +21,7 @@ homelessness_feb_june <- read_csv("data/homelessness/ukraine-homelessness-3-june
 homelessness_feb_july <- read_csv("data/homelessness/ukraine-homelessness-1-july.csv")
 homelessness_feb_aug <- read_csv("data/homelessness/ukraine-homelessness-29-july.csv")
 homelessness_24feb_26aug <- read_csv("data/homelessness/ukraine-homelessness-26-august.csv")
+homelessness_24feb_23sep <- read_csv("data/homelessness/ukraine-homelessness-23-september.csv")
 
 homelessness_total <- read_csv("data/homelessness/ukraine-homelessness-summary.csv")
 
@@ -75,7 +76,7 @@ homelessness_total |>
 ggsave("images/homelessness - totals.png", width = 70, height = 30, units = "mm")
 
 homelessness_total |> 
-  mutate(Date_text = factor(Date_text, levels = c("3 June", "1 July", "29 July", "26 August"))) |> 
+  mutate(Date_text = factor(Date_text, levels = c("3 June", "1 July", "29 July", "26 August", "23 September"))) |> 
   
   ggplot(aes(x = Date_text, y = `Total Ukrainian households owed a prevention or relief duty`)) +
   geom_line(aes(group = 1), colour = "red") +

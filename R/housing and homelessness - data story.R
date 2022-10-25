@@ -13,6 +13,7 @@ homelessness_24feb_3jun <- read_csv("data/homelessness/ukraine-homelessness-3-ju
 homelessness_24feb_1jul <- read_csv("data/homelessness/ukraine-homelessness-1-july.csv")
 homelessness_24feb_29jul <- read_csv("data/homelessness/ukraine-homelessness-29-july.csv")
 homelessness_24feb_26aug <- read_csv("data/homelessness/ukraine-homelessness-26-august.csv")
+homelessness_24feb_23sep <- read_csv("data/homelessness/ukraine-homelessness-23-september.csv")
 
 homelessness_total <- read_csv("data/homelessness/ukraine-homelessness-summary.csv")
 
@@ -25,7 +26,7 @@ england_index <- read_csv("output-data/index-of-housing-insecurity/housing-index
 homelessness_total <- 
   homelessness_total |> 
   mutate(
-    Date_text = factor(Date_text, levels = c("3 June", "1 July", "29 July", "26 August")),
+    Date_text = factor(Date_text, levels = c("3 June", "1 July", "29 July", "26 August", "23 September")),
     `% in temporary accommodation` = `Temporary Accommodation Snapshot` / `Total Ukrainian households owed a prevention or relief duty`
   )
 
@@ -100,9 +101,9 @@ homelessness_total |>
   select(Date, `Temporary Accommodation Snapshot`, `% in temporary accommodation`)
 
 # ---- %s of total homelessness in each region ----
-total_homelessness <- sum(homelessness_24feb_26aug$`Total Ukrainian households owed a prevention or relief duty`, na.rm = TRUE)
+total_homelessness <- sum(homelessness_24feb_23sep$`Total Ukrainian households owed a prevention or relief duty`, na.rm = TRUE)
 
-homelessness_24feb_26aug |> 
+homelessness_24feb_23sep |> 
   arrange(desc(`Total Ukrainian households owed a prevention or relief duty`)) |> 
   left_join(geographr::lookup_ltla21_region21, by = c("lad_code" = "ltla21_code")) |> 
   select(lad_name, region21_name, homelessness = `Total Ukrainian households owed a prevention or relief duty`) |> 
@@ -118,9 +119,9 @@ homelessness_24feb_26aug |>
 0.171 + 0.107
 
 # ---- %s of households in temporary accommodation in each region ----
-total_temp_acc <- sum(homelessness_24feb_26aug$`Temporary Accommodation Snapshot`, na.rm = TRUE)
+total_temp_acc <- sum(homelessness_24feb_23sep$`Temporary Accommodation Snapshot`, na.rm = TRUE)
 
-homelessness_24feb_26aug |> 
+homelessness_24feb_23sep |> 
   left_join(geographr::lookup_ltla21_region21, by = c("lad_code" = "ltla21_code")) |> 
   select(lad_name, region21_name, temp_acc = `Temporary Accommodation Snapshot`) |> 
   
@@ -142,9 +143,9 @@ homelessness_trends |>
 # ---- Which places had no homelessness in June but do now? ----
 new_homelessness <- 
   homelessness_trends |> 
-  filter((is.na(total_3jun) | total_3jun == 0) & (is.na(total_1jul) | total_1jul == 0) & (is.na(total_29jul) | total_29jul == 0) & (total_26aug > 0)) |> 
-  arrange(desc(total_26aug)) |> 
-  select(region21_name, lad_name, total_3jun, total_1jul, total_29jul, total_26aug)
+  filter((is.na(total_3jun) | total_3jun == 0) & (is.na(total_1jul) | total_1jul == 0) & (is.na(total_29jul) | total_29jul == 0) & (is.na(total_26aug) | total_26aug == 0) & (total_23sep > 0)) |> 
+  arrange(desc(total_23sep)) |> 
+  select(region21_name, lad_name, total_3jun, total_1jul, total_29jul, total_26aug, total_23sep)
 
 new_homelessness |> 
   count(region21_name, sort = TRUE)
@@ -152,7 +153,7 @@ new_homelessness |>
 new_homelessness
 
 # ---- Local Authorities with the highest rates of homelessness risk ----
-homelessness_24feb_26aug |> 
+homelessness_24feb_23sep |> 
   left_join(geographr::lookup_ltla21_region21, by = c("lad_code" = "ltla21_code")) |> 
   select(lad_name, region21_name, `% at risk of homelessness`, `% in temporary accommodation`) |> 
   arrange(desc(`% at risk of homelessness`), desc(`% in temporary accommodation`)) |> 
@@ -170,7 +171,7 @@ pal_region <-
     "West Midlands", "#737373"
   )
 
-homelessness_24feb_26aug |> 
+homelessness_24feb_23sep |> 
   left_join(geographr::lookup_ltla21_region21, by = c("lad_code" = "ltla21_code")) |> 
   select(lad_name, region21_name, `% at risk of homelessness`, `% in temporary accommodation`) |> 
   arrange(desc(`% at risk of homelessness`), desc(`% in temporary accommodation`)) |> 
@@ -216,7 +217,7 @@ ggsave("images/risk of homelessness.png", width = 150, height = 120, units = "mm
 ihs_imd_homelessness <- 
   england_index |> 
   
-  left_join(homelessness_trends |> select(ltla21_code = lad_code, total_26aug)) |> 
+  left_join(homelessness_trends |> select(ltla21_code = lad_code, total_23sep)) |> 
   
   left_join(IMD::imd_england_lad, by = c("ltla21_code" = "lad_code")) |> 
   left_join(IMD::imd_england_lad_subdomains, by = c("ltla21_code" = "lad_code")) |> 
@@ -235,7 +236,7 @@ ihs_imd_homelessness <-
     ltla21_code, 
     ltla21_name,
     
-    total_26aug,
+    total_23sep,
     
     homeless_threatened = `Households assessed as threatened with homelessness per (000s)`, 
     homeless = `Households assessed as homeless per (000s)`, 
@@ -253,14 +254,14 @@ ihs_imd_homelessness <-
 ihs_imd_homelessness |>
   pivot_longer(cols = homeless_threatened:`IMD Wider Barriers subdomain`, values_to = "rank") |>
 
-  ggplot(aes(x = rank, y = total_26aug)) +
+  ggplot(aes(x = rank, y = total_23sep)) +
   geom_point() +
   geom_smooth() +
   facet_wrap(~name, ncol = 3, scales = "free_x")
 
 # Plot 'wider barriers' subdomain
 ihs_imd_homelessness |> 
-  ggplot(aes(x = `IMD Wider Barriers subdomain`, y = total_26aug)) +
+  ggplot(aes(x = `IMD Wider Barriers subdomain`, y = total_23sep)) +
   geom_point(alpha = 0.4) +
   geom_smooth(method = "lm", colour = get_brc_colours()$red, fill = get_brc_colours()$red) +
   scale_x_continuous(
