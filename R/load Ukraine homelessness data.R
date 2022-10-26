@@ -440,5 +440,8 @@ write_csv(homelessness_24feb_26aug, "data/homelessness/ukraine-homelessness-26-a
 write_csv(homelessness_24feb_23sep, "data/homelessness/ukraine-homelessness-23-september.csv")
 
 write_csv(homelessness_total, "data/homelessness/ukraine-homelessness-summary.csv")
-
 write_csv(homelessness_trends, "data/homelessness/ukraine-homelessness-trends.csv")
+
+# Save a publicly accessible copy of totals and trends
+write_csv(homelessness_total, "output-data/homelessness/ukraine-homelessness-summary.csv")
+write_csv(homelessness_trends, "output-data/homelessness/ukraine-homelessness-trends.csv")
