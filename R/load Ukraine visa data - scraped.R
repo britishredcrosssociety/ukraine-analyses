@@ -345,6 +345,33 @@ visas_scraped <- tribble(
   32, "2022-11-01", "applications refused", "Ukraine Sponsorship Scheme", 900,
   32, "2022-11-01", "applications awaiting conclusion", "Ukraine Family Scheme", 4700,
   32, "2022-11-01", "applications awaiting conclusion", "Ukraine Sponsorship Scheme", 14100,
+
+  # Week of 11 November missing and not on archive.org - set as NA
+  33, "2022-11-01", "visa applications received", "Ukraine Family Scheme", NA,
+  33, "2022-11-01", "visa applications received", "Ukraine Sponsorship Scheme", NA,
+  33, "2022-11-01", "visas issued", "Ukraine Family Scheme", NA,
+  33, "2022-11-01", "visas issued", "Ukraine Sponsorship Scheme", NA,
+  33, "2022-10-31", "arrivals of visa-holders in the UK", "Ukraine Family Scheme", NA,
+  33, "2022-10-31", "arrivals of visa-holders in the UK", "Ukraine Sponsorship Scheme", NA,
+  33, "2022-11-01", "applications withdrawn", "Ukraine Family Scheme", NA,
+  33, "2022-11-01", "applications withdrawn", "Ukraine Sponsorship Scheme", NA,
+  33, "2022-11-01", "applications refused", "Ukraine Family Scheme", NA,
+  33, "2022-11-01", "applications refused", "Ukraine Sponsorship Scheme", NA,
+  33, "2022-11-01", "applications awaiting conclusion", "Ukraine Family Scheme", NA,
+  33, "2022-11-01", "applications awaiting conclusion", "Ukraine Sponsorship Scheme", NA,
+
+  34, "2022-11-01", "visa applications received", "Ukraine Family Scheme", 75200,
+  34, "2022-11-01", "visa applications received", "Ukraine Sponsorship Scheme", 170600,
+  34, "2022-11-01", "visas issued", "Ukraine Family Scheme", 57900,
+  34, "2022-11-01", "visas issued", "Ukraine Sponsorship Scheme", 141600,
+  34, "2022-10-31", "arrivals of visa-holders in the UK", "Ukraine Family Scheme", 40500,
+  34, "2022-10-31", "arrivals of visa-holders in the UK", "Ukraine Sponsorship Scheme", 104100,
+  34, "2022-11-01", "applications withdrawn", "Ukraine Family Scheme", 9300,
+  34, "2022-11-01", "applications withdrawn", "Ukraine Sponsorship Scheme", 14500,
+  34, "2022-11-01", "applications refused", "Ukraine Family Scheme", 3800,
+  34, "2022-11-01", "applications refused", "Ukraine Sponsorship Scheme", 1000,
+  34, "2022-11-01", "applications awaiting conclusion", "Ukraine Family Scheme", 4000,
+  34, "2022-11-01", "applications awaiting conclusion", "Ukraine Sponsorship Scheme", 13600
 ) |>
   mutate(
     Date = ymd(Date),
