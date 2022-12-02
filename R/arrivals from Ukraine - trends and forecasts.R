@@ -347,7 +347,6 @@ init_sim <- function(sim_start_week, num_weeks_to_simulate) {
 ## The simulation ----
 run_visa_simulation <- function(simulated_visas) {
   for (week in (min(simulated_visas$Week) + 1):max(simulated_visas$Week)) {
-
     # New arrivals this week, from last week's pool of issued visas - central estimate, based on predicted arrival rate for each scheme
     simulated_visas[simulated_visas$Week == week, ]$`Weekly arrivals - Homes for Ukraine` <- round(simulated_visas[simulated_visas$Week == week - 1, ]$`Backlog of visas issued - Homes for Ukraine` * simulated_visas[simulated_visas$Week == week, ]$`Arrival rate - Homes for Ukraine`, 0)
     simulated_visas[simulated_visas$Week == week, ]$`Weekly arrivals - Family Scheme` <- round(simulated_visas[simulated_visas$Week == week - 1, ]$`Backlog of visas issued - Family Scheme` * simulated_visas[simulated_visas$Week == week, ]$`Arrival rate - Family Scheme`, 0)

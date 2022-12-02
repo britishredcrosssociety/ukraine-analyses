@@ -98,6 +98,8 @@ for (visa_file in visa_files) {
   summary_skip <- case_when(
     visa_date <= ymd("2022-05-01") ~ 6,
     visa_date == ymd("2022-05-03") ~ 7,
+    visa_date == ymd("2022-11-22") ~ 10,
+    visa_date == ymd("2022-11-29") ~ 10,
     TRUE ~ 8
   )
 
@@ -106,18 +108,24 @@ for (visa_file in visa_files) {
       visa_date <= ymd("2022-05-01") ~ 6,
       visa_date == ymd("2022-05-03") ~ 7,
       visa_date == ymd("2022-06-21") ~ 7,
+      visa_date == ymd("2022-11-22") ~ 10,
+      visa_date == ymd("2022-11-29") ~ 10,
       TRUE ~ 8
     )
 
   wales_scotland_skip <- case_when(
     visa_date <= ymd("2022-05-01") ~ 8,
     visa_date == ymd("2022-05-03") ~ 9,
+    visa_date == ymd("2022-11-22") ~ 12,
+    visa_date == ymd("2022-11-29") ~ 12,
     TRUE ~ 10
   )
 
   ni_skip <-
     case_when(
       visa_date <= ymd("2022-05-01") ~ 6,
+      visa_date == ymd("2022-11-22") ~ 10,
+      visa_date == ymd("2022-11-29") ~ 10,
       TRUE ~ 8
     )
 
