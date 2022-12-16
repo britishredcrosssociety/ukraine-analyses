@@ -101,6 +101,7 @@ for (visa_file in visa_files) {
     visa_date == ymd("2022-11-22") ~ 10,
     visa_date == ymd("2022-11-29") ~ 10,
     visa_date == ymd("2022-12-06") ~ 10,
+    visa_date == ymd("2022-12-13") ~ 10,
     TRUE ~ 8
   )
 
@@ -112,6 +113,7 @@ for (visa_file in visa_files) {
       visa_date == ymd("2022-11-22") ~ 10,
       visa_date == ymd("2022-11-29") ~ 10,
       visa_date == ymd("2022-12-06") ~ 10,
+      visa_date == ymd("2022-12-13") ~ 10,
       TRUE ~ 8
     )
 
@@ -121,6 +123,7 @@ for (visa_file in visa_files) {
     visa_date == ymd("2022-11-22") ~ 12,
     visa_date == ymd("2022-11-29") ~ 12,
     visa_date == ymd("2022-12-06") ~ 12,
+    visa_date == ymd("2022-12-13") ~ 12,
     TRUE ~ 10
   )
 
@@ -130,6 +133,7 @@ for (visa_file in visa_files) {
       visa_date == ymd("2022-11-22") ~ 10,
       visa_date == ymd("2022-11-29") ~ 10,
       visa_date == ymd("2022-12-06") ~ 10,
+      visa_date == ymd("2022-12-13") ~ 10,
       TRUE ~ 8
     )
 
