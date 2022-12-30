@@ -409,6 +409,8 @@ visas_scraped <- tribble(
   39, "2022-12-20", "applications refused", "Ukraine Sponsorship Scheme", 1000,
   39, "2022-12-20", "applications awaiting conclusion", "Ukraine Family Scheme", 2200,
   39, "2022-12-20", "applications awaiting conclusion", "Ukraine Sponsorship Scheme", 11700
+  
+  # No data published for 26/27 December - next data release will be 5 Jan 2023
 ) |>
   mutate(
     Date = ymd(Date),
