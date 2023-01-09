@@ -423,18 +423,18 @@ visas_scraped <- tribble(
   40, "2022-12-27", "applications awaiting conclusion", "Ukraine Family Scheme", NA,
   40, "2022-12-27", "applications awaiting conclusion", "Ukraine Sponsorship Scheme", NA,
 
-  41, "2022-12-03", "visa applications received", "Ukraine Family Scheme", 80500,
-  41, "2022-12-03", "visa applications received", "Ukraine Sponsorship Scheme", 177100,
-  41, "2022-12-03", "visas issued", "Ukraine Family Scheme", 62800,
-  41, "2022-12-03", "visas issued", "Ukraine Sponsorship Scheme", 148100,
-  41, "2022-12-02", "arrivals of visa-holders in the UK", "Ukraine Family Scheme", 44200,
-  41, "2022-12-02", "arrivals of visa-holders in the UK", "Ukraine Sponsorship Scheme", 110300,
-  41, "2022-12-03", "applications withdrawn", "Ukraine Family Scheme", 9900,
-  41, "2022-12-03", "applications withdrawn", "Ukraine Sponsorship Scheme", 16600,
-  41, "2022-12-03", "applications refused", "Ukraine Family Scheme", 5600,
-  41, "2022-12-03", "applications refused", "Ukraine Sponsorship Scheme", 1000,
-  41, "2022-12-03", "applications awaiting conclusion", "Ukraine Family Scheme", 2300,
-  41, "2022-12-03", "applications awaiting conclusion", "Ukraine Sponsorship Scheme", 11500
+  41, "2023-01-03", "visa applications received", "Ukraine Family Scheme", 80500,
+  41, "2023-01-03", "visa applications received", "Ukraine Sponsorship Scheme", 177100,
+  41, "2023-01-03", "visas issued", "Ukraine Family Scheme", 62800,
+  41, "2023-01-03", "visas issued", "Ukraine Sponsorship Scheme", 148100,
+  41, "2023-01-02", "arrivals of visa-holders in the UK", "Ukraine Family Scheme", 44200,
+  41, "2023-01-02", "arrivals of visa-holders in the UK", "Ukraine Sponsorship Scheme", 110300,
+  41, "2023-01-03", "applications withdrawn", "Ukraine Family Scheme", 9900,
+  41, "2023-01-03", "applications withdrawn", "Ukraine Sponsorship Scheme", 16600,
+  41, "2023-01-03", "applications refused", "Ukraine Family Scheme", 5600,
+  41, "2023-01-03", "applications refused", "Ukraine Sponsorship Scheme", 1000,
+  41, "2023-01-03", "applications awaiting conclusion", "Ukraine Family Scheme", 2300,
+  41, "2023-01-03", "applications awaiting conclusion", "Ukraine Sponsorship Scheme", 11500
 ) |>
   mutate(
     Date = ymd(Date),
