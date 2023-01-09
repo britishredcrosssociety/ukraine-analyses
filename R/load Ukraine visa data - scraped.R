@@ -403,14 +403,38 @@ visas_scraped <- tribble(
   39, "2022-12-20", "visas issued", "Ukraine Sponsorship Scheme", 146900,
   39, "2022-12-19", "arrivals of visa-holders in the UK", "Ukraine Family Scheme", 43300,
   39, "2022-12-19", "arrivals of visa-holders in the UK", "Ukraine Sponsorship Scheme", 109000,
-  39, "2022-12-20", "applications withdrawn", "Ukraine Family Scheme",  	9800,
+  39, "2022-12-20", "applications withdrawn", "Ukraine Family Scheme", 9800,
   39, "2022-12-20", "applications withdrawn", "Ukraine Sponsorship Scheme", 16400,
   39, "2022-12-20", "applications refused", "Ukraine Family Scheme", 5300,
   39, "2022-12-20", "applications refused", "Ukraine Sponsorship Scheme", 1000,
   39, "2022-12-20", "applications awaiting conclusion", "Ukraine Family Scheme", 2200,
-  39, "2022-12-20", "applications awaiting conclusion", "Ukraine Sponsorship Scheme", 11700
-  
-  # No data published for 26/27 December - next data release will be 5 Jan 2023
+  39, "2022-12-20", "applications awaiting conclusion", "Ukraine Sponsorship Scheme", 11700,
+
+  40, "2022-12-27", "visa applications received", "Ukraine Family Scheme", NA,
+  40, "2022-12-27", "visa applications received", "Ukraine Sponsorship Scheme", NA,
+  40, "2022-12-27", "visas issued", "Ukraine Family Scheme", NA,
+  40, "2022-12-27", "visas issued", "Ukraine Sponsorship Scheme", NA,
+  40, "2022-12-26", "arrivals of visa-holders in the UK", "Ukraine Family Scheme", NA,
+  40, "2022-12-26", "arrivals of visa-holders in the UK", "Ukraine Sponsorship Scheme", NA,
+  40, "2022-12-27", "applications withdrawn", "Ukraine Family Scheme", NA,
+  40, "2022-12-27", "applications withdrawn", "Ukraine Sponsorship Scheme", NA,
+  40, "2022-12-27", "applications refused", "Ukraine Family Scheme", NA,
+  40, "2022-12-27", "applications refused", "Ukraine Sponsorship Scheme", NA,
+  40, "2022-12-27", "applications awaiting conclusion", "Ukraine Family Scheme", NA,
+  40, "2022-12-27", "applications awaiting conclusion", "Ukraine Sponsorship Scheme", NA,
+
+  41, "2022-12-03", "visa applications received", "Ukraine Family Scheme", 80500,
+  41, "2022-12-03", "visa applications received", "Ukraine Sponsorship Scheme", 177100,
+  41, "2022-12-03", "visas issued", "Ukraine Family Scheme", 62800,
+  41, "2022-12-03", "visas issued", "Ukraine Sponsorship Scheme", 148100,
+  41, "2022-12-02", "arrivals of visa-holders in the UK", "Ukraine Family Scheme", 44200,
+  41, "2022-12-02", "arrivals of visa-holders in the UK", "Ukraine Sponsorship Scheme", 110300,
+  41, "2022-12-03", "applications withdrawn", "Ukraine Family Scheme", 9900,
+  41, "2022-12-03", "applications withdrawn", "Ukraine Sponsorship Scheme", 16600,
+  41, "2022-12-03", "applications refused", "Ukraine Family Scheme", 5600,
+  41, "2022-12-03", "applications refused", "Ukraine Sponsorship Scheme", 1000,
+  41, "2022-12-03", "applications awaiting conclusion", "Ukraine Family Scheme", 2300,
+  41, "2022-12-03", "applications awaiting conclusion", "Ukraine Sponsorship Scheme", 11500
 ) |>
   mutate(
     Date = ymd(Date),

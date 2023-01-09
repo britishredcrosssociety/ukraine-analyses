@@ -95,15 +95,18 @@ for (visa_file in visa_files) {
     dmy()
 
   # The number of rows to skip when running read_ods() differs depending on the date/format of the file
-  summary_skip <- case_when(
-    visa_date <= ymd("2022-05-01") ~ 6,
-    visa_date == ymd("2022-05-03") ~ 7,
-    visa_date == ymd("2022-11-22") ~ 10,
-    visa_date == ymd("2022-11-29") ~ 10,
-    visa_date == ymd("2022-12-06") ~ 10,
-    visa_date == ymd("2022-12-13") ~ 10,
-    TRUE ~ 8
-  )
+  summary_skip <-
+    case_when(
+      visa_date <= ymd("2022-05-01") ~ 6,
+      visa_date == ymd("2022-05-03") ~ 7,
+      visa_date == ymd("2022-11-22") ~ 10,
+      visa_date == ymd("2022-11-29") ~ 10,
+      visa_date == ymd("2022-12-06") ~ 10,
+      visa_date == ymd("2022-12-13") ~ 10,
+      visa_date == ymd("2022-12-20") ~ 10,
+      visa_date == ymd("2023-01-03") ~ 10,
+      TRUE ~ 8
+    )
 
   england_skip <-
     case_when(
@@ -114,18 +117,23 @@ for (visa_file in visa_files) {
       visa_date == ymd("2022-11-29") ~ 10,
       visa_date == ymd("2022-12-06") ~ 10,
       visa_date == ymd("2022-12-13") ~ 10,
+      visa_date == ymd("2022-12-20") ~ 10,
+      visa_date == ymd("2023-01-03") ~ 10,
       TRUE ~ 8
     )
 
-  wales_scotland_skip <- case_when(
-    visa_date <= ymd("2022-05-01") ~ 8,
-    visa_date == ymd("2022-05-03") ~ 9,
-    visa_date == ymd("2022-11-22") ~ 12,
-    visa_date == ymd("2022-11-29") ~ 12,
-    visa_date == ymd("2022-12-06") ~ 12,
-    visa_date == ymd("2022-12-13") ~ 12,
-    TRUE ~ 10
-  )
+  wales_scotland_skip <-
+    case_when(
+      visa_date <= ymd("2022-05-01") ~ 8,
+      visa_date == ymd("2022-05-03") ~ 9,
+      visa_date == ymd("2022-11-22") ~ 12,
+      visa_date == ymd("2022-11-29") ~ 12,
+      visa_date == ymd("2022-12-06") ~ 12,
+      visa_date == ymd("2022-12-13") ~ 12,
+      visa_date == ymd("2022-12-20") ~ 12,
+      visa_date == ymd("2023-01-03") ~ 12,
+      TRUE ~ 10
+    )
 
   ni_skip <-
     case_when(
@@ -134,6 +142,8 @@ for (visa_file in visa_files) {
       visa_date == ymd("2022-11-29") ~ 10,
       visa_date == ymd("2022-12-06") ~ 10,
       visa_date == ymd("2022-12-13") ~ 10,
+      visa_date == ymd("2022-12-20") ~ 10,
+      visa_date == ymd("2023-01-03") ~ 10,
       TRUE ~ 8
     )
 
