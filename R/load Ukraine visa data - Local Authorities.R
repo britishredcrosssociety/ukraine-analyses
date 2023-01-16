@@ -119,7 +119,6 @@ for (visa_file in visa_files) {
       visa_date == ymd("2022-12-13") ~ 10,
       visa_date == ymd("2022-12-20") ~ 10,
       visa_date == ymd("2023-01-03") ~ 10,
-      visa_date == ymd("2023-01-10") ~ 10,
       TRUE ~ 8
     )
 
