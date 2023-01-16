@@ -318,7 +318,6 @@ visas_scraped <- tribble(
   32, "2022-11-01", "applications refused", "Ukraine Sponsorship Scheme", 900,
   32, "2022-11-01", "applications awaiting conclusion", "Ukraine Family Scheme", 4700,
   32, "2022-11-01", "applications awaiting conclusion", "Ukraine Sponsorship Scheme", 14100,
-
   33, "2022-11-08", "visa applications received", "Ukraine Family Scheme", 74200,
   33, "2022-11-08", "visa applications received", "Ukraine Sponsorship Scheme", 169400,
   33, "2022-11-08", "visas issued", "Ukraine Family Scheme", 57100,
@@ -331,7 +330,6 @@ visas_scraped <- tribble(
   33, "2022-11-08", "applications refused", "Ukraine Sponsorship Scheme", 900,
   33, "2022-11-08", "applications awaiting conclusion", "Ukraine Family Scheme", 4200,
   33, "2022-11-08", "applications awaiting conclusion", "Ukraine Sponsorship Scheme", 13400,
-
   34, "2022-11-15", "visa applications received", "Ukraine Family Scheme", 75200,
   34, "2022-11-15", "visa applications received", "Ukraine Sponsorship Scheme", 170600,
   34, "2022-11-15", "visas issued", "Ukraine Family Scheme", 57900,
@@ -344,7 +342,6 @@ visas_scraped <- tribble(
   34, "2022-11-15", "applications refused", "Ukraine Sponsorship Scheme", 1000,
   34, "2022-11-15", "applications awaiting conclusion", "Ukraine Family Scheme", 4000,
   34, "2022-11-15", "applications awaiting conclusion", "Ukraine Sponsorship Scheme", 13600,
-
   35, "2022-11-22", "visa applications received", "Ukraine Family Scheme", 76100,
   35, "2022-11-22", "visa applications received", "Ukraine Sponsorship Scheme", 171700,
   35, "2022-11-22", "visas issued", "Ukraine Family Scheme", 58900,
@@ -357,7 +354,6 @@ visas_scraped <- tribble(
   35, "2022-11-22", "applications refused", "Ukraine Sponsorship Scheme", 1000,
   35, "2022-11-22", "applications awaiting conclusion", "Ukraine Family Scheme", 3500,
   35, "2022-11-22", "applications awaiting conclusion", "Ukraine Sponsorship Scheme", 13400,
-
   36, "2022-11-29", "visa applications received", "Ukraine Family Scheme", 77100,
   36, "2022-11-29", "visa applications received", "Ukraine Sponsorship Scheme", 173000,
   36, "2022-11-29", "visas issued", "Ukraine Family Scheme", 59600,
@@ -370,7 +366,6 @@ visas_scraped <- tribble(
   36, "2022-11-29", "applications refused", "Ukraine Sponsorship Scheme", 1000,
   36, "2022-11-29", "applications awaiting conclusion", "Ukraine Family Scheme", 3300,
   36, "2022-11-29", "applications awaiting conclusion", "Ukraine Sponsorship Scheme", 13300,
-
   37, "2022-12-06", "visa applications received", "Ukraine Family Scheme", 77900,
   37, "2022-12-06", "visa applications received", "Ukraine Sponsorship Scheme", 174100,
   37, "2022-12-06", "visas issued", "Ukraine Family Scheme", 60300,
@@ -383,7 +378,6 @@ visas_scraped <- tribble(
   37, "2022-12-06", "applications refused", "Ukraine Sponsorship Scheme", 1000,
   37, "2022-12-06", "applications awaiting conclusion", "Ukraine Family Scheme", 2900,
   37, "2022-12-06", "applications awaiting conclusion", "Ukraine Sponsorship Scheme", 12900,
-
   38, "2022-12-13", "visa applications received", "Ukraine Family Scheme", 78700,
   38, "2022-12-13", "visa applications received", "Ukraine Sponsorship Scheme", 175000,
   38, "2022-12-13", "visas issued", "Ukraine Family Scheme", 61100,
@@ -396,7 +390,6 @@ visas_scraped <- tribble(
   38, "2022-12-13", "applications refused", "Ukraine Sponsorship Scheme", 1000,
   38, "2022-12-13", "applications awaiting conclusion", "Ukraine Family Scheme", 2700,
   38, "2022-12-13", "applications awaiting conclusion", "Ukraine Sponsorship Scheme", 12500,
-
   39, "2022-12-20", "visa applications received", "Ukraine Family Scheme", 79300,
   39, "2022-12-20", "visa applications received", "Ukraine Sponsorship Scheme", 175900,
   39, "2022-12-20", "visas issued", "Ukraine Family Scheme", 62000,
@@ -409,7 +402,6 @@ visas_scraped <- tribble(
   39, "2022-12-20", "applications refused", "Ukraine Sponsorship Scheme", 1000,
   39, "2022-12-20", "applications awaiting conclusion", "Ukraine Family Scheme", 2200,
   39, "2022-12-20", "applications awaiting conclusion", "Ukraine Sponsorship Scheme", 11700,
-
   40, "2022-12-27", "visa applications received", "Ukraine Family Scheme", NA,
   40, "2022-12-27", "visa applications received", "Ukraine Sponsorship Scheme", NA,
   40, "2022-12-27", "visas issued", "Ukraine Family Scheme", NA,
@@ -422,7 +414,6 @@ visas_scraped <- tribble(
   40, "2022-12-27", "applications refused", "Ukraine Sponsorship Scheme", NA,
   40, "2022-12-27", "applications awaiting conclusion", "Ukraine Family Scheme", NA,
   40, "2022-12-27", "applications awaiting conclusion", "Ukraine Sponsorship Scheme", NA,
-
   41, "2023-01-03", "visa applications received", "Ukraine Family Scheme", 80500,
   41, "2023-01-03", "visa applications received", "Ukraine Sponsorship Scheme", 177100,
   41, "2023-01-03", "visas issued", "Ukraine Family Scheme", 62800,
@@ -435,7 +426,6 @@ visas_scraped <- tribble(
   41, "2023-01-03", "applications refused", "Ukraine Sponsorship Scheme", 1000,
   41, "2023-01-03", "applications awaiting conclusion", "Ukraine Family Scheme", 2300,
   41, "2023-01-03", "applications awaiting conclusion", "Ukraine Sponsorship Scheme", 11500,
-
   42, "2023-01-10", "visa applications received", "Ukraine Family Scheme", 81500,
   42, "2023-01-10", "visa applications received", "Ukraine Sponsorship Scheme", 177900,
   42, "2023-01-10", "visas issued", "Ukraine Family Scheme", 63600,
@@ -447,11 +437,15 @@ visas_scraped <- tribble(
   42, "2023-01-10", "applications refused", "Ukraine Family Scheme", 5900,
   42, "2023-01-10", "applications refused", "Ukraine Sponsorship Scheme", 1000,
   42, "2023-01-10", "applications awaiting conclusion", "Ukraine Family Scheme", 2000,
-  42, "2023-01-10", "applications awaiting conclusion", "Ukraine Sponsorship Scheme", 10000 
+  42, "2023-01-10", "applications awaiting conclusion", "Ukraine Sponsorship Scheme", 10000
 ) |>
   mutate(
     Date = ymd(Date),
-    Week = week(Date)
+    Week = if_else(
+      Date < "2023-01-01",
+      week(Date),
+      week(Date) + 52
+    )
   )
 
 # Interpolate missing values
@@ -465,3 +459,4 @@ visas_scraped <-
 #   filter(str_detect(Stage, "arrivals")) |>
 #   pivot_wider(names_from = Scheme, values_from = Visas) |>
 #   mutate(Arrivals = `Ukraine Family Scheme` + `Ukraine Sponsorship Scheme`)
+

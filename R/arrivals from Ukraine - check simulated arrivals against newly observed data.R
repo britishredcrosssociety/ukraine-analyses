@@ -29,7 +29,13 @@ cumulative_sponsorship_scheme_visas <-
   filter(str_detect(Type, "^Sponsored")) |>
   mutate(Scheme = if_else(str_detect(Type, "Government"), "Government 'super sponsored'", Type)) |>
   # Calculate UK weekly totals
-  mutate(Week = week(Date)) |>
+  mutate(
+    Week = if_else(
+      Date < "2023-01-01",
+      week(Date),
+      week(Date) + 52
+    )
+  ) |>
   group_by(Week, Scheme) |>
   summarise(
     `Number of visa applications` = sum(`Number of visa applications`),
@@ -177,10 +183,10 @@ cumulative_visas_by_scheme |>
   coord_cartesian(
     # xlim = c(ymd("2022-07-28"), ymd("2022-08-25")),
     xlim = c(
-      date_to_focus_on - ddays(15),
-      date_to_focus_on + ddays(10)
-    ),
-    ylim = c(90000, 150000)
+      date_to_focus_on - ddays(23),
+      date_to_focus_on + ddays(9)
+    )
+    # ,ylim = c(90000, 150000)
   ) +
   scale_y_continuous(labels = scales::comma, expand = expansion(mult = c(0, .1))) +
   scale_fill_brewer(palette = "Set2") +

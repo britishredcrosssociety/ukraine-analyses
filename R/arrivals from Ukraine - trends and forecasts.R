@@ -55,7 +55,13 @@ weekly_sponsorship_scheme_visas <-
   filter(str_detect(Type, "^Sponsored")) |>
   mutate(Scheme = if_else(str_detect(Type, "Government"), "Government 'super sponsored'", Type)) |>
   # Calculate UK weekly totals
-  mutate(Week = week(Date)) |>
+  mutate(
+    Week = if_else(
+      Date < "2023-01-01",
+      week(Date),
+      week(Date) + 52
+    )
+  ) |>
   group_by(Week, Scheme) |>
   summarise(
     `Number of visa applications` = sum(`Number of visa applications`),
@@ -108,7 +114,13 @@ cumulative_sponsorship_scheme_visas <-
   filter(str_detect(Type, "^Sponsored")) |>
   mutate(Scheme = if_else(str_detect(Type, "Government"), "Government 'super sponsored'", Type)) |>
   # Calculate UK weekly totals
-  mutate(Week = week(Date)) |>
+  mutate(
+    Week = if_else(
+      Date < "2023-01-01",
+      week(Date),
+      week(Date) + 52
+    )
+  ) |>
   group_by(Week, Scheme) |>
   summarise(
     `Number of visa applications` = sum(`Number of visa applications`),
