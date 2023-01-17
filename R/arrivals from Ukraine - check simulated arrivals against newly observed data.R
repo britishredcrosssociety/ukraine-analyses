@@ -183,8 +183,8 @@ cumulative_visas_by_scheme |>
   coord_cartesian(
     # xlim = c(ymd("2022-07-28"), ymd("2022-08-25")),
     xlim = c(
-      date_to_focus_on - ddays(23),
-      date_to_focus_on + ddays(9)
+      date_to_focus_on - ddays(15),
+      date_to_focus_on + ddays(10)
     )
     # ,ylim = c(90000, 150000)
   ) +
