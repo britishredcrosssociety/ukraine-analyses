@@ -901,7 +901,7 @@ write_csv(simulated_visas_no_more_applications, glue::glue("output-data/simulati
 ####
 
 ## Choose week numbers that the sim will run from and to ----
-sim_start_week <- 51 # Assume the winter surge starts in the middle of December
+sim_start_week <- min(simulated_visas_baseline$Week)
 num_weeks_to_simulate <- 6 # Run surge scenario over six weeks
 
 ## Set up a tibble for the simulated data ----
