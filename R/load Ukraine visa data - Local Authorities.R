@@ -179,6 +179,95 @@ visas_ltla21_wales <- bind_rows(visas_wales)
 visas_ltla21_scotland <- bind_rows(visas_scotland)
 visas_ltla21_ni <- bind_rows(visas_ni)
 
+# ---- Impute missing values ----
+# The week of 27th Dec 2022 was not published. No information for why this is
+# the case can be found. Assume this weeks figures match the previous week:
+
+# - Summary -
+visas_ltla21_summary <- visas_ltla21_summary |>
+  distinct(Location, Type) |>
+  mutate(
+    Date = ymd("2022-12-27"),
+    `Number of visa applications` = NA,
+    `Number of visas issued` = NA,
+    `Number of arrivals in the UK by sponsor location` = NA
+  ) |>
+  relocate(Date) |>
+  bind_rows(visas_ltla21_summary) |>
+  arrange(Date) |>
+  group_by(Location, Type) |>
+  fill(
+    `Number of visa applications`,
+    `Number of visas issued`,
+    `Number of arrivals in the UK by sponsor location`
+  ) |>
+  ungroup()
+
+# - England -
+visas_ltla21_england <- visas_ltla21_england |>
+  distinct(`Lower tier local authority name`, ltla21_code) |>
+  mutate(
+    Date = ymd("2022-12-27"),
+    `Number of visa applications` = NA,
+    `Number of visas issued` = NA,
+    `Number of arrivals` = NA
+  ) |>
+  relocate(Date) |>
+  bind_rows(visas_ltla21_england) |>
+  arrange(Date) |>
+  group_by(`Lower tier local authority name`, ltla21_code) |>
+  fill(`Number of visa applications`, `Number of visas issued`, `Number of arrivals`) |>
+  ungroup()
+
+# - Wales -
+visas_ltla21_wales <- visas_ltla21_wales |>
+  distinct(`Upper tier local authority name`, ltla21_code) |>
+  mutate(
+    Date = ymd("2022-12-27"),
+    `Number of visa applications` = NA,
+    `Number of visas issued` = NA,
+    `Number of arrivals` = NA
+  ) |>
+  relocate(Date) |>
+  bind_rows(visas_ltla21_wales) |>
+  arrange(Date) |>
+  group_by(`Upper tier local authority name`, ltla21_code) |>
+  fill(`Number of visa applications`, `Number of visas issued`, `Number of arrivals`) |>
+  ungroup()
+
+# - Scotland -
+visas_ltla21_scotland <- visas_ltla21_scotland |>
+  distinct(`Upper tier local authority name`, ltla21_code) |>
+  mutate(
+    Date = ymd("2022-12-27"),
+    `Number of visa applications` = NA,
+    `Number of visas issued` = NA,
+    `Number of arrivals` = NA
+  ) |>
+  relocate(Date) |>
+  bind_rows(visas_ltla21_scotland) |>
+  arrange(Date) |>
+  group_by(`Upper tier local authority name`, ltla21_code) |>
+  fill(`Number of visa applications`, `Number of visas issued`, `Number of arrivals`) |>
+  ungroup()
+
+# - NI -
+visas_ltla21_ni <- visas_ltla21_ni |>
+  distinct(`Local authority name`, ltla21_code) |>
+  mutate(
+    Date = ymd("2022-12-27"),
+    `Number of visa applications` = NA,
+    `Number of visas issued` = NA,
+    `Number of arrivals` = NA
+  ) |>
+  relocate(Date) |>
+  bind_rows(visas_ltla21_ni) |>
+  arrange(Date) |>
+  group_by(`Local authority name`, ltla21_code) |>
+  fill(`Number of visa applications`, `Number of visas issued`, `Number of arrivals`) |>
+  ungroup()
+
+# Create UK dataframe
 visas_ltla21_uk <-
   bind_rows(
     visas_ltla21_england |> rename(ltla21_name = `Lower tier local authority name`),
