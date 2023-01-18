@@ -83,14 +83,17 @@ cba_people <-
     adults = as.numeric(adults)
   ) |>
   mutate(people = children + adults) |>
-  relocate(people, .before = status) |> 
+  relocate(people, .before = status) |>
   summarise(total_people = sum(people)) |>
   pull(total_people)
 
 # Next, we need to estimate the number of people who have made an application
 # for CBA via the National Support Line (NSL), but have not yet been added to
 # RedRose. This data can be found on the Ukraine PowerBI "Cash Card applications
-# pipline" dashboard. To do this, we need to:
+# pipline" dashboard:
+# https://app.powerbi.com/groups/me/apps/cfa2f05f-4b8f-4a5a-8699-5ae17e52b399/reports/6cacaec6-508d-4ac2-80c8-2da3379b647b/ReportSectionc1a9b3b105a37c566358?ctid=fedc3cba-ca5e-4388-a837-b45c7f0d71b7
+
+# To do this, we need to:
 #   1. Calculate the rate of applicaions which get approved. This can be
 #      estimated by taking the current number of applications submitted
 #      (nsl_num_applications) to the NSL, subtracting those which are currently
@@ -108,28 +111,19 @@ cba_people <-
 #      number of expected people.
 
 # Step one
-# nsl_data <- read_csv("data/nsl/nsl_data.csv")
-nsl_num_rejected <-
-nsl_num_applications <-
-nsl_num_pending <-
-nsl_num_waiting <- 
-
-# To Do, instead of reading csv, add values from here to above variables: 
-# https://app.powerbi.com/groups/me/apps/cfa2f05f-4b8f-4a5a-8699-5ae17e52b399/reports/6cacaec6-508d-4ac2-80c8-2da3379b647b/ReportSectionc1a9b3b105a37c566358?ctid=fedc3cba-ca5e-4388-a837-b45c7f0d71b7
-
-
-
-
-
+nsl_num_rejected <- 1523
+nsl_num_applications <- 26230
+nsl_num_pending <- 88
+nsl_num_waiting <- 0
 
 nsl_approval_rate <-
-  1 - (nsl_data$nsl_num_rejected / (nsl_data$nsl_num_applications - nsl_data$nsl_num_pending - nsl_data$nsl_num_waiting))
+  1 - (nsl_num_rejected / (nsl_num_applications - nsl_num_pending - nsl_num_waiting))
 
 # Step two
-nsl_num_pending_and_approved <- round(nsl_data$nsl_num_pending * nsl_approval_rate)
+nsl_num_pending_and_approved <- round(nsl_num_pending * nsl_approval_rate)
 
 # Step three
-nsl_total_applications <- nsl_num_pending_and_approved + nsl_data$nsl_num_waiting
+nsl_total_applications <- nsl_num_pending_and_approved + nsl_num_waiting
 
 # Step four
 average_people_per_application <-
@@ -144,7 +138,6 @@ average_people_per_application <-
     children = as.numeric(children),
     adults = as.numeric(adults)
   ) |>
-  filter(adults != 1225) |>
   mutate(people = children + adults) |>
   summarise(average = mean(people)) |>
   pull(average)
@@ -201,11 +194,36 @@ baseline_cash <-
 
 write_csv(
   baseline_cash,
-  glue::glue("data/simulations/simulation-baseline-cash-{min(baseline_cash$Date)}.csv")
+  glue::glue("data/cba-simulations/simulation-baseline-cash-{min(baseline_cash$Date)}.csv")
 )
 
-# For surge accumulated cash, the accumulation value from week 50 from the
-# baseline scenario must be added on (as surge starts at week 51)
+# # For surge accumulated cash, the accumulation value from week 50 from the
+# # baseline scenario must be added on (as surge starts at week 51)
+# surge_cash <-
+#   simulation_surge |>
+#   select(
+#     Date,
+#     Week,
+#     `Arrivals` = `Weekly arrivals`,
+#     `Arrivals (lower bound)` = `Weekly arrivals (lower bound)`,
+#     `Arrivals (upper bound)` = `Weekly arrivals (upper bound)`
+#   ) |>
+#   mutate(
+#     `Arrivals requiring cash` = `Arrivals` * require_cash_percentage,
+#     `Arrivals requiring cash (lower bound)` = `Arrivals (lower bound)` * require_cash_percentage,
+#     `Arrivals requiring cash (upper bound)` = `Arrivals (upper bound)` * require_cash_percentage
+#   ) |>
+#   mutate(
+#     `Cash amount` = `Arrivals requiring cash` * 50,
+#     `Cash amount (lower bound)` = `Arrivals requiring cash (lower bound)` * 50,
+#     `Cash amount (upper bound)` = `Arrivals requiring cash (upper bound)` * 50
+#   ) |>
+#   mutate(
+#     `Cumulative cash amount` = cumsum(`Cash amount`) + (baseline_cash |> filter(Week == 50) |> select(`Cumulative cash amount`) |> pull()),
+#     `Cumulative cash amount (lower bound)` = cumsum(`Cash amount (lower bound)`) + (baseline_cash |> filter(Week == 50) |> select(`Cumulative cash amount (lower bound)`) |> pull()),
+#     `Cumulative cash amount (upper bound)` = cumsum(`Cash amount (upper bound)`) + (baseline_cash |> filter(Week == 50) |> select(`Cumulative cash amount (upper bound)`) |> pull())
+#   )
+
 surge_cash <-
   simulation_surge |>
   select(
@@ -226,14 +244,14 @@ surge_cash <-
     `Cash amount (upper bound)` = `Arrivals requiring cash (upper bound)` * 50
   ) |>
   mutate(
-    `Cumulative cash amount` = cumsum(`Cash amount`) + (baseline_cash |> filter(Week == 50) |> select(`Cumulative cash amount`) |> pull()),
-    `Cumulative cash amount (lower bound)` = cumsum(`Cash amount (lower bound)`) + (baseline_cash |> filter(Week == 50) |> select(`Cumulative cash amount (lower bound)`) |> pull()),
-    `Cumulative cash amount (upper bound)` = cumsum(`Cash amount (upper bound)`) + (baseline_cash |> filter(Week == 50) |> select(`Cumulative cash amount (upper bound)`) |> pull())
+    `Cumulative cash amount` = cumsum(`Cash amount`),
+    `Cumulative cash amount (lower bound)` = cumsum(`Cash amount (lower bound)`),
+    `Cumulative cash amount (upper bound)` = cumsum(`Cash amount (upper bound)`)
   )
 
 write_csv(
   surge_cash,
-  glue::glue("data/simulations/simulation-surge-cash-{min(baseline_cash$Date)}.csv")
+  glue::glue("data/cba-simulations/simulation-surge-cash-{min(baseline_cash$Date)}.csv")
 )
 
 # # Less percentage of people arriving require cash
