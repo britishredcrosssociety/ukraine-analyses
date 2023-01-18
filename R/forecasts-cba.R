@@ -44,15 +44,15 @@ library(hrbrthemes)
 # Calculated in analysis/ukraine/arrivals from Ukraine - trends and forecasts.R
 
 # Historic data
-historic_cumulative_data <- read_csv("data/cumulative-visas/cumulative-visas-2022-08-15.csv")
+historic_cumulative_data <- read_csv("data/cumulative-visas/cumulative-visas-2023-01-09.csv")
 
 # Simulated data
 simulation_baseline <-
-  read_csv("output-data/simulations/simulation-baseline-2022-08-22.csv") |>
+  read_csv("output-data/simulations/simulation-baseline-2023-01-16.csv") |>
   select(Date, Week, `Weekly arrivals`, `Weekly arrivals (upper bound)`, `Weekly arrivals (lower bound)`)
 
 simulation_surge <-
-  read_csv("output-data/simulations/simulation-surge-2022-08-22.csv") |>
+  read_csv("output-data/simulations/simulation-surge-2023-01-16.csv") |>
   select(Date, Week, `Weekly arrivals`, `Weekly arrivals (upper bound)`, `Weekly arrivals (lower bound)`)
 
 # ---- Load Cash Based Assistance (CBA) -----
@@ -64,7 +64,7 @@ simulation_surge <-
 # 3. Set a filter of "STATUS IN CANDIATE APPROVED"
 # 4. Export the data (admin permissions required)
 cba_raw <-
-  read_excel("data/RedRose/redrose-filtered-18-08-22.xlsx")
+  read_excel("data/RedRose/redrose-filtered-17-01-23.xlsx")
 
 # ---- Calculate people requesting cash since arrival ----
 # Count the number of beneficiaries who have either been approved (status ==
@@ -82,9 +82,8 @@ cba_people <-
     children = as.numeric(children),
     adults = as.numeric(adults)
   ) |>
-  filter(adults != 1225) |>
   mutate(people = children + adults) |>
-  relocate(people, .before = status) |>
+  relocate(people, .before = status) |> 
   summarise(total_people = sum(people)) |>
   pull(total_people)
 
@@ -109,7 +108,19 @@ cba_people <-
 #      number of expected people.
 
 # Step one
-nsl_data <- read_csv("data/nsl/nsl_data.csv")
+# nsl_data <- read_csv("data/nsl/nsl_data.csv")
+nsl_num_rejected <-
+nsl_num_applications <-
+nsl_num_pending <-
+nsl_num_waiting <- 
+
+# To Do, instead of reading csv, add values from here to above variables: 
+# https://app.powerbi.com/groups/me/apps/cfa2f05f-4b8f-4a5a-8699-5ae17e52b399/reports/6cacaec6-508d-4ac2-80c8-2da3379b647b/ReportSectionc1a9b3b105a37c566358?ctid=fedc3cba-ca5e-4388-a837-b45c7f0d71b7
+
+
+
+
+
 
 nsl_approval_rate <-
   1 - (nsl_data$nsl_num_rejected / (nsl_data$nsl_num_applications - nsl_data$nsl_num_pending - nsl_data$nsl_num_waiting))
