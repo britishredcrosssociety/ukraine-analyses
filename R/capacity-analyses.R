@@ -4,6 +4,9 @@ library(readxl)
 library(hrbrthemes)
 library(lubridate)
 
+# PowerBI source:
+# https://app.powerbi.com/groups/me/apps/cfa2f05f-4b8f-4a5a-8699-5ae17e52b399/reports/6cacaec6-508d-4ac2-80c8-2da3379b647b/ReportSectionfcf47adc9f63a161aee0?ctid=fedc3cba-ca5e-4388-a837-b45c7f0d71b7
+
 # ---- Load BRC data ----
 cr <- read_excel(
   "data/brc/cr.xlsx",
@@ -66,13 +69,13 @@ nsl <-
 
 # ---- Load visa data ----
 historic <-
-  read_csv("data/cumulative-visas/cumulative-visas-2022-09-26.csv") |>
+  read_csv("data/cumulative-visas/cumulative-visas-2023-01-09.csv") |>
   rename(week = Week) |>
   group_by(week) |>
   summarise(arrivals = sum(`Number of arrivals`, na.rm = TRUE))
 
 simulated_baseline <-
-  read_csv("output-data/simulations/simulation-baseline-2022-10-03.csv") |>
+  read_csv("output-data/simulations/simulation-baseline-2023-01-16.csv") |>
   select(
     week = Week,
     arrivals = `Weekly arrivals`,
@@ -81,7 +84,7 @@ simulated_baseline <-
   )
 
 simulated_surge <-
-  read_csv("output-data/simulations/simulation-surge-2022-10-03.csv") |>
+  read_csv("output-data/simulations/simulation-surge-2023-01-16.csv") |>
   select(
     week = Week,
     arrivals = `Weekly arrivals`,
@@ -171,17 +174,32 @@ cr_baseline <-
   mutate(date = ymd("2022-01-01") + weeks(week - 1)) |>
   relocate(date)
 
+# cr_surge <-
+#   simulated_surge |>
+#   mutate(
+#     cr = arrivals * brc_rates$rate[1],
+#     cr_lower = arrivals_lower * brc_rates$rate[1],
+#     cr_upper = arrivals_upper * brc_rates$rate[1]
+#   ) |>
+#   mutate(
+#     cumsum_cr = cumsum(cr) + (cr_baseline |> filter(week == 51) |> pull(cumsum_cr)),
+#     cumsum_cr_lower = cumsum(cr_lower) + (cr_baseline |> filter(week == 51) |> pull(cumsum_cr_lower)),
+#     cumsum_cr_upper = cumsum(cr_upper) + (cr_baseline |> filter(week == 51) |> pull(cumsum_cr_upper))
+#   ) |>
+#   mutate(date = ymd("2022-01-01") + weeks(week - 1)) |>
+#   relocate(date)
+
 cr_surge <-
-  simulated_surge |>
+  simulated_surge |> 
   mutate(
     cr = arrivals * brc_rates$rate[1],
     cr_lower = arrivals_lower * brc_rates$rate[1],
     cr_upper = arrivals_upper * brc_rates$rate[1]
   ) |>
   mutate(
-    cumsum_cr = cumsum(cr) + (cr_baseline |> filter(week == 51) |> pull(cumsum_cr)),
-    cumsum_cr_lower = cumsum(cr_lower) + (cr_baseline |> filter(week == 51) |> pull(cumsum_cr_lower)),
-    cumsum_cr_upper = cumsum(cr_upper) + (cr_baseline |> filter(week == 51) |> pull(cumsum_cr_upper))
+    cumsum_cr = cumsum(cr) + cr_max,
+    cumsum_cr_lower = cumsum(cr_lower) + cr_max,
+    cumsum_cr_upper = cumsum(cr_upper) + cr_max
   ) |>
   mutate(date = ymd("2022-01-01") + weeks(week - 1)) |>
   relocate(date)
@@ -276,6 +294,27 @@ rsrflat_baseline <-
   mutate(date = ymd("2022-01-01") + weeks(week - 1)) |>
   relocate(date)
 
+# rsrflat_surge <-
+#   simulated_surge |>
+#   mutate(
+#     clients = arrivals * brc_rates$rate[2],
+#     clients_lower = arrivals_lower * brc_rates$rate[2],
+#     clients_upper = arrivals_upper * brc_rates$rate[2],
+#     dependents = arrivals * brc_rates$rate[3],
+#     dependents_lower = arrivals_lower * brc_rates$rate[3],
+#     dependents_upper = arrivals_upper * brc_rates$rate[3]
+#   ) |>
+#   mutate(
+#     cumsum_clients = cumsum(clients) + (rsrflat_baseline |> filter(week == 51) |> pull(cumsum_clients)),
+#     cumsum_clients_lower = cumsum(clients_lower) + (rsrflat_baseline |> filter(week == 51) |> pull(cumsum_clients_lower)),
+#     cumsum_clients_upper = cumsum(clients_upper) + (rsrflat_baseline |> filter(week == 51) |> pull(cumsum_clients_upper)),
+#     cumsum_dependents = cumsum(dependents) + (rsrflat_baseline |> filter(week == 51) |> pull(cumsum_dependents)),
+#     cumsum_dependents_lower = cumsum(dependents_lower) + (rsrflat_baseline |> filter(week == 51) |> pull(cumsum_dependents_lower)),
+#     cumsum_dependents_upper = cumsum(dependents_upper) + (rsrflat_baseline |> filter(week == 51) |> pull(cumsum_dependents_upper))
+#   ) |>
+#   mutate(date = ymd("2022-01-01") + weeks(week - 1)) |>
+#   relocate(date)
+
 rsrflat_surge <-
   simulated_surge |>
   mutate(
@@ -287,12 +326,12 @@ rsrflat_surge <-
     dependents_upper = arrivals_upper * brc_rates$rate[3]
   ) |>
   mutate(
-    cumsum_clients = cumsum(clients) + (rsrflat_baseline |> filter(week == 51) |> pull(cumsum_clients)),
-    cumsum_clients_lower = cumsum(clients_lower) + (rsrflat_baseline |> filter(week == 51) |> pull(cumsum_clients_lower)),
-    cumsum_clients_upper = cumsum(clients_upper) + (rsrflat_baseline |> filter(week == 51) |> pull(cumsum_clients_upper)),
-    cumsum_dependents = cumsum(dependents) + (rsrflat_baseline |> filter(week == 51) |> pull(cumsum_dependents)),
-    cumsum_dependents_lower = cumsum(dependents_lower) + (rsrflat_baseline |> filter(week == 51) |> pull(cumsum_dependents_lower)),
-    cumsum_dependents_upper = cumsum(dependents_upper) + (rsrflat_baseline |> filter(week == 51) |> pull(cumsum_dependents_upper))
+    cumsum_clients = cumsum(clients) + rsrflat_clients_max,
+    cumsum_clients_lower = cumsum(clients_lower) + rsrflat_clients_max,
+    cumsum_clients_upper = cumsum(clients_upper) + rsrflat_clients_max,
+    cumsum_dependents = cumsum(dependents) + rsrflat_dependents_max,
+    cumsum_dependents_lower = cumsum(dependents_lower) + rsrflat_dependents_max,
+    cumsum_dependents_upper = cumsum(dependents_upper) + rsrflat_dependents_max
   ) |>
   mutate(date = ymd("2022-01-01") + weeks(week - 1)) |>
   relocate(date)
