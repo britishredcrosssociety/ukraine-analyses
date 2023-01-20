@@ -417,3 +417,34 @@ rsrflat_baseline |>
     subtitle = "Grey area shows predicted dependents in the baseline scenario. Blue area shows predicted dependents during a 'winter surge' scenario. \nDotted lines show the lower and upper bounds of predictions."
   ) +
   theme_ipsum()
+
+# ---- Calculate figures ----
+# - CR -
+# baseline
+max(cr_baseline$cumsum_cr) - min(cr_baseline$cumsum_cr)
+
+# baseline upper bound
+max(cr_baseline$cumsum_cr_upper) - min(cr_baseline$cumsum_cr_upper)
+
+# baseline lower bound
+max(cr_baseline$cumsum_cr_lower) - min(cr_baseline$cumsum_cr_lower)
+
+# - RSRFLAT clients -
+# baseline
+max(rsrflat_baseline$cumsum_clients) - min(rsrflat_baseline$cumsum_clients)
+
+# baseline upper bound
+max(rsrflat_baseline$cumsum_clients_upper) - min(rsrflat_baseline$cumsum_clients_upper)
+
+# baseline lower bound
+max(rsrflat_baseline$cumsum_clients_lower) - min(rsrflat_baseline$cumsum_clients_lower)
+
+# - RSRFLAT depedents -
+# baseline
+max(rsrflat_baseline$cumsum_dependents) - min(rsrflat_baseline$cumsum_dependents)
+
+# baseline upper bound
+max(rsrflat_baseline$cumsum_dependents_upper) - min(rsrflat_baseline$cumsum_dependents_upper)
+
+# baseline lower bound
+max(rsrflat_baseline$cumsum_dependents_lower) - min(rsrflat_baseline$cumsum_dependents_lower)
