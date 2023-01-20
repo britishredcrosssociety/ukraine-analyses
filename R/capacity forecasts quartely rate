@@ -1,0 +1,419 @@
+# ---- Load libs ----
+library(tidyverse)
+library(readxl)
+library(lubridate)
+library(hrbrthemes)
+
+# ---- Load arrivals data ----
+# - Arrivals from Ukraine -
+# Calculated in analysis/ukraine/arrivals from Ukraine - trends and forecasts.R
+
+# Arrivals across all schemes
+arrivals <- read_csv("data/cumulative-visas/cumulative-visas-2023-01-09.csv") |>
+  select(Date, Scheme, `Number of arrivals`) |>
+  group_by(Date) |>
+  summarise(arrivals_cumsum = sum(`Number of arrivals`, na.rm = TRUE)) |>
+  mutate(arrivals = c(arrivals_cumsum[1], diff(arrivals_cumsum))) |>
+  select(date = Date, arrivals, arrivals_cumsum)
+
+simulated_baseline <-
+  read_csv("output-data/simulations/simulation-baseline-2023-01-16.csv") |>
+  select(
+    week = Week,
+    arrivals = `Weekly arrivals`,
+    arrivals_lower = `Weekly arrivals (lower bound)`,
+    arrivals_upper = `Weekly arrivals (upper bound)`
+  )
+
+simulated_surge <-
+  read_csv("output-data/simulations/simulation-surge-2023-01-16.csv") |>
+  select(
+    week = Week,
+    arrivals = `Weekly arrivals`,
+    arrivals_lower = `Weekly arrivals (lower bound)`,
+    arrivals_upper = `Weekly arrivals (upper bound)`
+  )
+
+# ---- Load BRC data ----
+cr <- read_excel(
+  "data/brc/cr.xlsx",
+  skip = 2
+) |>
+  select(
+    week = Week,
+    people = `No. People Assisted`
+  ) |>
+  group_by(week) |>
+  summarise(people = sum(people)) |>
+  mutate(cumsum_people = cumsum(people)) |>
+  mutate(date = ymd("2022-01-01") + weeks(week - 1)) |>
+  relocate(date)
+
+rsrflat <-
+  read_excel(
+    "data/brc/rsrflat.xlsx",
+    skip = 2
+  ) |>
+  select(
+    week = Week,
+    clients = `Main Clients`,
+    dependents = Dependents
+  ) |>
+  group_by(week) |>
+  summarise(
+    clients = sum(clients),
+    dependents = sum(dependents)
+  ) |>
+  slice(-c(1:2)) |>
+  mutate(
+    cumsum_clients = cumsum(clients),
+    cumsum_dependents = cumsum(dependents)
+  ) |>
+  mutate(date = ymd("2022-01-01") + weeks(week - 1)) |>
+  relocate(date)
+
+# ---- Get max values ----
+cr_max <-
+  cr |>
+  filter(cumsum_people == max(cumsum_people)) |>
+  pull(cumsum_people) |>
+  unique()
+
+rsrflat_clients_max <-
+  rsrflat |>
+  filter(cumsum_clients == max(cumsum_clients)) |>
+  pull(cumsum_clients)
+
+rsrflat_dependents_max <-
+  rsrflat |>
+  filter(cumsum_dependents == max(cumsum_dependents)) |>
+  slice(-1) |>
+  pull(cumsum_dependents)
+
+# ---- Calculate monthly conversion rates of services ----
+arrivals_monthly <- arrivals |>
+  group_by(month = lubridate::floor_date(date, "month")) |>
+  summarise(arrivals = sum(arrivals, na.rm = TRUE))
+
+cr_monthly <- cr |>
+  group_by(month = lubridate::floor_date(date, "month")) |>
+  summarise(people = sum(people, na.rm = TRUE))
+
+rsrflat_monthly <- rsrflat |>
+  group_by(month = lubridate::floor_date(date, "month")) |>
+  summarise(
+    clients = sum(clients, na.rm = TRUE),
+    dependents = sum(dependents, na.rm = TRUE)
+  )
+
+# Calculate rate of last quarter of 2022
+# Jan 2023 data is not yet complete by BRC so exclude
+cr_quartely_rate <-
+  cr_monthly |>
+  left_join(arrivals_monthly) |>
+  mutate(conversion_rate = people / arrivals) |>
+  filter(month < "2023-01-01" & month > "2022-09-01") |>
+  summarise(mean_rate = mean(conversion_rate)) |>
+  pull()
+
+rsrflat_quartely_rate <-
+  rsrflat_monthly |>
+  left_join(arrivals_monthly) |>
+  mutate(
+    conversion_rate_clients = clients / arrivals,
+    conversion_rate_dependents = dependents / arrivals
+  ) |>
+  filter(month < "2023-01-01" & month > "2022-09-01") |>
+  summarise(
+    mean_rate_clients = mean(conversion_rate_clients),
+    mean_rate_dependents = mean(conversion_rate_dependents)
+  )
+
+rsrflat_quartely_rate_clients <-
+  rsrflat_quartely_rate |>
+  pull(mean_rate_clients)
+
+rsrflat_quartely_rate_dependents <-
+  rsrflat_quartely_rate |>
+  pull(mean_rate_dependents)
+
+# ---- Simulate data ----
+# - CR -
+cr_baseline <-
+  simulated_baseline |>
+  mutate(
+    cr = arrivals * cr_quartely_rate,
+    cr_lower = arrivals_lower * cr_quartely_rate,
+    cr_upper = arrivals_upper * cr_quartely_rate
+  ) |>
+  mutate(
+    cumsum_cr = cumsum(cr) + cr_max,
+    cumsum_cr_lower = cumsum(cr_lower) + cr_max,
+    cumsum_cr_upper = cumsum(cr_upper) + cr_max
+  ) |>
+  mutate(date = ymd("2022-01-01") + weeks(week - 1)) |>
+  relocate(date)
+
+cr_surge <-
+  simulated_surge |>
+  mutate(
+    cr = arrivals * cr_quartely_rate,
+    cr_lower = arrivals_lower * cr_quartely_rate,
+    cr_upper = arrivals_upper * cr_quartely_rate
+  ) |>
+  mutate(
+    cumsum_cr = cumsum(cr) + cr_max,
+    cumsum_cr_lower = cumsum(cr_lower) + cr_max,
+    cumsum_cr_upper = cumsum(cr_upper) + cr_max
+  ) |>
+  mutate(date = ymd("2022-01-01") + weeks(week - 1)) |>
+  relocate(date)
+
+cr_baseline |>
+  ggplot(aes(x = date)) +
+  geom_line(
+    data = cr,
+    aes(y = cumsum_people)
+  ) +
+  geom_ribbon(
+    data = cr_baseline,
+    mapping = aes(
+      x = date,
+      ymin = cumsum_cr_lower,
+      ymax = cumsum_cr_upper
+    ),
+    fill = "#9CAAAE",
+    alpha = 0.4
+  ) +
+  geom_line(
+    data = cr_baseline,
+    aes(y = cumsum_cr),
+    color = "#717171"
+  ) +
+  geom_line(
+    aes(y = cumsum_cr_lower),
+    color = "#717171",
+    lty = 2
+  ) +
+  geom_line(
+    aes(y = cumsum_cr_upper),
+    color = "#717171",
+    lty = 2
+  ) +
+  geom_ribbon(
+    data = cr_surge,
+    mapping = aes(
+      x = date,
+      ymin = cumsum_cr_lower,
+      ymax = cumsum_cr_upper
+    ),
+    fill = "cornflowerblue",
+    alpha = 0.4
+  ) +
+  geom_line(
+    data = cr_surge,
+    aes(y = cumsum_cr),
+    color = "royalblue4"
+  ) +
+  geom_line(
+    data = cr_surge,
+    aes(y = cumsum_cr_lower),
+    color = "royalblue4",
+    lty = 2
+  ) +
+  geom_line(
+    data = cr_surge,
+    aes(y = cumsum_cr_upper),
+    color = "royalblue4",
+    lty = 2
+  ) +
+  scale_y_continuous(labels = scales::comma) +
+  scale_x_date(date_breaks = "3 month", date_labels = "%b %y") +
+  labs(
+    x = "Date",
+    y = "Number of people helped",
+    title = "Historic and predicted number of people supported by CR in the Ukraine reponse.",
+    subtitle = "Grey area shows predicted people in the baseline scenario. Blue area shows predicted people during a 'winter surge' scenario. \nDotted lines show the lower and upper bounds of predictions."
+  ) +
+  theme_ipsum()
+
+# - RSRFLAT -
+rsrflat_baseline <-
+  simulated_baseline |>
+  mutate(
+    clients = arrivals * rsrflat_quartely_rate_clients,
+    clients_lower = arrivals_lower * rsrflat_quartely_rate_clients,
+    clients_upper = arrivals_upper * rsrflat_quartely_rate_clients,
+    dependents = arrivals * rsrflat_quartely_rate_dependents,
+    dependents_lower = arrivals_lower * rsrflat_quartely_rate_dependents,
+    dependents_upper = arrivals_upper * rsrflat_quartely_rate_dependents
+  ) |>
+  mutate(
+    cumsum_clients = cumsum(clients) + rsrflat_clients_max,
+    cumsum_clients_lower = cumsum(clients_lower) + rsrflat_clients_max,
+    cumsum_clients_upper = cumsum(clients_upper) + rsrflat_clients_max,
+    cumsum_dependents = cumsum(dependents) + rsrflat_dependents_max,
+    cumsum_dependents_lower = cumsum(dependents_lower) + rsrflat_dependents_max,
+    cumsum_dependents_upper = cumsum(dependents_upper) + rsrflat_dependents_max
+  ) |>
+  mutate(date = ymd("2022-01-01") + weeks(week - 1)) |>
+  relocate(date)
+
+rsrflat_surge <-
+  simulated_surge |>
+  mutate(
+    clients = arrivals * rsrflat_quartely_rate_clients,
+    clients_lower = arrivals_lower * rsrflat_quartely_rate_clients,
+    clients_upper = arrivals_upper * rsrflat_quartely_rate_clients,
+    dependents = arrivals * rsrflat_quartely_rate_dependents,
+    dependents_lower = arrivals_lower * rsrflat_quartely_rate_dependents,
+    dependents_upper = arrivals_upper * rsrflat_quartely_rate_dependents
+  ) |>
+  mutate(
+    cumsum_clients = cumsum(clients) + rsrflat_clients_max,
+    cumsum_clients_lower = cumsum(clients_lower) + rsrflat_clients_max,
+    cumsum_clients_upper = cumsum(clients_upper) + rsrflat_clients_max,
+    cumsum_dependents = cumsum(dependents) + rsrflat_dependents_max,
+    cumsum_dependents_lower = cumsum(dependents_lower) + rsrflat_dependents_max,
+    cumsum_dependents_upper = cumsum(dependents_upper) + rsrflat_dependents_max
+  ) |>
+  mutate(date = ymd("2022-01-01") + weeks(week - 1)) |>
+  relocate(date)
+
+# Main clients
+rsrflat_baseline |>
+  ggplot(aes(x = date)) +
+  geom_line(
+    data = rsrflat,
+    aes(y = cumsum_clients)
+  ) +
+  geom_ribbon(
+    data = rsrflat_baseline,
+    mapping = aes(
+      x = date,
+      ymin = cumsum_clients_lower,
+      ymax = cumsum_clients_upper
+    ),
+    fill = "#9CAAAE",
+    alpha = 0.4
+  ) +
+  geom_line(
+    data = rsrflat_baseline,
+    aes(y = cumsum_clients),
+    color = "#717171"
+  ) +
+  geom_line(
+    aes(y = cumsum_clients_lower),
+    color = "#717171",
+    lty = 2
+  ) +
+  geom_line(
+    aes(y = cumsum_clients_upper),
+    color = "#717171",
+    lty = 2
+  ) +
+  geom_ribbon(
+    data = rsrflat_surge,
+    mapping = aes(
+      x = date,
+      ymin = cumsum_clients_lower,
+      ymax = cumsum_clients_upper
+    ),
+    fill = "cornflowerblue",
+    alpha = 0.4
+  ) +
+  geom_line(
+    data = rsrflat_surge,
+    aes(y = cumsum_clients),
+    color = "royalblue4"
+  ) +
+  geom_line(
+    data = rsrflat_surge,
+    aes(y = cumsum_clients_lower),
+    color = "royalblue4",
+    lty = 2
+  ) +
+  geom_line(
+    data = rsrflat_surge,
+    aes(y = cumsum_clients_upper),
+    color = "royalblue4",
+    lty = 2
+  ) +
+  scale_y_continuous(labels = scales::comma) +
+  scale_x_date(date_breaks = "3 month", date_labels = "%b %y") +
+  labs(
+    x = "Date",
+    y = "Number of main clients",
+    title = "Historic and predicted number of main clients supported by Refugee Support in the Ukraine reponse",
+    subtitle = "Grey area shows predicted clients in the baseline scenario. Blue area shows predicted clients during a 'winter surge' scenario. \nDotted lines show the lower and upper bounds of predictions."
+  ) +
+  theme_ipsum()
+
+# Dependents
+rsrflat_baseline |>
+  ggplot(aes(x = date)) +
+  geom_line(
+    data = rsrflat,
+    aes(y = cumsum_dependents)
+  ) +
+  geom_ribbon(
+    data = rsrflat_baseline,
+    mapping = aes(
+      x = date,
+      ymin = cumsum_dependents_lower,
+      ymax = cumsum_dependents_upper
+    ),
+    fill = "#9CAAAE",
+    alpha = 0.4
+  ) +
+  geom_line(
+    data = rsrflat_baseline,
+    aes(y = cumsum_dependents),
+    color = "#717171"
+  ) +
+  geom_line(
+    aes(y = cumsum_dependents_lower),
+    color = "#717171",
+    lty = 2
+  ) +
+  geom_line(
+    aes(y = cumsum_dependents_upper),
+    color = "#717171",
+    lty = 2
+  ) +
+  geom_ribbon(
+    data = rsrflat_surge,
+    mapping = aes(
+      x = date,
+      ymin = cumsum_dependents_lower,
+      ymax = cumsum_dependents_upper
+    ),
+    fill = "cornflowerblue",
+    alpha = 0.4
+  ) +
+  geom_line(
+    data = rsrflat_surge,
+    aes(y = cumsum_dependents),
+    color = "royalblue4"
+  ) +
+  geom_line(
+    data = rsrflat_surge,
+    aes(y = cumsum_dependents_lower),
+    color = "royalblue4",
+    lty = 2
+  ) +
+  geom_line(
+    data = rsrflat_surge,
+    aes(y = cumsum_dependents_upper),
+    color = "royalblue4",
+    lty = 2
+  ) +
+  scale_y_continuous(labels = scales::comma) +
+  scale_x_date(date_breaks = "3 month", date_labels = "%b %y") +
+  labs(
+    x = "Date",
+    y = "Number of dependents",
+    title = "Historic and predicted number of dependents supported by Refugee Support in the Ukraine reponse",
+    subtitle = "Grey area shows predicted dependents in the baseline scenario. Blue area shows predicted dependents during a 'winter surge' scenario. \nDotted lines show the lower and upper bounds of predictions."
+  ) +
+  theme_ipsum()

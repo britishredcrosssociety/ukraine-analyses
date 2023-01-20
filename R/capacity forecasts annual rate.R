@@ -100,7 +100,7 @@ total_arrivals <-
   pull(arrivals)
 
 # BRC values to date
-  cr_max <-
+cr_max <-
   cr |>
   filter(cumsum_people == max(cumsum_people)) |>
   pull(cumsum_people) |>
