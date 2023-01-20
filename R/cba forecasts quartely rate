@@ -1,0 +1,220 @@
+# ---- Load libs ----
+library(tidyverse)
+library(readxl)
+library(lubridate)
+library(hrbrthemes)
+
+# ---- Load arrivals data ----
+# - Arrivals from Ukraine -
+# Calculated in analysis/ukraine/arrivals from Ukraine - trends and forecasts.R
+
+# Arrivals across all schemes
+arrivals <- read_csv("data/cumulative-visas/cumulative-visas-2023-01-09.csv") |>
+  select(Date, Scheme, `Number of arrivals`) |>
+  group_by(Date) |>
+  summarise(arrivals_cumsum = sum(`Number of arrivals`, na.rm = TRUE)) |>
+  mutate(arrivals = c(arrivals_cumsum[1], diff(arrivals_cumsum))) |>
+  select(date = Date, arrivals, arrivals_cumsum)
+
+# Simulated data
+simulation_baseline <-
+  read_csv("output-data/simulations/simulation-baseline-2023-01-16.csv") |>
+  select(Date, Week, `Weekly arrivals`, `Weekly arrivals (upper bound)`, `Weekly arrivals (lower bound)`)
+
+simulation_surge <-
+  read_csv("output-data/simulations/simulation-surge-2023-01-16.csv") |>
+  select(Date, Week, `Weekly arrivals`, `Weekly arrivals (upper bound)`, `Weekly arrivals (lower bound)`)
+
+# ---- Load Cash Based Assistance (CBA) -----
+# To generate the correct subset of data from RedRose, the following steps have
+# to be taken:
+# 1. Hover on the beneficiaries icon on the left hand side (3rd symbol down,
+#    symbol = two people) and click "List"
+# 2. Set a filter of "LOCATION LIKE UKRAINE"
+# 3. Set a filter of "STATUS IN CANDIATE APPROVED"
+# 4. Export the data (admin permissions required)
+cba_raw <-
+  read_excel("data/RedRose/redrose-filtered-17-01-23.xlsx")
+
+cba <-
+  cba_raw |>
+  slice(-1) |>
+  select(
+    date = `Registration Date`,
+    children = `# of Children (<18)`,
+    adults = `# of Adults (18+)`
+  ) |>
+  mutate(
+    date = as_date(date),
+    children = as.numeric(children),
+    adults = as.numeric(adults)
+  ) |>
+  mutate(people = children + adults) |>
+  group_by(date) |>
+  summarise(people = sum(people)) |>
+  mutate(people_cumsum = cumsum(people))
+
+# ---- Calculate monthly conversion rates of arrivals to cba ----
+cba_monthly <- cba |>
+  group_by(month = lubridate::floor_date(date, "month")) |>
+  summarise(people = sum(people, na.rm = TRUE))
+
+arrivals_monthly <- arrivals |>
+  group_by(month = lubridate::floor_date(date, "month")) |>
+  summarise(arrivals = sum(arrivals, na.rm = TRUE))
+
+# Calculate rate of last quarter of 2022
+# Jan 2023 data is not yet complete by BRC so exclude
+require_cash_percentage <-
+  arrivals_monthly |>
+  left_join(cba_monthly) |>
+  mutate(conversion_rate = people / arrivals) |>
+  filter(month < "2023-01-01" & month > "2022-08-01") |>
+  slice(-1) |>
+  summarise(mean_rate = mean(conversion_rate)) |>
+  pull()
+
+# ---- Simulations ----
+# Expected scenario
+baseline_cash <-
+  simulation_baseline |>
+  select(
+    Date,
+    Week,
+    `Arrivals` = `Weekly arrivals`,
+    `Arrivals (lower bound)` = `Weekly arrivals (lower bound)`,
+    `Arrivals (upper bound)` = `Weekly arrivals (upper bound)`
+  ) |>
+  mutate(
+    `Arrivals requiring cash` = `Arrivals` * require_cash_percentage,
+    `Arrivals requiring cash (lower bound)` = `Arrivals (lower bound)` * require_cash_percentage,
+    `Arrivals requiring cash (upper bound)` = `Arrivals (upper bound)` * require_cash_percentage
+  ) |>
+  mutate(
+    `Cash amount` = `Arrivals requiring cash` * 50,
+    `Cash amount (lower bound)` = `Arrivals requiring cash (lower bound)` * 50,
+    `Cash amount (upper bound)` = `Arrivals requiring cash (upper bound)` * 50
+  ) |>
+  mutate(
+    `Cumulative cash amount` = cumsum(`Cash amount`),
+    `Cumulative cash amount (lower bound)` = cumsum(`Cash amount (lower bound)`),
+    `Cumulative cash amount (upper bound)` = cumsum(`Cash amount (upper bound)`)
+  )
+
+write_csv(
+  baseline_cash,
+  glue::glue("data/cba-simulations/simulation-baseline-cash-{min(baseline_cash$Date)}.csv")
+)
+
+surge_cash <-
+  simulation_surge |>
+  select(
+    Date,
+    Week,
+    `Arrivals` = `Weekly arrivals`,
+    `Arrivals (lower bound)` = `Weekly arrivals (lower bound)`,
+    `Arrivals (upper bound)` = `Weekly arrivals (upper bound)`
+  ) |>
+  mutate(
+    `Arrivals requiring cash` = `Arrivals` * require_cash_percentage,
+    `Arrivals requiring cash (lower bound)` = `Arrivals (lower bound)` * require_cash_percentage,
+    `Arrivals requiring cash (upper bound)` = `Arrivals (upper bound)` * require_cash_percentage
+  ) |>
+  mutate(
+    `Cash amount` = `Arrivals requiring cash` * 50,
+    `Cash amount (lower bound)` = `Arrivals requiring cash (lower bound)` * 50,
+    `Cash amount (upper bound)` = `Arrivals requiring cash (upper bound)` * 50
+  ) |>
+  mutate(
+    `Cumulative cash amount` = cumsum(`Cash amount`),
+    `Cumulative cash amount (lower bound)` = cumsum(`Cash amount (lower bound)`),
+    `Cumulative cash amount (upper bound)` = cumsum(`Cash amount (upper bound)`)
+  )
+
+write_csv(
+  surge_cash,
+  glue::glue("data/cba-simulations/simulation-surge-cash-{min(baseline_cash$Date)}.csv")
+)
+
+# ---- Plot ----
+# - Expected scenario -
+baseline_cash |>
+  filter(Date < "2023-05-01") |>
+  ggplot(aes(x = Date)) +
+  geom_ribbon(
+    mapping = aes(
+      x = Date,
+      ymin = `Cumulative cash amount (lower bound)`,
+      ymax = `Cumulative cash amount (upper bound)`
+    ),
+    fill = "#9CAAAE",
+    alpha = 0.4
+  ) +
+  geom_line(
+    aes(y = `Cumulative cash amount`),
+    color = "#717171"
+  ) +
+  geom_line(
+    aes(y = `Cumulative cash amount (lower bound)`),
+    color = "#717171",
+    lty = 2
+  ) +
+  geom_line(
+    aes(y = `Cumulative cash amount (upper bound)`),
+    color = "#717171",
+    lty = 2
+  ) +
+  geom_ribbon(
+    data = surge_cash,
+    mapping = aes(
+      x = Date,
+      ymin = `Cumulative cash amount (lower bound)`,
+      ymax = `Cumulative cash amount (upper bound)`
+    ),
+    fill = "cornflowerblue",
+    alpha = 0.4
+  ) +
+  geom_line(
+    data = surge_cash,
+    aes(y = `Cumulative cash amount`),
+    color = "royalblue4"
+  ) +
+  geom_line(
+    data = surge_cash,
+    aes(y = `Cumulative cash amount (lower bound)`),
+    color = "royalblue4",
+    lty = 2
+  ) +
+  geom_line(
+    data = surge_cash,
+    aes(y = `Cumulative cash amount (upper bound)`),
+    color = "royalblue4",
+    lty = 2
+  ) +
+  scale_y_continuous(labels = scales::comma) +
+  labs(
+    x = NULL,
+    y = "Additional cash required (£)",
+    title = "Predicted cash required by new Ukraine arrivals into the UK",
+    subtitle = "Grey area shows predicted cash in the baseline scenario. Blue area shows predicted cash during a 'winter surge' scenario. \nSolid lines show predictions. Dotted lines show the lower and upper bounds of predictions."
+  ) +
+  theme_ipsum()
+
+# ---- Calculate figures ----
+# baseline cash
+baseline_cash |>
+  filter(Date < "2023-05-01") |>
+  tail(1) |>
+  pull(`Cumulative cash amount`)
+
+# baseline upper bound
+baseline_cash |>
+  filter(Date < "2023-05-01") |>
+  tail(1) |>
+  pull(`Cumulative cash amount (upper bound)`)
+
+# baseline lower bound
+baseline_cash |>
+  filter(Date < "2023-05-01") |>
+  tail(1) |>
+  pull(`Cumulative cash amount (lower bound)`)
