@@ -4,6 +4,52 @@ library(httr)
 
 source("R/load Ukraine visa data - Local Authorities.R")
 
+# ---- Load latest homelessness management info (24 February to 30 December 2022) ----
+# Source: https://www.gov.uk/government/publications/homelessness-management-information-ukrainian-nationals-england
+GET(
+  "https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/1128431/Ukraine_Homelessness_Pressures_10012023.ods",
+  write_disk(tf <- tempfile(fileext = ".ods"))
+)
+
+homelessness_24feb_30dec_raw <- read_ods(tf, skip = 3, sheet = "Ukrainian_Homelessness")
+
+# Remove empty columns
+homelessness_24feb_30dec_raw <- homelessness_24feb_30dec_raw[-c(3, 4, 10, 14, 21)]
+
+names(homelessness_24feb_30dec_raw) <- c(
+  "lad_code",
+  "lad_name",
+  "Total Ukrainian households owed a prevention or relief duty",
+  "Single household (total)",
+  "Single household (%)",
+  "Household with dependent children (total)",
+  "Household with dependent children (%)",
+  "Homelessness Prevented or Relieved via Mediation",
+  "Homelessness Prevented or Relieved via Rematch",
+  "Homelessness Prevented or Relieved via Other",
+  "Family Scheme: Accommodation or arrangement broken down",
+  "Family Scheme: Accommodation not available or suitable on arrival",
+  "Homes for Ukraine Scheme: Accommodation or arrangement broken down",
+  "Homes for Ukraine Scheme: Accommodation not available or suitable on arrival",
+  "Homes for Ukraine Scheme: Rejected sponsors offer",
+  "Other/Not Known",
+  "Temporary Accommodation Snapshot",
+  "Offer of Settled Accomodation"
+)
+
+homelessness_24feb_30dec_raw <- 
+  homelessness_24feb_30dec_raw |> 
+  as_tibble() |> 
+  mutate(across(-(lad_code:lad_name), as.numeric))
+
+homelessness_24feb_30dec_total <- 
+  homelessness_24feb_30dec_raw |> 
+  slice(3)
+
+homelessness_24feb_30dec <- 
+  homelessness_24feb_30dec_raw |> 
+  filter(str_detect(lad_code, "^E"))
+
 # ---- Load latest homelessness management info (24 February to 18 November 2022) ----
 # Source: https://www.gov.uk/government/publications/homelessness-management-information-ukrainian-nationals-england
 GET(
@@ -333,6 +379,7 @@ homelessness_24feb_3jun <-
 # ---- Summary of homelessness ----
 homelessness_total <- 
   bind_rows(
+    homelessness_24feb_30dec_total |> mutate(Date = ymd("2022-12-30"), Date_text = "30 December"),
     homelessness_24feb_18nov_total |> mutate(Date = ymd("2022-11-18"), Date_text = "18 November"),
     homelessness_24feb_21oct_total |> mutate(Date = ymd("2022-10-21"), Date_text = "21 October"),
     homelessness_24feb_23sep_total |> mutate(Date = ymd("2022-09-23"), Date_text = "23 September"),
@@ -342,7 +389,7 @@ homelessness_total <-
     homelessness_24feb_3jun_total  |> mutate(Date = ymd("2022-06-03"), Date_text = "3 June")
   ) |> 
   relocate(Date) |> 
-  mutate(Date_text = factor(Date_text, levels = c("3 June", "1 July", "29 July", "26 August", "23 September", "21 October", "18 November")))
+  mutate(Date_text = factor(Date_text, levels = c("3 June", "1 July", "29 July", "26 August", "23 September", "21 October", "18 November", "30 December")))
 
 # Calculate proportions of households at risk of homelessness in each visa scheme
 homelessness_total <- 
@@ -363,6 +410,12 @@ visas_ltla21_england |>
   arrange(Date) |> 
   distinct(Date) |> 
   print(n = 50)
+
+visas_3jan <- 
+  visas_ltla21_england |> 
+  filter(Date == ymd("2022-01-03")) |> 
+  mutate(`Number of arrivals` = as.integer(str_remove(`Number of arrivals`, "<")) - 1) |> 
+  select(ltla21_code, `Number of arrivals`)
 
 visas_22nov <- 
   visas_ltla21_england |> 
@@ -407,6 +460,14 @@ visas_7jun <-
   select(ltla21_code, `Number of arrivals`)
 
 # Calculate proportions
+homelessness_24feb_30dec <- 
+  homelessness_24feb_30dec |> 
+  left_join(visas_3jan, by = c("lad_code" = "ltla21_code")) |> 
+  mutate(
+    `% at risk of homelessness` = `Total Ukrainian households owed a prevention or relief duty` / `Number of arrivals`,
+    `% in temporary accommodation` = `Temporary Accommodation Snapshot` / `Number of arrivals`
+  )
+
 homelessness_24feb_18nov <- 
   homelessness_24feb_18nov |> 
   left_join(visas_22nov, by = c("lad_code" = "ltla21_code")) |> 
@@ -547,6 +608,18 @@ homelessness_trends <-
         temp_18nov = `Temporary Accommodation Snapshot`, 
         temp_percent_18nov = `% in temporary accommodation`
       )
+  ) |> 
+  left_join(
+    homelessness_24feb_30dec |> 
+      select(
+        lad_code, 
+        lad_name, 
+        `Number of arrivals (3 January)` = `Number of arrivals`,
+        total_30dec = `Total Ukrainian households owed a prevention or relief duty`, 
+        percent_30dec = `% at risk of homelessness`,
+        temp_30dec = `Temporary Accommodation Snapshot`, 
+        temp_percent_30dec = `% in temporary accommodation`
+      )
   )
 
 homelessness_trends <- 
@@ -586,13 +659,18 @@ homelessness_trends <-
     total_18nov = 0, 
     percent_18nov = 0, 
     temp_18nov = 0,
-    temp_percent_18nov = 0
+    temp_percent_18nov = 0,
+    
+    total_30dec = 0, 
+    percent_30dec = 0, 
+    temp_30dec = 0,
+    temp_percent_30dec = 0
   )) |> 
   mutate(
-    total_delta = total_18nov - total_3jun,
-    percent_delta = percent_18nov - percent_3jun,
-    temp_delta = temp_18nov - temp_3jun,
-    temp_percent_delta = temp_percent_18nov - temp_percent_3jun
+    total_delta = total_30dec - total_3jun,
+    percent_delta = percent_30dec - percent_3jun,
+    temp_delta = temp_30dec - temp_3jun,
+    temp_percent_delta = temp_percent_30dec - temp_percent_3jun
   )
 
 # ---- Save wrangled data ----
@@ -603,6 +681,7 @@ write_csv(homelessness_24feb_26aug, "data/homelessness/ukraine-homelessness-26-a
 write_csv(homelessness_24feb_23sep, "data/homelessness/ukraine-homelessness-23-september.csv")
 write_csv(homelessness_24feb_21oct, "data/homelessness/ukraine-homelessness-21-october.csv")
 write_csv(homelessness_24feb_18nov, "data/homelessness/ukraine-homelessness-18-november.csv")
+write_csv(homelessness_24feb_30dec, "data/homelessness/ukraine-homelessness-30-december.csv")
 
 write_csv(homelessness_total, "data/homelessness/ukraine-homelessness-summary.csv")
 write_csv(homelessness_trends, "data/homelessness/ukraine-homelessness-trends.csv")
