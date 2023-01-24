@@ -339,10 +339,10 @@ ggsave("images/temporary accommodation - trends.png", width = 160, height = 100,
 # - Number of households at risk of homelessness -
 risk_trends <- 
   homelessness_trends |> 
-  filter(total_3jun > 0 & total_1jul > 0 & total_29jul > 0 & total_26aug > 0) |> 
-  select(lad_name, region21_name, `3 June` = total_3jun, `1 July` = total_1jul, `29 July` = total_29jul, `26 August` = total_26aug) |> 
+  filter(total_30dec > 0) |> 
+  select(lad_name, region21_name, `3 Jun` = total_3jun, `1 Jul` = total_1jul, `29 Jul` = total_29jul, `26 Aug` = total_26aug, `23 Sep` = total_23sep, `21 Oct` = total_21oct, `18 Nov` = total_18nov, `30 Dec` = total_30dec) |> 
   pivot_longer(cols = -contains("_name"), names_to = "date", values_to = "count") |> 
-  mutate(date = factor(date, levels = c("3 June", "1 July", "29 July", "26 August")))
+  mutate(date = factor(date, levels = c("3 Jun", "1 Jul", "29 Jul", "26 Aug", "23 Sep", "21 Oct", "18 Nov", "30 Dec")))
 
 # What regions are the LAs with the 10 highest risk of homelessness in?
 risk_trends |> 
@@ -352,7 +352,7 @@ risk_trends |>
 # Label the top three LAs in each region
 risk_trends_labels <- 
   risk_trends |> 
-  filter(date == "26 August") |> 
+  filter(date == "30 Dec") |> 
   group_by(region21_name) |>
   slice_max(count, n = 3) |> 
   ungroup() |> 
@@ -363,7 +363,7 @@ risk_trends |>
   left_join(risk_trends_labels) |> 
   mutate(
     colour = if_else(!is.na(label), "red", "grey"),
-    label = if_else(date == "26 August", label, NA_character_)
+    label = if_else(date == "30 Dec", label, NA_character_)
   ) |> 
   
   ggplot(aes(x = date, y = count, group = lad_name)) +
@@ -377,7 +377,7 @@ risk_trends |>
     plot.title.position = "plot"
   ) +
   labs(
-    title = str_wrap("Most of the Ukrainian households at risk of homelessness live in London", 90),
+    title = str_wrap("Most of the Ukrainian households at risk of homelessness live in London, East and South East England", 90),
     subtitle = str_wrap("Showing trends in households at risk of homelessness across England. Red lines highlight LAs with the largest number of Ukrainian households at risk of homelessness in each region.", 100),
     x = NULL,
     y = "Number of Ukrainian households at risk of homelessness",
