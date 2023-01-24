@@ -14,6 +14,9 @@ homelessness_24feb_1jul <- read_csv("data/homelessness/ukraine-homelessness-1-ju
 homelessness_24feb_29jul <- read_csv("data/homelessness/ukraine-homelessness-29-july.csv")
 homelessness_24feb_26aug <- read_csv("data/homelessness/ukraine-homelessness-26-august.csv")
 homelessness_24feb_23sep <- read_csv("data/homelessness/ukraine-homelessness-23-september.csv")
+homelessness_24feb_21oct <- read_csv("data/homelessness/ukraine-homelessness-21-october.csv")
+homelessness_24feb_18nov <- read_csv("data/homelessness/ukraine-homelessness-18-november.csv")
+homelessness_24feb_30dec <- read_csv("data/homelessness/ukraine-homelessness-30-december.csv")
 
 homelessness_total <- read_csv("data/homelessness/ukraine-homelessness-summary.csv")
 
@@ -26,7 +29,7 @@ england_index <- read_csv("output-data/index-of-housing-insecurity/housing-index
 homelessness_total <- 
   homelessness_total |> 
   mutate(
-    Date_text = factor(Date_text, levels = c("3 June", "1 July", "29 July", "26 August", "23 September")),
+    Date_text = factor(Date_text, levels = c("3 June", "1 July", "29 July", "26 August", "23 September", "21 October", "18 November", "30 December")),
     `% in temporary accommodation` = `Temporary Accommodation Snapshot` / `Total Ukrainian households owed a prevention or relief duty`
   )
 
@@ -69,7 +72,13 @@ homelessness_total |>
   select(Date_text, `% Homes for Ukraine`, `% Family Scheme`) |> 
   pivot_longer(cols = starts_with("%"), names_to = "Scheme", values_to = "Percent") |> 
   
-  ggplot(aes(x = Date_text, y = Percent, group = Scheme)) +
+  mutate(
+    Date_text_short = Date_text |> 
+      str_remove("ember|tember|ober|ust|y$|e$") |> 
+      factor(levels = c("3 Jun", "1 Jul", "29 Jul", "26 Aug", "23 Sep", "21 Oct", "18 Nov", "30 Dec"))
+  ) |> 
+  
+  ggplot(aes(x = Date_text_short, y = Percent, group = Scheme)) +
   geom_line(aes(colour = Scheme), size = 1.1) +
   geom_point(aes(fill = Scheme), size = 2.5, pch = 21, colour = "white") +
   
@@ -101,9 +110,9 @@ homelessness_total |>
   select(Date, `Temporary Accommodation Snapshot`, `% in temporary accommodation`)
 
 # ---- %s of total homelessness in each region ----
-total_homelessness <- sum(homelessness_24feb_23sep$`Total Ukrainian households owed a prevention or relief duty`, na.rm = TRUE)
+total_homelessness <- sum(homelessness_24feb_30dec$`Total Ukrainian households owed a prevention or relief duty`, na.rm = TRUE)
 
-homelessness_24feb_23sep |> 
+homelessness_24feb_30dec |> 
   arrange(desc(`Total Ukrainian households owed a prevention or relief duty`)) |> 
   left_join(geographr::lookup_ltla21_region21, by = c("lad_code" = "ltla21_code")) |> 
   select(lad_name, region21_name, homelessness = `Total Ukrainian households owed a prevention or relief duty`) |> 
@@ -116,12 +125,12 @@ homelessness_24feb_23sep |>
   arrange(desc(proportion))
 
 # % at risk of homelessness in South East and East
-0.171 + 0.107
+0.195 + 0.163
 
 # ---- %s of households in temporary accommodation in each region ----
-total_temp_acc <- sum(homelessness_24feb_23sep$`Temporary Accommodation Snapshot`, na.rm = TRUE)
+total_temp_acc <- sum(homelessness_24feb_30dec$`Temporary Accommodation Snapshot`, na.rm = TRUE)
 
-homelessness_24feb_23sep |> 
+homelessness_24feb_30dec |> 
   left_join(geographr::lookup_ltla21_region21, by = c("lad_code" = "ltla21_code")) |> 
   select(lad_name, region21_name, temp_acc = `Temporary Accommodation Snapshot`) |> 
   
@@ -133,7 +142,7 @@ homelessness_24feb_23sep |>
   arrange(desc(proportion))
 
 # % in temporary accommodation in London, South East, and East
-.164 + .0857
+.252 + .0857
 
 # ---- Where has experienced by biggest increases in homelessness? ----
 homelessness_trends |> 
@@ -153,7 +162,7 @@ new_homelessness |>
 new_homelessness
 
 # ---- Local Authorities with the highest rates of homelessness risk ----
-homelessness_24feb_23sep |> 
+homelessness_24feb_30dec |> 
   left_join(geographr::lookup_ltla21_region21, by = c("lad_code" = "ltla21_code")) |> 
   select(lad_name, region21_name, `% at risk of homelessness`, `% in temporary accommodation`) |> 
   arrange(desc(`% at risk of homelessness`), desc(`% in temporary accommodation`)) |> 
@@ -168,10 +177,10 @@ pal_region <-
     "East of England", "#fb6a4a",
     "Yorkshire and The Humber", "#737373",
     "East Midlands", "#737373",
-    "West Midlands", "#737373"
+    "North West", "#737373"
   )
 
-homelessness_24feb_23sep |> 
+homelessness_24feb_30dec |> 
   left_join(geographr::lookup_ltla21_region21, by = c("lad_code" = "ltla21_code")) |> 
   select(lad_name, region21_name, `% at risk of homelessness`, `% in temporary accommodation`) |> 
   arrange(desc(`% at risk of homelessness`), desc(`% in temporary accommodation`)) |> 
@@ -217,7 +226,7 @@ ggsave("images/risk of homelessness.png", width = 150, height = 120, units = "mm
 ihs_imd_homelessness <- 
   england_index |> 
   
-  left_join(homelessness_trends |> select(ltla21_code = lad_code, total_23sep)) |> 
+  left_join(homelessness_trends |> select(ltla21_code = lad_code, total = total_30dec)) |> 
   
   left_join(IMD::imd_england_lad, by = c("ltla21_code" = "lad_code")) |> 
   left_join(IMD::imd_england_lad_subdomains, by = c("ltla21_code" = "lad_code")) |> 
@@ -236,7 +245,7 @@ ihs_imd_homelessness <-
     ltla21_code, 
     ltla21_name,
     
-    total_23sep,
+    total,
     
     homeless_threatened = `Households assessed as threatened with homelessness per (000s)`, 
     homeless = `Households assessed as homeless per (000s)`, 
@@ -254,14 +263,14 @@ ihs_imd_homelessness <-
 ihs_imd_homelessness |>
   pivot_longer(cols = homeless_threatened:`IMD Wider Barriers subdomain`, values_to = "rank") |>
 
-  ggplot(aes(x = rank, y = total_23sep)) +
+  ggplot(aes(x = rank, y = total)) +
   geom_point() +
   geom_smooth() +
   facet_wrap(~name, ncol = 3, scales = "free_x")
 
 # Plot 'wider barriers' subdomain
 ihs_imd_homelessness |> 
-  ggplot(aes(x = `IMD Wider Barriers subdomain`, y = total_23sep)) +
+  ggplot(aes(x = `IMD Wider Barriers subdomain`, y = total)) +
   geom_point(alpha = 0.4) +
   geom_smooth(method = "lm", colour = get_brc_colours()$red, fill = get_brc_colours()$red) +
   scale_x_continuous(

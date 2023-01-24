@@ -22,6 +22,9 @@ homelessness_feb_july <- read_csv("data/homelessness/ukraine-homelessness-1-july
 homelessness_feb_aug <- read_csv("data/homelessness/ukraine-homelessness-29-july.csv")
 homelessness_24feb_26aug <- read_csv("data/homelessness/ukraine-homelessness-26-august.csv")
 homelessness_24feb_23sep <- read_csv("data/homelessness/ukraine-homelessness-23-september.csv")
+homelessness_24feb_21oct <- read_csv("data/homelessness/ukraine-homelessness-21-october.csv")
+homelessness_24feb_18nov <- read_csv("data/homelessness/ukraine-homelessness-18-november.csv")
+homelessness_24feb_30dec <- read_csv("data/homelessness/ukraine-homelessness-30-december.csv")
 
 homelessness_total <- read_csv("data/homelessness/ukraine-homelessness-summary.csv")
 
@@ -58,27 +61,32 @@ homelessness_feb_july_total$`Temporary Accommodation Snapshot`
 homelessness_feb_june_total$`Temporary Accommodation Snapshot`
 
 # Plot total numbers of households owed a duty
+# homelessness_total |> 
+#   mutate(
+#     point_axis = 1,
+#     text_axis = 0.99
+#   ) |> 
+#   ggplot(aes(x = Date_text, y = point_axis)) +
+#   geom_point(aes(size = `Total Ukrainian households owed a prevention or relief duty`), show.legend = FALSE, alpha = 0.4, colour = "red") +
+#   geom_text(aes(y = text_axis, label = scales::comma(`Total Ukrainian households owed a prevention or relief duty`)), show.legend = FALSE, size = rel(8)) +
+#   scale_size_area(max_size = 20) +
+#   scale_y_continuous(limits = c(0.98, 1.01)) +  #, expand = expansion(mult = 2, add = 0.0))
+#   theme_void() +
+#   theme(
+#     axis.text.x = element_text()
+#   )
+# 
+# ggsave("images/homelessness - totals.png", width = 70, height = 30, units = "mm")
+
 homelessness_total |> 
+  mutate(Date_text = factor(Date_text, levels = c("3 June", "1 July", "29 July", "26 August", "23 September", "21 October", "18 November", "30 December"))) |> 
   mutate(
-    point_axis = 1,
-    text_axis = 0.99
+    Date_text_short = Date_text |> 
+      str_remove("ember|tember|ober|ust|y$|e$") |> 
+      factor(levels = c("3 Jun", "1 Jul", "29 Jul", "26 Aug", "23 Sep", "21 Oct", "18 Nov", "30 Dec"))
   ) |> 
-  ggplot(aes(x = Date_text, y = point_axis)) +
-  geom_point(aes(size = `Total Ukrainian households owed a prevention or relief duty`), show.legend = FALSE, alpha = 0.4, colour = "red") +
-  geom_text(aes(y = text_axis, label = scales::comma(`Total Ukrainian households owed a prevention or relief duty`)), show.legend = FALSE, size = rel(8)) +
-  scale_size_area(max_size = 20) +
-  scale_y_continuous(limits = c(0.98, 1.01)) +  #, expand = expansion(mult = 2, add = 0.0))
-  theme_void() +
-  theme(
-    axis.text.x = element_text()
-  )
-
-ggsave("images/homelessness - totals.png", width = 70, height = 30, units = "mm")
-
-homelessness_total |> 
-  mutate(Date_text = factor(Date_text, levels = c("3 June", "1 July", "29 July", "26 August", "23 September"))) |> 
   
-  ggplot(aes(x = Date_text, y = `Total Ukrainian households owed a prevention or relief duty`)) +
+  ggplot(aes(x = Date_text_short, y = `Total Ukrainian households owed a prevention or relief duty`)) +
   geom_line(aes(group = 1), colour = "red") +
   geom_point(aes(size = `Total Ukrainian households owed a prevention or relief duty`), show.legend = FALSE, alpha = 0.4, colour = "red") +
   geom_text(aes(label = scales::comma(`Total Ukrainian households owed a prevention or relief duty`)), show.legend = FALSE, size = rel(4)) +
@@ -91,19 +99,20 @@ homelessness_total |>
   labs(
     title = "Ukrainian households owed a prevention or relief duty",
     x = NULL,
-    y = NULL
+    y = NULL,
+    caption = "British Red Cross analysis of DLUHC data"
   )
 
 ggsave("images/homelessness - totals - line graph.png", width = 100, height = 70, units = "mm")
 
 # ---- Show top tens ----
-homelessness_feb_aug |> 
+homelessness_24feb_30dec |> 
   arrange(desc(`Total Ukrainian households owed a prevention or relief duty`)) |> 
   left_join(geographr::lookup_ltla21_region21, by = c("lad_code" = "ltla21_code")) |> 
   select(lad_name, region21_name, `Total Ukrainian households owed a prevention or relief duty`) |> 
   slice(1:10)
 
-homelessness_feb_aug |> 
+homelessness_24feb_30dec |> 
   arrange(desc(`Temporary Accommodation Snapshot`)) |> 
   left_join(geographr::lookup_ltla21_region21, by = c("lad_code" = "ltla21_code")) |> 
   select(lad_name, region21_name, `Temporary Accommodation Snapshot`) |> 
@@ -111,13 +120,13 @@ homelessness_feb_aug |>
 
 # ---- Rates/proportions of homelessness ----
 # Table, where more than 10% of arrivals are at risk of homelessness or in temp accommodation
-homelessness_feb_aug |> 
+homelessness_24feb_30dec |> 
   filter(`% at risk of homelessness` >= 0.1 | `% in temporary accommodation` >= 0.1) |> 
   select(lad_name, `% at risk of homelessness`, `% in temporary accommodation`) |> 
   arrange(desc(`% at risk of homelessness`))
 
 # Visualise homelessness rates
-homelessness_feb_aug |> 
+homelessness_24feb_30dec |> 
   left_join(geographr::lookup_ltla21_region21, by = c("lad_code" = "ltla21_code")) |> 
   select(lad_name, region21_name, `% at risk of homelessness`, `% in temporary accommodation`) |> 
   arrange(desc(`% at risk of homelessness`), desc(`% in temporary accommodation`)) |> 
