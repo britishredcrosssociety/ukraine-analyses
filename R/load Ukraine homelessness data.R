@@ -413,7 +413,7 @@ visas_ltla21_england |>
 
 visas_3jan <- 
   visas_ltla21_england |> 
-  filter(Date == ymd("2022-01-03")) |> 
+  filter(Date == ymd("2023-01-03")) |> 
   mutate(`Number of arrivals` = as.integer(str_remove(`Number of arrivals`, "<")) - 1) |> 
   select(ltla21_code, `Number of arrivals`)
 
