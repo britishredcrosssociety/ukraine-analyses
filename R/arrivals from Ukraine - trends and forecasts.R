@@ -1174,6 +1174,18 @@ simulated_totals |>
   filter(Week == max(Week)) |>
   pull(total_diff)
 
+# How many additional people might arrive under the baseline scenario in three
+# months time?
+three_month_baseline <- simulated_visas_baseline |>
+  filter(Week == min(Week) + 12) |>
+  pull(`Total arrivals`)
+
+three_month_baseline_upper <- simulated_visas_baseline |>
+  filter(Week == min(Week) + 12) |>
+  pull(`Total arrivals (upper bound)`)
+
+three_month_baseline_upper - observed_total
+
 # How many additional people might arrive under the baseline scenario...
 # ... in three months' time?
 simulated_totals |>
@@ -1207,7 +1219,6 @@ simulated_visas_baseline |>
     `Mean number of arrivals (upper)` = mean(baseline_weekly_upper),
     `Mean number of arrivals (lower)` = mean(baseline_weekly_lower),
   )
-
 
 ####
 ####
