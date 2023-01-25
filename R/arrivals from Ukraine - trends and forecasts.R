@@ -1180,6 +1180,8 @@ three_month_baseline <- simulated_visas_baseline |>
   filter(Week == min(Week) + 12) |>
   pull(`Total arrivals`)
 
+three_month_baseline - observed_total
+
 three_month_baseline_upper <- simulated_visas_baseline |>
   filter(Week == min(Week) + 12) |>
   pull(`Total arrivals (upper bound)`)
