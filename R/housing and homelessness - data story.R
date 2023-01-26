@@ -105,6 +105,62 @@ homelessness_total |>
 
 ggsave("images/homelessness - percent by scheme.png", width = 110, height = 100, units = "mm")
 
+# ---- Absolute numbers on each scheme, by reason ----
+homelessness_total |> 
+  select(
+    Date_text, 
+    `Homes for Ukraine Scheme: Accommodation not available or suitable on arrival`, 
+    `Homes for Ukraine Scheme: Accommodation or arrangement broken down`, 
+    `Homes for Ukraine Scheme: Rejected sponsors offer`,
+    `Family Scheme: Accommodation or arrangement broken down`,
+    `Family Scheme: Accommodation not available or suitable on arrival`
+  ) |> 
+  pivot_longer(cols = -Date_text, names_to = "Scheme", values_to = "n") |> 
+  
+  # mutate(
+  #   label = case_when(
+  #     Date_text == "26 August" & Scheme == "Homes for Ukraine Scheme: Accommodation not available or suitable on arrival" ~ Scheme,
+  #     TRUE ~ NA_character_
+  #   )
+  # ) |> 
+  
+  mutate(
+    Date_text_short = Date_text |> 
+      str_remove("ember|tember|ober|ust|y$|e$") |> 
+      factor(levels = c("3 Jun", "1 Jul", "29 Jul", "26 Aug", "23 Sep", "21 Oct", "18 Nov", "30 Dec"))
+  ) |> 
+  
+  ggplot(aes(x = Date_text_short, y = n, group = Scheme)) +
+  geom_line(aes(colour = Scheme), size = 1.1) +
+  geom_point(aes(fill = Scheme), size = 2.5, pch = 21, colour = "white") +
+  
+  # geom_label(aes(label = label)) +
+  
+  scale_y_continuous(labels = scales::comma, limits = c(0, NA)) +
+  scale_color_manual(values = c(get_brc_colours()$teal, get_brc_colours()$teal_light, get_brc_colours()$red, get_brc_colours()$red_dark, get_brc_colours()$red_light)) +
+  scale_fill_manual(values = c(get_brc_colours()$teal, get_brc_colours()$teal_light, get_brc_colours()$red, get_brc_colours()$red_dark, get_brc_colours()$red_light)) +
+  
+  theme_classic() +
+  guides(fill=guide_legend(nrow=3,byrow=TRUE), color = guide_legend(nrow=3,byrow=TRUE))+
+  theme(
+    legend.position = "bottom",
+    # legend.box = "vertical",
+    # legend.margin = margin(),
+    plot.title.position = "plot",
+    plot.title = element_textbox_simple(size = 12)
+  ) +
+  labs(
+    title = str_glue(
+      "People arriving on the <span style='color:{get_brc_colours()$red}; font-weight:bold'>Homes for Ukraine Scheme</span> increasingly face homelessness<br/>
+      <span style='font-size:10pt; color:#737373; font-weight:bold'>Number of Ukraine refugee housholds at risk of homelessness on the <span style='color:{get_brc_colours()$teal}; font-weight:bold'>Family Scheme</span> and the <span style='color:{get_brc_colours()$red}'>Homes for Ukraine Scheme</span></span>"
+    ),
+    x = NULL,
+    y = NULL,
+    caption = "British Red Cross analysis of DLUHC data"
+  )
+
+ggsave("images/homelessness - count by scheme and reason.png", width = 150, height = 120, units = "mm")
+
 # ---- Numbers and %s in temporary accommodation ----
 homelessness_total |> 
   select(Date, `Temporary Accommodation Snapshot`, `% in temporary accommodation`)

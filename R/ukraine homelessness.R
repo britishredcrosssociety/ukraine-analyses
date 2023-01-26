@@ -342,7 +342,11 @@ risk_trends <-
   filter(total_30dec > 0) |> 
   select(lad_name, region21_name, `3 Jun` = total_3jun, `1 Jul` = total_1jul, `29 Jul` = total_29jul, `26 Aug` = total_26aug, `23 Sep` = total_23sep, `21 Oct` = total_21oct, `18 Nov` = total_18nov, `30 Dec` = total_30dec) |> 
   pivot_longer(cols = -contains("_name"), names_to = "date", values_to = "count") |> 
-  mutate(date = factor(date, levels = c("3 Jun", "1 Jul", "29 Jul", "26 Aug", "23 Sep", "21 Oct", "18 Nov", "30 Dec")))
+  
+  filter(date != "1 Jul") |> 
+  mutate(date = str_remove(date, "[0-9]+\\s")) |> 
+  
+  mutate(date = factor(date, levels = c("Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")))
 
 # What regions are the LAs with the 10 highest risk of homelessness in?
 risk_trends |> 
@@ -352,7 +356,7 @@ risk_trends |>
 # Label the top three LAs in each region
 risk_trends_labels <- 
   risk_trends |> 
-  filter(date == "30 Dec") |> 
+  filter(date == "Dec") |> 
   group_by(region21_name) |>
   slice_max(count, n = 3) |> 
   ungroup() |> 
@@ -363,11 +367,11 @@ risk_trends |>
   left_join(risk_trends_labels) |> 
   mutate(
     colour = if_else(!is.na(label), "red", "grey"),
-    label = if_else(date == "30 Dec", label, NA_character_)
+    label = if_else(date == "Dec", label, NA_character_)
   ) |> 
   
   ggplot(aes(x = date, y = count, group = lad_name)) +
-  geom_line(aes(colour = colour), size = 1.1, show.legend = FALSE) +
+  geom_line(aes(colour = colour), linewidth = 1.1, show.legend = FALSE) +
   geom_text_repel(aes(label = label)) +
   facet_wrap(~region21_name) +
   scale_y_continuous(labels = scales::comma) +
