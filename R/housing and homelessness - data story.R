@@ -109,11 +109,11 @@ ggsave("images/homelessness - percent by scheme.png", width = 110, height = 100,
 homelessness_total |> 
   select(
     Date_text, 
-    `Homes for Ukraine Scheme: Accommodation not available or suitable on arrival`, 
-    `Homes for Ukraine Scheme: Accommodation or arrangement broken down`, 
-    `Homes for Ukraine Scheme: Rejected sponsors offer`,
-    `Family Scheme: Accommodation or arrangement broken down`,
-    `Family Scheme: Accommodation not available or suitable on arrival`
+    `Homes for Ukraine: Accommodation not available/suitable` = `Homes for Ukraine Scheme: Accommodation not available or suitable on arrival`, 
+    `Homes for Ukraine: Accommodation/arrangement broken down` = `Homes for Ukraine Scheme: Accommodation or arrangement broken down`, 
+    `Homes for Ukraine: Rejected sponsor's offer` = `Homes for Ukraine Scheme: Rejected sponsors offer`,
+    `Family Scheme: Accommodation/arrangement broken down` = `Family Scheme: Accommodation or arrangement broken down`,
+    `Family Scheme: Accommodation not available/suitable` = `Family Scheme: Accommodation not available or suitable on arrival`
   ) |> 
   pivot_longer(cols = -Date_text, names_to = "Scheme", values_to = "n") |> 
   
@@ -141,7 +141,7 @@ homelessness_total |>
   scale_fill_manual(values = c(get_brc_colours()$teal, get_brc_colours()$teal_light, get_brc_colours()$red, get_brc_colours()$red_dark, get_brc_colours()$red_light)) +
   
   theme_classic() +
-  guides(fill=guide_legend(nrow=3,byrow=TRUE), color = guide_legend(nrow=3,byrow=TRUE))+
+  guides(fill=guide_legend(nrow=5,byrow=TRUE), color = guide_legend(nrow=5,byrow=TRUE))+
   theme(
     legend.position = "bottom",
     # legend.box = "vertical",
@@ -159,7 +159,7 @@ homelessness_total |>
     caption = "British Red Cross analysis of DLUHC data"
   )
 
-ggsave("images/homelessness - count by scheme and reason.png", width = 150, height = 120, units = "mm")
+ggsave("images/homelessness - count by scheme and reason.png", width = 150, height = 150, units = "mm")
 
 # ---- Numbers and %s in temporary accommodation ----
 homelessness_total |> 
