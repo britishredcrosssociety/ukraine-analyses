@@ -8,7 +8,7 @@ library(httr)
 # Load live tables on homelessness
 # Source: https://www.gov.uk/government/statistical-data-sets/live-tables-on-homelessness
 GET(
-  "https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/1094504/Detailed_LA_202203.ods",
+  "https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/1119809/Detailed_LA_202206.ods",
   write_disk(tf <- tempfile(fileext = ".ods"))
 )
 
@@ -28,7 +28,7 @@ england_homeless <-
   )
 
 ## Temporary accommodation ----
-england_temp_accomm_raw <- read_ods(tf, sheet = "TA1", skip = 6)
+england_temp_accomm_raw <- read_ods(tf, sheet = "TA1_", skip = 6)
 
 england_temp_accomm <- england_temp_accomm_raw[, c(1, 2, 7)]
 names(england_temp_accomm) <- c("ltla21_code", "ltla21_name", "Total number of households in TA per (000s)")
@@ -43,15 +43,15 @@ england_temp_accomm <-
 
 ## Housing stock and waiting list data ----
 # Load LA housing statistics
-# Source: https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/1084731/LAHS_all_data_2020_2021_-_06_2022.csv/preview
-england_stock_waits <- read_csv("https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/1084731/LAHS_all_data_2020_2021_-_06_2022.csv")
+# Source: https://www.gov.uk/government/collections/local-authority-housing-data // https://www.gov.uk/government/statistical-data-sets/local-authority-housing-statistics-data-returns-for-2021-to-2022
+england_stock_waits <- read_csv("https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/1130122/LAHS_21-22_Full_Data.csv")
 
 # Keep relevant columns
 # Definitions of column codes are from: https://www.gov.uk/government/publications/completing-local-authority-housing-statistics-2020-to-2021-guidance-notes-and-bulk-upload
 england_stock_waits <- 
   england_stock_waits |> 
   select(
-    ltla21_code = `organisation-id`,
+    ltla21_code = LAD21CD,
     # ltla21_name = organisation.name,
     
     # Total number of households on the waiting list at 31 March
@@ -69,6 +69,7 @@ england_stock_waits <-
     # Total affordable rent stock
     affordable_rent_stock = a2iab
   ) |> 
+  mutate(social_rent_stock = as.integer(social_rent_stock), affordable_rent_stock = as.integer(affordable_rent_stock)) |> 
   mutate(`Housing stock` = social_rent_stock + affordable_rent_stock) |> 
   select(-social_rent_stock, -affordable_rent_stock)
 
