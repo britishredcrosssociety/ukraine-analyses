@@ -104,7 +104,7 @@ homelessness_total |>
     caption = "British Red Cross analysis of DLUHC data"
   )
 
-ggsave("images/homelessness - totals - line graph.png", width = 100, height = 70, units = "mm")
+ggsave("images/homelessness - totals - line graph.png", width = 115, height = 70, units = "mm")
 
 # Plot month-on-month % change in homelessness
 homelessness_percent <- 
@@ -132,12 +132,13 @@ homelessness_percent |>
   ) +
   labs(
     title = "Ukrainian households at risk of or experiencing homelessness",
+    subtitle = "Showing month-on-month change (%)",
     x = NULL,
     y = NULL,
     caption = "British Red Cross analysis of DLUHC data"
   )
 
-ggsave("images/homelessness - percentage - line graph.png", width = 100, height = 70, units = "mm")
+ggsave("images/homelessness - percentage - line graph.png", width = 115, height = 70, units = "mm")
 
 # 
 homelessness_increase <- 
