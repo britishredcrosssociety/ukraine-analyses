@@ -13,12 +13,12 @@ library(viridis)
 library(sf)
 
 # ---- Load data ----
-homelessness_24feb_30dec <- read_csv("data/homelessness/ukraine-homelessness-30-december.csv")
+homelessness_24feb_27jan <- read_csv("data/homelessness/ukraine-homelessness-27-january.csv")
 homelessness_total <- read_csv("data/homelessness/ukraine-homelessness-summary.csv")
 homelessness_trends <- read_csv("data/homelessness/ukraine-homelessness-trends.csv")
 
 homelessness_latest <- 
-  homelessness_24feb_30dec |> 
+  homelessness_24feb_27jan |> 
   select(lad_code, homeless = `Total Ukrainian households owed a prevention or relief duty`) |> 
   left_join(demographr::households21_ltla21, by = c("lad_code" = "ltla21_code")) |> 
   mutate(homeless_per_100000 = homeless / households * 100000)

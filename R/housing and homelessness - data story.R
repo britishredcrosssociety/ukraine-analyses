@@ -126,8 +126,8 @@ homelessness_total |>
   
   mutate(
     Date_text_short = Date_text |> 
-      str_remove("ember|tember|ober|ust|y$|e$") |> 
-      factor(levels = c("3 Jun", "1 Jul", "29 Jul", "26 Aug", "23 Sep", "21 Oct", "18 Nov", "30 Dec"))
+      str_remove("ember|tember|ober|ust|uary|y$|e$") |> 
+      factor(levels = c("3 Jun", "1 Jul", "29 Jul", "26 Aug", "23 Sep", "21 Oct", "18 Nov", "27 Jan"))
   ) |> 
   
   ggplot(aes(x = Date_text_short, y = n, group = Scheme)) +

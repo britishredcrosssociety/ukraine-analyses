@@ -24,7 +24,8 @@ homelessness_24feb_26aug <- read_csv("data/homelessness/ukraine-homelessness-26-
 homelessness_24feb_23sep <- read_csv("data/homelessness/ukraine-homelessness-23-september.csv")
 homelessness_24feb_21oct <- read_csv("data/homelessness/ukraine-homelessness-21-october.csv")
 homelessness_24feb_18nov <- read_csv("data/homelessness/ukraine-homelessness-18-november.csv")
-homelessness_24feb_30dec <- read_csv("data/homelessness/ukraine-homelessness-30-december.csv")
+# homelessness_24feb_30dec <- read_csv("data/homelessness/ukraine-homelessness-30-december.csv")
+homelessness_24feb_27jan <- read_csv("data/homelessness/ukraine-homelessness-27-january.csv")
 
 homelessness_total <- read_csv("data/homelessness/ukraine-homelessness-summary.csv")
 
@@ -79,11 +80,11 @@ homelessness_feb_june_total$`Temporary Accommodation Snapshot`
 # ggsave("images/homelessness - totals.png", width = 70, height = 30, units = "mm")
 
 homelessness_total |> 
-  mutate(Date_text = factor(Date_text, levels = c("3 June", "1 July", "29 July", "26 August", "23 September", "21 October", "18 November", "30 December"))) |> 
+  mutate(Date_text = factor(Date_text, levels = c("3 June", "1 July", "29 July", "26 August", "23 September", "21 October", "18 November", "27 January"))) |> 
   mutate(
     Date_text_short = Date_text |> 
-      str_remove("ember|tember|ober|ust|y$|e$") |> 
-      factor(levels = c("3 Jun", "1 Jul", "29 Jul", "26 Aug", "23 Sep", "21 Oct", "18 Nov", "30 Dec"))
+      str_remove("ember|tember|ober|ust|uary|y$|e$") |> 
+      factor(levels = c("3 Jun", "1 Jul", "29 Jul", "26 Aug", "23 Sep", "21 Oct", "18 Nov", "27 Jan"))
   ) |> 
   
   ggplot(aes(x = Date_text_short, y = `Total Ukrainian households owed a prevention or relief duty`)) +
@@ -97,13 +98,69 @@ homelessness_total |>
     plot.title = element_text(size = rel(1))
   ) +
   labs(
-    title = "Ukrainian households owed a prevention or relief duty",
+    title = "Ukrainian households at risk of or experiencing homelessness",
     x = NULL,
     y = NULL,
     caption = "British Red Cross analysis of DLUHC data"
   )
 
 ggsave("images/homelessness - totals - line graph.png", width = 100, height = 70, units = "mm")
+
+# Plot month-on-month % change in homelessness
+homelessness_percent <- 
+  homelessness_total |> 
+  mutate(Date_text = factor(Date_text, levels = c("3 June", "1 July", "29 July", "26 August", "23 September", "21 October", "18 November", "27 January"))) |> 
+  mutate(
+    Date_text_short = Date_text |> 
+      str_remove("ember|tember|ober|ust|uary|y$|e$") |> 
+      factor(levels = c("3 Jun", "1 Jul", "29 Jul", "26 Aug", "23 Sep", "21 Oct", "18 Nov", "27 Jan"))
+  ) |> 
+  
+  select(Date_text_short, `Total Ukrainian households owed a prevention or relief duty`) |> 
+  mutate(percent = (`Total Ukrainian households owed a prevention or relief duty` - lead(`Total Ukrainian households owed a prevention or relief duty`, n = 1)) / lead(`Total Ukrainian households owed a prevention or relief duty`, n = 1))
+  
+homelessness_percent |> 
+  ggplot(aes(x = Date_text_short, y = percent)) +
+  geom_line(aes(group = 1), colour = "red") +
+  geom_point(aes(size = percent), show.legend = FALSE, alpha = 0.4, colour = "red") +
+  geom_text(aes(label = scales::percent(percent)), show.legend = FALSE, size = rel(4)) +
+  scale_y_continuous(limits = c(0, NA), labels = scales::percent) +
+  theme_classic() +
+  theme(
+    plot.title.position = "plot",
+    plot.title = element_text(size = rel(1))
+  ) +
+  labs(
+    title = "Ukrainian households at risk of or experiencing homelessness",
+    x = NULL,
+    y = NULL,
+    caption = "British Red Cross analysis of DLUHC data"
+  )
+
+ggsave("images/homelessness - percentage - line graph.png", width = 100, height = 70, units = "mm")
+
+# 
+homelessness_increase <- 
+  homelessness_total |> 
+  select(Date, Homeless = `Total Ukrainian households owed a prevention or relief duty`) 
+
+expand_grid(
+  From = homelessness_increase$Date,
+  To = homelessness_increase$Date
+) |> 
+  filter(From < To) |> 
+  arrange(From, To) |> 
+  left_join(homelessness_increase, by = c("From" = "Date")) |> 
+  rename(From_homeless = Homeless) |> 
+  left_join(homelessness_increase, by = c("To" = "Date")) |> 
+  rename(To_homeless = Homeless) |> 
+  mutate(`% change` = scales::percent((To_homeless - From_homeless) / From_homeless)) |> 
+  mutate(
+    From = paste(day(From), month.name[month(From)], year(From), sep = " "),
+    To = paste(day(To), month.name[month(To)], year(To), sep = " ")
+  ) |> 
+  
+  write_csv("output-data/homelessness/ukraine-homelessness-percent-change.csv")
 
 # ---- Show top tens ----
 homelessness_24feb_30dec |> 
