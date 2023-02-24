@@ -489,7 +489,33 @@ visas_scraped <- tribble(
   46, "2023-02-07", "applications refused", "Ukraine Family Scheme", 7300,
   46, "2023-02-07", "applications refused", "Ukraine Sponsorship Scheme", 900,
   46, "2023-02-07", "applications awaiting conclusion", "Ukraine Family Scheme", 2300,
-  46, "2023-02-07", "applications awaiting conclusion", "Ukraine Sponsorship Scheme", 9700
+  46, "2023-02-07", "applications awaiting conclusion", "Ukraine Sponsorship Scheme", 9700,
+
+  47, "2023-02-14", "visa applications received", "Ukraine Family Scheme", 86700,
+  47, "2023-02-14", "visa applications received", "Ukraine Sponsorship Scheme", 183000,
+  47, "2023-02-14", "visas issued", "Ukraine Family Scheme", 65900,
+  47, "2023-02-14", "visas issued", "Ukraine Sponsorship Scheme", 152600,
+  47, "2023-02-13", "arrivals of visa-holders in the UK", "Ukraine Family Scheme", 47500,
+  47, "2023-02-13", "arrivals of visa-holders in the UK", "Ukraine Sponsorship Scheme", 115200,
+  47, "2023-02-14", "applications withdrawn", "Ukraine Family Scheme", 10400,
+  47, "2023-02-14", "applications withdrawn", "Ukraine Sponsorship Scheme", 19700,
+  47, "2023-02-14", "applications refused", "Ukraine Family Scheme", 8000,
+  47, "2023-02-14", "applications refused", "Ukraine Sponsorship Scheme", 1000,
+  47, "2023-02-14", "applications awaiting conclusion", "Ukraine Family Scheme", 2400,
+  47, "2023-02-14", "applications awaiting conclusion", "Ukraine Sponsorship Scheme", 9700,
+
+  48, "2023-02-21", "visa applications received", "Ukraine Family Scheme", 87600,
+  48, "2023-02-21", "visa applications received", "Ukraine Sponsorship Scheme", 184000,
+  48, "2023-02-21", "visas issued", "Ukraine Family Scheme", 66100,
+  48, "2023-02-21", "visas issued", "Ukraine Sponsorship Scheme", 153300,
+  48, "2023-02-20", "arrivals of visa-holders in the UK", "Ukraine Family Scheme", 47800,
+  48, "2023-02-20", "arrivals of visa-holders in the UK", "Ukraine Sponsorship Scheme", 115800,
+  48, "2023-02-21", "applications withdrawn", "Ukraine Family Scheme", 10500,
+  48, "2023-02-21", "applications withdrawn", "Ukraine Sponsorship Scheme", 20300,
+  48, "2023-02-21", "applications refused", "Ukraine Family Scheme", 8800,
+  48, "2023-02-21", "applications refused", "Ukraine Sponsorship Scheme", 1000,
+  48, "2023-02-21", "applications awaiting conclusion", "Ukraine Family Scheme", 2300,
+  48, "2023-02-21", "applications awaiting conclusion", "Ukraine Sponsorship Scheme", 9400
 ) |>
   mutate(
     Date = ymd(Date),
@@ -511,4 +537,3 @@ visas_scraped <-
 #   filter(str_detect(Stage, "arrivals")) |>
 #   pivot_wider(names_from = Scheme, values_from = Visas) |>
 #   mutate(Arrivals = `Ukraine Family Scheme` + `Ukraine Sponsorship Scheme`)
-
