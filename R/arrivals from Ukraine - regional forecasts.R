@@ -32,12 +32,19 @@ weekly_visas_by_region <-
   arrange(Date) |> 
 
   # Calculate UK weekly totals
-  mutate(Week = week(Date)) |> 
+  mutate(
+    Week = if_else(
+      Date < "2023-01-01",
+      week(Date),
+      week(Date) + 52
+    )
+  ) |>
+  
   group_by(Week, brc_area) |> 
   summarise(
-    `Number of visa applications` = sum(`Number of visa applications`),
-    `Number of visas issued` = sum(`Number of visas issued`),
-    `Number of arrivals` = sum(`Number of arrivals`)
+    `Number of visa applications` = sum(`Number of visa applications`, na.rm = TRUE),
+    `Number of visas issued` = sum(`Number of visas issued`, na.rm = TRUE),
+    `Number of arrivals` = sum(`Number of arrivals`, na.rm = TRUE)
   ) |> 
   ungroup() |> 
   
@@ -101,7 +108,14 @@ cumulative_visas_by_region <-
   arrange(Date) |> 
   
   # Calculate UK weekly totals
-  mutate(Week = week(Date)) |> 
+  mutate(
+    Week = if_else(
+      Date < "2023-01-01",
+      week(Date),
+      week(Date) + 52
+    )
+  ) |>
+  
   group_by(Week, brc_area) |> 
   summarise(
     `Number of visa applications` = sum(`Number of visa applications`),
