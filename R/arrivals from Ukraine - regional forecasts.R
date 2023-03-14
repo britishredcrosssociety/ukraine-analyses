@@ -118,9 +118,9 @@ cumulative_visas_by_region <-
   
   group_by(Week, brc_area) |> 
   summarise(
-    `Number of visa applications` = sum(`Number of visa applications`),
-    `Number of visas issued` = sum(`Number of visas issued`),
-    `Number of arrivals` = sum(`Number of arrivals`)
+    `Number of visa applications` = sum(`Number of visa applications`, na.rm = TRUE),
+    `Number of visas issued` = sum(`Number of visas issued`, na.rm = TRUE),
+    `Number of arrivals` = sum(`Number of arrivals`, na.rm = TRUE)
   ) |> 
   ungroup() |> 
 
