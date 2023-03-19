@@ -11,7 +11,24 @@ library(xgboost)
 library(forecast)
 
 # Read the dataset
-data <- read.csv("data.csv")
+#! Matt intervention: load the actual Ukraine arrivals data
+# data <- read.csv("data.csv")
+data <- read_csv("data/cumulative-visas/cumulative-visas-2023-03-13.csv")
+
+data <- 
+  data |> 
+  select(
+    date = Date,
+    visa_applications = `Number of visa applications`,
+    visas_issued = `Number of visas issued`,
+    arrivals = `Number of arrivals`
+  ) |> 
+  group_by(date) |> 
+  summarise(
+    visa_applications = sum(visa_applications, na.rm = TRUE),
+    visas_issued = sum(visas_issued, na.rm = TRUE),
+    arrivals = sum(arrivals, na.rm = TRUE)
+  )
 
 # Data preprocessing
 data$date <- ymd(data$date)
@@ -81,4 +98,5 @@ arima_model <- auto.arima(arima_train, seasonal = TRUE)
 arima_forecast <- forecast(arima_model, h = length(arima_test))
 arima_predictions <- arima_forecast$mean
 
-evaluate(arima_predictions, arima_test)
+#! Matt intervention: need to convert to vectors otherwise you get NaNs
+evaluate(as.vector(arima_predictions), as.vector(arima_test))
