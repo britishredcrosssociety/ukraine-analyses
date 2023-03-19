@@ -1,4 +1,12 @@
-# If you would like to simulate the arrivals based on historical data and its 
+# This follows on from "ChatGPT-4 - attempt2.R" - see that file for the prompts/answers that led to this point.
+# Next prompt: Brilliant, thanks. I'll try this out. Could you also develop a numerical simulation to predict arrivals?
+
+# ---- ChatGPT answered: ----
+# A numerical simulation might not be the best approach for predicting arrivals based on
+# the given dataset. Numerical simulations are typically used to model systems governed 
+# by physical laws or mathematical equations, such as fluid dynamics or the motion of particles.
+# 
+# However, i If you would like to simulate the arrivals based on historical data and its 
 # uncertainty, you can use a bootstrapping method to generate multiple possible 
 # scenarios. Below is an R script demonstrating how to create a simple bootstrap 
 # simulation for predicting arrivals based on the visa applications and visa approval rate.

@@ -1,3 +1,7 @@
+# See "ChatGPT-4 - attempt 1.R" for ChatGPT prompt history before ChatGPT wrote this script.
+# Prompt that generated this code: Can you write R code that explores more sophisticated models?
+
+# ---- ChatGPT answered: ----
 # Here's an R script that explores more sophisticated models, including Linear
 # Regression, Random Forest, and XGBoost. Additionally, this script uses the 
 # forecast package for ARIMA modeling.
