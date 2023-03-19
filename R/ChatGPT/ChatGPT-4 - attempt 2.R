@@ -43,10 +43,14 @@ data$lag_arrivals <- lag(data$arrivals, 1)
 data <- data %>% drop_na()
 
 # Train/test split
-set.seed(123)
-train_indices <- createDataPartition(data$arrivals, p = 0.8, list = FALSE)
-train_data <- data[train_indices, ]
-test_data <- data[-train_indices, ]
+# set.seed(123)
+# train_indices <- createDataPartition(data$arrivals, p = 0.8, list = FALSE)
+# train_data <- data[train_indices, ]
+# test_data <- data[-train_indices, ]
+
+# Train the model on all but the most recent eight weeks of data - we'll 
+train_data <- data |> dplyr::slice(1:(n() - 8))
+test_data <- data |> dplyr::slice((n() - 7):n())
 
 # Evaluation function
 evaluate <- function(predictions, true_values) {
