@@ -167,3 +167,43 @@ model_predictions |>
   
   geom_ribbon(aes(ymin = lm_lower, ymax = lm_upper), fill = "blue", alpha = 0.2) +
   geom_line(aes(y = lm_prediction), colour = "blue")
+
+# ---- Compare 2-month-ahead predictions ----
+# In practice, we wouldn't have information on future numbers of applications,
+# visas issued, approval rates or arrival rates, so we would have to model them.
+# Matt asked ChatGPT for some code to do this. ChatGPT generated most of the code 
+# below; Matt has lightly edited and expanded it.
+
+# Generate future dates (2 months into the future)
+last_date <- max(train_data$date)
+future_dates <- seq(from = last_date + days(7), by = "week", length.out = 8)
+
+# Prepare future data
+future_data <- data.frame(
+  date = future_dates,
+  visa_applications = rep(mean(train_data$visa_applications), length(future_dates)),
+  visas_issued = rep(mean(train_data$visas_issued), length(future_dates)),
+  visa_approval_rate = rep(mean(train_data$visa_approval_rate), length(future_dates)),
+  arrival_rate = rep(mean(train_data$arrival_rate), length(future_dates)),
+  lag_arrivals = c(tail(train_data$arrivals, 1), rep(mean(train_data$arrivals), length(future_dates) - 1))
+)
+
+# Predict future arrivals
+predicted_arrivals <- predict(lm_model, future_data)
+
+# Combine future dates with predictions
+future_predictions <- data.frame(
+  date = future_dates,
+  lm_prediction = predicted_arrivals
+)
+
+future_predictions <- 
+  future_predictions |> 
+  left_join(brc_predictions |> select(date, brc_prediction)) |> 
+  left_join(test_data |> select(date, arrivals))
+
+bind_rows(
+  evaluate(future_predictions$lm_prediction, future_predictions$arrivals, "Linear regression"),
+  evaluate(future_predictions$brc_prediction, future_predictions$arrivals, "BRC")
+)
+#--> BRC simulation fares a *lot* better
