@@ -104,3 +104,66 @@ arima_predictions <- arima_forecast$mean
 
 #! Matt intervention: need to convert to vectors otherwise you get NaNs
 evaluate(as.vector(arima_predictions), as.vector(arima_test))
+
+# ---- Compare to BRC simulation performance ----
+# Use BRC predictions from the same point as `test_data` starts
+brc_predictions_raw <- 
+  read_csv("output-data/simulations/simulation-baseline-2023-01-23.csv")
+
+brc_predictions <- 
+  brc_predictions_raw |> 
+  dplyr::slice(1:8) |> 
+  select(date = Date, brc_prediction = `Total arrivals`, brc_lower = `Total arrivals (lower bound)`, brc_upper = `Total arrivals (upper bound)`) |> 
+  left_join(data |> select(date, arrivals), by = "date")
+
+# Evaluation function
+evaluate <- function(predictions, true_values, label = "") {
+  mae <- mean(abs(predictions - true_values))
+  mse <- mean((predictions - true_values)^2)
+  rmse <- sqrt(mse)
+  
+  tibble(
+    model = label,
+    MAE = mae,
+    MSE = mse,
+    RMSE = rmse
+  )
+}
+
+# Compare all models
+bind_rows(
+  evaluate(lm_predictions, test_data$arrivals, "Linear"),
+  evaluate(rf_predictions, test_data$arrivals, "RF"),
+  evaluate(xgb_predictions, test_data$arrivals, "xgboost"),
+  evaluate(as.vector(arima_predictions), as.vector(arima_test), "arima"),
+  evaluate(brc_predictions$brc_prediction, brc_predictions$arrivals, "BRC")
+)
+#--> BRC simulation gives the most accurate predictions of actual arrivals 8 weeks into the future
+
+# Linear regression is the best-performing statistical model
+# - let's compare it to the BRC simulation in more detail
+lm_predictions_ci <- 
+  bind_cols(
+    data |> select(date), 
+    predict(lm_model, data, interval = "confidence")
+  )
+
+model_predictions <- 
+  brc_predictions |> 
+  left_join(lm_predictions_ci |> select(date, lm_prediction = fit, lm_lower = lwr, lm_upper = upr))
+
+bind_rows(
+  evaluate(model_predictions$lm_prediction, model_predictions$arrivals, "Linear regression"),
+  evaluate(model_predictions$brc_prediction, model_predictions$arrivals, "BRC")
+)
+
+# Plot both models' predictions (and confidence intervals)
+model_predictions |> 
+  ggplot(aes(x = date, y = arrivals)) +
+  geom_line(colour = "black") +
+  
+  # geom_ribbon(aes(ymin = brc_lower, ymax = brc_upper), fill = "red", alpha = 0.2) +
+  geom_line(aes(y = brc_prediction), colour = "red") +
+  
+  geom_ribbon(aes(ymin = lm_lower, ymax = lm_upper), fill = "blue", alpha = 0.2) +
+  geom_line(aes(y = lm_prediction), colour = "blue")
