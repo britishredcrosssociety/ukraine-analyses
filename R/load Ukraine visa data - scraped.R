@@ -554,7 +554,20 @@ visas_scraped <- tribble(
   51, "2023-03-14", "applications refused", "Ukraine Family Scheme", 10700,
   51, "2023-03-14", "applications refused", "Ukraine Sponsorship Scheme", 1100,
   51, "2023-03-14", "applications awaiting conclusion", "Ukraine Family Scheme", 3100,
-  51, "2023-03-14", "applications awaiting conclusion", "Ukraine Sponsorship Scheme", 9800
+  51, "2023-03-14", "applications awaiting conclusion", "Ukraine Sponsorship Scheme", 9800,
+
+  52, "2023-03-21", "visa applications received", "Ukraine Family Scheme", 92200,
+  52, "2023-03-21", "visa applications received", "Ukraine Sponsorship Scheme", 188000,
+  52, "2023-03-21", "visas issued", "Ukraine Family Scheme", 67000,
+  52, "2023-03-21", "visas issued", "Ukraine Sponsorship Scheme", 156000,
+  52, "2023-03-20", "arrivals of visa-holders in the UK", "Ukraine Family Scheme", 49400,
+  52, "2023-03-20", "arrivals of visa-holders in the UK", "Ukraine Sponsorship Scheme", 118300,
+  52, "2023-03-21", "applications withdrawn", "Ukraine Family Scheme", 10700,
+  52, "2023-03-21", "applications withdrawn", "Ukraine Sponsorship Scheme", 21100,
+  52, "2023-03-21", "applications refused", "Ukraine Family Scheme", 11500,
+  52, "2023-03-21", "applications refused", "Ukraine Sponsorship Scheme", 1100,
+  52, "2023-03-21", "applications awaiting conclusion", "Ukraine Family Scheme", 3000,
+  52, "2023-03-21", "applications awaiting conclusion", "Ukraine Sponsorship Scheme", 9700
 ) |>
   mutate(
     Date = ymd(Date),
