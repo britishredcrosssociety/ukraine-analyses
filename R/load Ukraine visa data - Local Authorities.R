@@ -53,7 +53,7 @@ for (url in visa_data_urls) {
 wrangle_visa_summary <- function(d, visa_date) {
   d |>
     as_tibble(.name_repair = "unique") |>
-    rename(Type = `Var.2`) |>
+    rename(Type = `...2`) |>
     fill(Location, .direction = "down") |>
     na.omit() |>
     mutate(Date = visa_date) |>
