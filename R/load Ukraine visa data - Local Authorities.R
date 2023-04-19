@@ -53,7 +53,7 @@ for (url in visa_data_urls) {
 wrangle_visa_summary <- function(d, visa_date) {
   d |>
     as_tibble(.name_repair = "unique") |>
-    rename(Type = `...2`) |>
+    rename(Type = `Var.2`) |>
     fill(Location, .direction = "down") |>
     na.omit() |>
     mutate(Date = visa_date) |>
@@ -67,10 +67,16 @@ wrangle_visa_data <- function(d, visa_date, country = "^E") {
     filter(str_detect(ltla21_code, country)) |>
     mutate(Date = visa_date) |>
     relocate(Date) |>
-    mutate(across(starts_with("Number"), as.character)) |>
+    mutate(across(starts_with("Number"), as.character)) %>%
+    
+    # Some visa data files are missing the 'applications' or 'arrivals' columns - only rename if they exist
+    # Inline conditional logic - the {if(...)} statements - needs matrittr pipes rather than base pipes
+    {if(sum(str_detect(names(tmp_england), "applications")) > 0) rename_with(., function(x) "Number of visa applications", contains("applications")) else .} %>%
+    {if(sum(str_detect(names(tmp_england), "arrivals")) > 0) rename_with(., function(x) "Number of arrivals", contains("arrivals")) else .}
+    
     # Standardise column names (some have footnotes; some say "Numbers" rather than "Number")
-    rename_with(function(x) "Number of visa applications", contains("applications")) |>
-    rename_with(function(x) "Number of arrivals", contains("arrivals"))
+    # rename_with(~ "Number of visa applications", matches("applications")) |>
+    # rename_with(function(x) "Number of arrivals", contains("arrivals"))
 }
 
 convert_number_columns <- function(d) {
