@@ -4,6 +4,54 @@ library(httr)
 
 source("R/load Ukraine visa data - Local Authorities.R")
 
+# ---- Load latest homelessness management info (24 February to 21 April 2023) ----
+# Source: https://www.gov.uk/government/publications/homelessness-management-information-ukrainian-nationals-england
+GET(
+  "https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/1154505/Ukraine_Homelessness_Pressures_Publication_21042023.ods",
+  write_disk(tf <- tempfile(fileext = ".ods"))
+)
+
+homelessness_24feb_21apr_raw <- read_ods(tf, skip = 3, sheet = "Publication")
+
+# Remove empty columns
+homelessness_24feb_21apr_raw <- homelessness_24feb_21apr_raw[-c(3, 4, 10, 12, 20)]
+
+names(homelessness_24feb_21apr_raw) <- c(
+  "lad_code",
+  "lad_name",
+  "Total Ukrainian households owed a prevention or relief duty",
+  "Single household (total)",
+  "Single household (%)",
+  "Household with dependent children (total)",
+  "Household with dependent children (%)",
+  "Prevention and relief",
+  # "Homelessness Prevented or Relieved via Mediation",
+  # "Homelessness Prevented or Relieved via Rematch",
+  # "Homelessness Prevented or Relieved via Other",
+  "Family Scheme: Accommodation or arrangement broken down",
+  "Family Scheme: Accommodation not available or suitable on arrival",
+  "Homes for Ukraine Scheme: Accommodation or arrangement broken down",
+  "Homes for Ukraine Scheme: Accommodation not available or suitable on arrival",
+  "Homes for Ukraine Scheme: Rejected sponsors offer",
+  "Extension Scheme",
+  "Other/Not Known",
+  "Temporary Accommodation Snapshot",
+  "Offer of Settled Accomodation"
+)
+
+homelessness_24feb_21apr_raw <- 
+  homelessness_24feb_21apr_raw |> 
+  as_tibble() |> 
+  mutate(across(-(lad_code:lad_name), as.numeric))
+
+homelessness_24feb_21apr_total <- 
+  homelessness_24feb_21apr_raw |> 
+  slice(3)
+
+homelessness_24feb_21apr <- 
+  homelessness_24feb_21apr_raw |> 
+  filter(str_detect(lad_code, "^E"))
+
 # ---- Load latest homelessness management info (24 February to 24 March 2023) ----
 # Source: https://www.gov.uk/government/publications/homelessness-management-information-ukrainian-nationals-england
 GET(
@@ -11,10 +59,10 @@ GET(
   write_disk(tf <- tempfile(fileext = ".ods"))
 )
 
-homelessness_24feb_24mar_raw <- read_ods(tf, skip = 3, sheet = "Ukrainian_Homelessness")
+homelessness_24feb_24mar_raw <- read_ods(tf, skip = 3, sheet = "Publication")
 
 # Remove empty columns
-homelessness_24feb_24mar_raw <- homelessness_24feb_24mar_raw[-c(2, 3, 10, 12, 20)]
+homelessness_24feb_24mar_raw <- homelessness_24feb_24mar_raw[-c(3, 4, 10, 12, 20)]
 
 names(homelessness_24feb_24mar_raw) <- c(
   "lad_code",
@@ -24,6 +72,7 @@ names(homelessness_24feb_24mar_raw) <- c(
   "Single household (%)",
   "Household with dependent children (total)",
   "Household with dependent children (%)",
+  "Prevention and relief",
   # "Homelessness Prevented or Relieved via Mediation",
   # "Homelessness Prevented or Relieved via Rematch",
   # "Homelessness Prevented or Relieved via Other",
@@ -521,8 +570,11 @@ homelessness_24feb_3jun <-
 # ---- Summary of homelessness ----
 homelessness_total <- 
   bind_rows(
+    homelessness_24feb_21apr_total |> mutate(Date = ymd("2023-04-21"), Date_text = "21 April"),
+    homelessness_24feb_24mar_total |> mutate(Date = ymd("2023-03-24"), Date_text = "24 March"),
+    homelessness_24feb_24feb_total |> mutate(Date = ymd("2023-02-24"), Date_text = "24 February"),
     homelessness_24feb_27jan_total |> mutate(Date = ymd("2023-01-27"), Date_text = "27 January"),
-    # homelessness_24feb_30dec_total |> mutate(Date = ymd("2022-12-30"), Date_text = "30 December"),
+    homelessness_24feb_30dec_total |> mutate(Date = ymd("2022-12-30"), Date_text = "30 December"),
     homelessness_24feb_18nov_total |> mutate(Date = ymd("2022-11-18"), Date_text = "18 November"),
     homelessness_24feb_21oct_total |> mutate(Date = ymd("2022-10-21"), Date_text = "21 October"),
     homelessness_24feb_23sep_total |> mutate(Date = ymd("2022-09-23"), Date_text = "23 September"),
@@ -532,7 +584,7 @@ homelessness_total <-
     homelessness_24feb_3jun_total  |> mutate(Date = ymd("2022-06-03"), Date_text = "3 June")
   ) |> 
   relocate(Date) |> 
-  mutate(Date_text = factor(Date_text, levels = c("3 June", "1 July", "29 July", "26 August", "23 September", "21 October", "18 November", "27 January")))
+  mutate(Date_text = factor(Date_text, levels = c("3 June", "1 July", "29 July", "26 August", "23 September", "21 October", "18 November", "27 January", "24 February", "24 March", "21 April")))
 
 # Calculate proportions of households at risk of homelessness in each visa scheme
 homelessness_total <- 
@@ -921,6 +973,7 @@ write_csv(homelessness_24feb_30dec, "data/homelessness/ukraine-homelessness-30-d
 write_csv(homelessness_24feb_27jan, "data/homelessness/ukraine-homelessness-27-january.csv")
 write_csv(homelessness_24feb_24feb, "data/homelessness/ukraine-homelessness-24-february.csv")
 write_csv(homelessness_24feb_24mar, "data/homelessness/ukraine-homelessness-24-march.csv")
+write_csv(homelessness_24feb_21apr, "data/homelessness/ukraine-homelessness-21-april.csv")
 
 write_csv(homelessness_total, "data/homelessness/ukraine-homelessness-summary.csv")
 write_csv(homelessness_trends, "data/homelessness/ukraine-homelessness-trends.csv")
