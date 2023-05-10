@@ -205,7 +205,7 @@ GET(
 homelessness_24feb_30dec_raw <- read_ods(tf, skip = 3, sheet = "Ukrainian_Homelessness")
 
 # Remove empty columns
-homelessness_24feb_30dec_raw <- homelessness_24feb_30dec_raw[-c(2, 3, 5, 6, 10, 14, 21)]
+homelessness_24feb_30dec_raw <- homelessness_24feb_30dec_raw[-c(2, 3, 5, 6, 12, 16, 23)]
 
 names(homelessness_24feb_30dec_raw) <- c(
   "lad_code",
