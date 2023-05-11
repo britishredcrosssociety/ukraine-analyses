@@ -18,7 +18,7 @@ homelessness_total <- read_csv("data/homelessness/ukraine-homelessness-summary.c
 homelessness_total <- 
   homelessness_total |> 
   mutate(
-    Date_text = factor(Date_text, levels = c("3 June", "1 July", "29 July", "26 August", "23 September", "21 October", "18 November", "30 December", "27 January")),
+    Date_text = factor(Date_text, levels = c("3 June", "1 July", "29 July", "26 August", "23 September", "21 October", "18 November", "30 December", "27 January", "24 February", "24 March", "21 April")),
     `% in temporary accommodation` = `Temporary Accommodation Snapshot` / `Total Ukrainian households owed a prevention or relief duty`
   )
 
@@ -43,8 +43,8 @@ homelessness_total |>
   
   mutate(
     Date_text_short = Date_text |> 
-      str_remove("ember|tember|ober|ust|uary|y$|e$") |> 
-      factor(levels = c("3 Jun", "1 Jul", "29 Jul", "26 Aug", "23 Sep", "21 Oct", "18 Nov", "27 Jan"))
+      str_remove("ember|tember|ober|ust|ruary|uary|y$|e$|ch$|il$") |> 
+      factor(levels = c("3 Jun", "1 Jul", "29 Jul", "26 Aug", "23 Sep", "21 Oct", "18 Nov", "30 Dec", "27 Jan", "24 Feb", "24 Mar", "21 Apr"))
   ) |> 
   
   ggplot(aes(x = Date_text_short, y = n, group = Scheme)) +
