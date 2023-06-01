@@ -2,7 +2,52 @@ library(tidyverse)
 library(readODS)
 library(httr)
 
-source("R/load Ukraine visa data - Local Authorities.R")
+# source("R/load Ukraine visa data - Local Authorities.R")
+
+# ---- Load latest homelessness management info (24 February to 19 May 2023) ----
+# Source: https://www.gov.uk/government/publications/homelessness-management-information-ukrainian-nationals-england
+GET(
+  "https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/1159972/Ukraine_Homelessness_Pressures_Publication_19052023.ods",
+  write_disk(tf <- tempfile(fileext = ".ods"))
+)
+
+homelessness_24feb_19may_raw <- read_ods(tf, skip = 3, sheet = "Publication_")
+
+# Remove empty columns
+homelessness_24feb_19may_raw <- homelessness_24feb_19may_raw[-c(3:6, 12, 14, 22)]
+
+names(homelessness_24feb_19may_raw) <- c(
+  "lad_code",
+  "lad_name",
+  "Total Ukrainian households owed a prevention or relief duty",
+  "Single household (total)",
+  "Single household (%)",
+  "Household with dependent children (total)",
+  "Household with dependent children (%)",
+  "Prevention and relief",
+  "Family Scheme: Accommodation or arrangement broken down",
+  "Family Scheme: Accommodation not available or suitable on arrival",
+  "Homes for Ukraine Scheme: Accommodation or arrangement broken down",
+  "Homes for Ukraine Scheme: Accommodation not available or suitable on arrival",
+  "Homes for Ukraine Scheme: Rejected sponsors offer",
+  "Extension Scheme",
+  "Other/Not Known",
+  "Temporary Accommodation Snapshot",
+  "Offer of Settled Accomodation"
+)
+
+homelessness_24feb_19may_raw <- 
+  homelessness_24feb_19may_raw |> 
+  as_tibble() |> 
+  mutate(across(-(lad_code:lad_name), as.numeric))
+
+homelessness_24feb_19may_total <- 
+  homelessness_24feb_19may_raw |> 
+  slice(3)
+
+homelessness_24feb_19may <- 
+  homelessness_24feb_19may_raw |> 
+  filter(str_detect(lad_code, "^E"))
 
 # ---- Load latest homelessness management info (24 February to 21 April 2023) ----
 # Source: https://www.gov.uk/government/publications/homelessness-management-information-ukrainian-nationals-england
@@ -570,6 +615,7 @@ homelessness_24feb_3jun <-
 # ---- Summary of homelessness ----
 homelessness_total <- 
   bind_rows(
+    homelessness_24feb_19may_total |> mutate(Date = ymd("2023-05-19"), Date_text = "19 May"),
     homelessness_24feb_21apr_total |> mutate(Date = ymd("2023-04-21"), Date_text = "21 April"),
     homelessness_24feb_24mar_total |> mutate(Date = ymd("2023-03-24"), Date_text = "24 March"),
     homelessness_24feb_24feb_total |> mutate(Date = ymd("2023-02-24"), Date_text = "24 February"),
@@ -584,7 +630,7 @@ homelessness_total <-
     homelessness_24feb_3jun_total  |> mutate(Date = ymd("2022-06-03"), Date_text = "3 June")
   ) |> 
   relocate(Date) |> 
-  mutate(Date_text = factor(Date_text, levels = c("3 June", "1 July", "29 July", "26 August", "23 September", "21 October", "18 November", "30 December", "27 January", "24 February", "24 March", "21 April")))
+  mutate(Date_text = factor(Date_text, levels = c("3 June", "1 July", "29 July", "26 August", "23 September", "21 October", "18 November", "30 December", "27 January", "24 February", "24 March", "21 April", "19 May")))
 
 # Calculate proportions of households at risk of homelessness in each visa scheme
 homelessness_total <- 
@@ -907,6 +953,15 @@ homelessness_trends <-
         temp_21apr = `Temporary Accommodation Snapshot`, 
         # temp_percent_24mar = `% in temporary accommodation`
       )
+  ) |> 
+  left_join(
+    homelessness_24feb_19may |> 
+      select(
+        lad_code, 
+        lad_name, 
+        total_19may = `Total Ukrainian households owed a prevention or relief duty`, 
+        temp_19may = `Temporary Accommodation Snapshot`
+      )
   )
 
 homelessness_trends <- 
@@ -969,13 +1024,15 @@ homelessness_trends <-
     # temp_percent_24mar = 0,
     
     total_21apr = 0,
-    temp_21apr = 0
+    temp_21apr = 0,
+    
+    total_19may = 0,
+    temp_19may = 0
+    
   )) |> 
   mutate(
-    total_delta = total_21apr - total_3jun,
-    # percent_delta = percent_24mar - percent_3jun,
-    temp_delta = temp_21apr - temp_3jun,
-    # temp_percent_delta = temp_percent_24mar - temp_percent_3jun
+    total_delta = total_19may - total_3jun,
+    temp_delta = temp_19may - temp_3jun
   )
 
 # ---- Save wrangled data ----
@@ -991,6 +1048,7 @@ write_csv(homelessness_24feb_27jan, "data/homelessness/ukraine-homelessness-27-j
 write_csv(homelessness_24feb_24feb, "data/homelessness/ukraine-homelessness-24-february.csv")
 write_csv(homelessness_24feb_24mar, "data/homelessness/ukraine-homelessness-24-march.csv")
 write_csv(homelessness_24feb_21apr, "data/homelessness/ukraine-homelessness-21-april.csv")
+write_csv(homelessness_24feb_19may, "data/homelessness/ukraine-homelessness-19-may.csv")
 
 write_csv(homelessness_total, "data/homelessness/ukraine-homelessness-summary.csv")
 write_csv(homelessness_trends, "data/homelessness/ukraine-homelessness-trends.csv")
