@@ -67,10 +67,11 @@ wrangle_visa_data <- function(d, visa_date, country = "^E") {
     filter(str_detect(ltla21_code, country)) |>
     mutate(Date = visa_date) |>
     relocate(Date) |>
-    mutate(across(starts_with("Number"), as.character)) |>
-    # Standardise column names (some have footnotes; some say "Numbers" rather than "Number")
-    rename_with(function(x) "Number of visa applications", contains("applications")) |>
-    rename_with(function(x) "Number of arrivals", contains("arrivals"))
+    mutate(across(starts_with("Number"), as.character)) %>%
+    # Some visa data files are missing the 'applications' or 'arrivals' columns - only rename if they exist
+    # Inline conditional logic - the {if(...)} statements - needs matrittr pipes rather than base pipes
+    {if(sum(str_detect(names(tmp_england), "applications")) > 0) rename_with(., function(x) "Number of visa applications", contains("applications")) else .} %>%
+    {if(sum(str_detect(names(tmp_england), "arrivals")) > 0) rename_with(., function(x) "Number of arrivals", contains("arrivals")) else .}
 }
 
 convert_number_columns <- function(d) {
