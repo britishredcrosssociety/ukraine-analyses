@@ -438,7 +438,6 @@ visas_scraped <- tribble(
   42, "2023-01-10", "applications refused", "Ukraine Sponsorship Scheme", 1000,
   42, "2023-01-10", "applications awaiting conclusion", "Ukraine Family Scheme", 2000,
   42, "2023-01-10", "applications awaiting conclusion", "Ukraine Sponsorship Scheme", 10000,
-  
   43, "2023-01-17", "visa applications received", "Ukraine Family Scheme", 82400,
   43, "2023-01-17", "visa applications received", "Ukraine Sponsorship Scheme", 179000,
   43, "2023-01-17", "visas issued", "Ukraine Family Scheme", 64400,
@@ -451,7 +450,6 @@ visas_scraped <- tribble(
   43, "2023-01-17", "applications refused", "Ukraine Sponsorship Scheme", 900,
   43, "2023-01-17", "applications awaiting conclusion", "Ukraine Family Scheme", 1600,
   43, "2023-01-17", "applications awaiting conclusion", "Ukraine Sponsorship Scheme", 10000,
-
   44, "2023-01-24", "visa applications received", "Ukraine Family Scheme", NA,
   44, "2023-01-24", "visa applications received", "Ukraine Sponsorship Scheme", NA,
   44, "2023-01-24", "visas issued", "Ukraine Family Scheme", NA,
@@ -464,7 +462,6 @@ visas_scraped <- tribble(
   44, "2023-01-24", "applications refused", "Ukraine Sponsorship Scheme", NA,
   44, "2023-01-24", "applications awaiting conclusion", "Ukraine Family Scheme", NA,
   44, "2023-01-24", "applications awaiting conclusion", "Ukraine Sponsorship Scheme", NA,
-
   45, "2023-01-31", "visa applications received", "Ukraine Family Scheme", 84600,
   45, "2023-01-31", "visa applications received", "Ukraine Sponsorship Scheme", 180900,
   45, "2023-01-31", "visas issued", "Ukraine Family Scheme", 65500,
@@ -477,20 +474,18 @@ visas_scraped <- tribble(
   45, "2023-01-31", "applications refused", "Ukraine Sponsorship Scheme", 1000,
   45, "2023-01-31", "applications awaiting conclusion", "Ukraine Family Scheme", 1900,
   45, "2023-01-31", "applications awaiting conclusion", "Ukraine Sponsorship Scheme", 9300,
-
   46, "2023-02-07", "visa applications received", "Ukraine Family Scheme", 85800,
   46, "2023-02-07", "visa applications received", "Ukraine Sponsorship Scheme", 182000,
   46, "2023-02-07", "visas issued", "Ukraine Family Scheme", 65800,
   46, "2023-02-07", "visas issued", "Ukraine Sponsorship Scheme", 152100,
   46, "2023-02-06", "arrivals of visa-holders in the UK", "Ukraine Family Scheme", 46900,
   46, "2023-02-06", "arrivals of visa-holders in the UK", "Ukraine Sponsorship Scheme", 114400,
-  46, "2023-02-07", "applications withdrawn", "Ukraine Family Scheme", 	10300,
+  46, "2023-02-07", "applications withdrawn", "Ukraine Family Scheme", 10300,
   46, "2023-02-07", "applications withdrawn", "Ukraine Sponsorship Scheme", 19300,
   46, "2023-02-07", "applications refused", "Ukraine Family Scheme", 7300,
   46, "2023-02-07", "applications refused", "Ukraine Sponsorship Scheme", 900,
   46, "2023-02-07", "applications awaiting conclusion", "Ukraine Family Scheme", 2300,
   46, "2023-02-07", "applications awaiting conclusion", "Ukraine Sponsorship Scheme", 9700,
-
   47, "2023-02-14", "visa applications received", "Ukraine Family Scheme", 86700,
   47, "2023-02-14", "visa applications received", "Ukraine Sponsorship Scheme", 183000,
   47, "2023-02-14", "visas issued", "Ukraine Family Scheme", 65900,
@@ -503,7 +498,6 @@ visas_scraped <- tribble(
   47, "2023-02-14", "applications refused", "Ukraine Sponsorship Scheme", 1000,
   47, "2023-02-14", "applications awaiting conclusion", "Ukraine Family Scheme", 2400,
   47, "2023-02-14", "applications awaiting conclusion", "Ukraine Sponsorship Scheme", 9700,
-
   48, "2023-02-21", "visa applications received", "Ukraine Family Scheme", 87600,
   48, "2023-02-21", "visa applications received", "Ukraine Sponsorship Scheme", 184000,
   48, "2023-02-21", "visas issued", "Ukraine Family Scheme", 66100,
@@ -516,7 +510,6 @@ visas_scraped <- tribble(
   48, "2023-02-21", "applications refused", "Ukraine Sponsorship Scheme", 1000,
   48, "2023-02-21", "applications awaiting conclusion", "Ukraine Family Scheme", 2300,
   48, "2023-02-21", "applications awaiting conclusion", "Ukraine Sponsorship Scheme", 9400,
-
   49, "2023-02-28", "visa applications received", "Ukraine Family Scheme", 88600,
   49, "2023-02-28", "visa applications received", "Ukraine Sponsorship Scheme", 185000,
   49, "2023-02-28", "visas issued", "Ukraine Family Scheme", 66300,
@@ -529,7 +522,6 @@ visas_scraped <- tribble(
   49, "2023-02-28", "applications refused", "Ukraine Sponsorship Scheme", 1000,
   49, "2023-02-28", "applications awaiting conclusion", "Ukraine Family Scheme", 2300,
   49, "2023-02-28", "applications awaiting conclusion", "Ukraine Sponsorship Scheme", 9500,
-
   50, "2023-03-07", "visa applications received", "Ukraine Family Scheme", 89300,
   50, "2023-03-07", "visa applications received", "Ukraine Sponsorship Scheme", 185900,
   50, "2023-03-07", "visas issued", "Ukraine Family Scheme", 66600,
@@ -542,7 +534,6 @@ visas_scraped <- tribble(
   50, "2023-03-07", "applications refused", "Ukraine Sponsorship Scheme", 1100,
   50, "2023-03-07", "applications awaiting conclusion", "Ukraine Family Scheme", 2000,
   50, "2023-03-07", "applications awaiting conclusion", "Ukraine Sponsorship Scheme", 9400,
-
   51, "2023-03-14", "visa applications received", "Ukraine Family Scheme", 91200,
   51, "2023-03-14", "visa applications received", "Ukraine Sponsorship Scheme", 187000,
   51, "2023-03-14", "visas issued", "Ukraine Family Scheme", 66800,
@@ -555,7 +546,6 @@ visas_scraped <- tribble(
   51, "2023-03-14", "applications refused", "Ukraine Sponsorship Scheme", 1100,
   51, "2023-03-14", "applications awaiting conclusion", "Ukraine Family Scheme", 3100,
   51, "2023-03-14", "applications awaiting conclusion", "Ukraine Sponsorship Scheme", 9800,
-
   52, "2023-03-21", "visa applications received", "Ukraine Family Scheme", 92200,
   52, "2023-03-21", "visa applications received", "Ukraine Sponsorship Scheme", 188000,
   52, "2023-03-21", "visas issued", "Ukraine Family Scheme", 67000,
@@ -568,7 +558,6 @@ visas_scraped <- tribble(
   52, "2023-03-21", "applications refused", "Ukraine Sponsorship Scheme", 1100,
   52, "2023-03-21", "applications awaiting conclusion", "Ukraine Family Scheme", 3000,
   52, "2023-03-21", "applications awaiting conclusion", "Ukraine Sponsorship Scheme", 9700,
-
   53, "2023-03-28", "visa applications received", "Ukraine Family Scheme", 92800,
   53, "2023-03-28", "visa applications received", "Ukraine Sponsorship Scheme", 189000,
   53, "2023-03-28", "visas issued", "Ukraine Family Scheme", 67200,
@@ -581,7 +570,6 @@ visas_scraped <- tribble(
   53, "2023-03-28", "applications refused", "Ukraine Sponsorship Scheme", 1300,
   53, "2023-03-28", "applications awaiting conclusion", "Ukraine Family Scheme", 2600,
   53, "2023-03-28", "applications awaiting conclusion", "Ukraine Sponsorship Scheme", 9400,
-
   54, "2023-04-04", "visa applications received", "Ukraine Family Scheme", 93200,
   54, "2023-04-04", "visa applications received", "Ukraine Sponsorship Scheme", 189900,
   54, "2023-04-04", "visas issued", "Ukraine Family Scheme", 67400,
@@ -594,7 +582,6 @@ visas_scraped <- tribble(
   54, "2023-04-04", "applications refused", "Ukraine Sponsorship Scheme", 1400,
   54, "2023-04-04", "applications awaiting conclusion", "Ukraine Family Scheme", 2100,
   54, "2023-04-04", "applications awaiting conclusion", "Ukraine Sponsorship Scheme", 9600,
-
   55, "2023-04-11", "visa applications received", "Ukraine Family Scheme", 93500,
   55, "2023-04-11", "visa applications received", "Ukraine Sponsorship Scheme", 190700,
   55, "2023-04-11", "visas issued", "Ukraine Family Scheme", 67600,
@@ -607,11 +594,10 @@ visas_scraped <- tribble(
   55, "2023-04-11", "applications refused", "Ukraine Sponsorship Scheme", 1400,
   55, "2023-04-11", "applications awaiting conclusion", "Ukraine Family Scheme", 1800,
   55, "2023-04-11", "applications awaiting conclusion", "Ukraine Sponsorship Scheme", 9800,
-
   56, "2023-04-18", "visa applications received", "Ukraine Family Scheme", 93800,
   56, "2023-04-18", "visa applications received", "Ukraine Sponsorship Scheme", 191500,
   56, "2023-04-18", "visas issued", "Ukraine Family Scheme", 67700,
-  56, "2023-04-18", "visas issued", "Ukraine Sponsorship Scheme", 158500 ,
+  56, "2023-04-18", "visas issued", "Ukraine Sponsorship Scheme", 158500,
   56, "2023-04-17", "arrivals of visa-holders in the UK", "Ukraine Family Scheme", 50300,
   56, "2023-04-17", "arrivals of visa-holders in the UK", "Ukraine Sponsorship Scheme", 120400,
   56, "2023-04-18", "applications withdrawn", "Ukraine Family Scheme", 11000,
@@ -620,7 +606,6 @@ visas_scraped <- tribble(
   56, "2023-04-18", "applications refused", "Ukraine Sponsorship Scheme", 1700,
   56, "2023-04-18", "applications awaiting conclusion", "Ukraine Family Scheme", 1200,
   56, "2023-04-18", "applications awaiting conclusion", "Ukraine Sponsorship Scheme", 9500,
-
   57, "2023-04-25", "visa applications received", "Ukraine Family Scheme", 94400,
   57, "2023-04-25", "visa applications received", "Ukraine Sponsorship Scheme", 192400,
   57, "2023-04-25", "visas issued", "Ukraine Family Scheme", 67900,
@@ -633,7 +618,6 @@ visas_scraped <- tribble(
   57, "2023-04-25", "applications refused", "Ukraine Sponsorship Scheme", 1900,
   57, "2023-04-25", "applications awaiting conclusion", "Ukraine Family Scheme", 1000,
   57, "2023-04-25", "applications awaiting conclusion", "Ukraine Sponsorship Scheme", 9300,
-
   58, "2023-05-02", "visa applications received", "Ukraine Family Scheme", 94900,
   58, "2023-05-02", "visa applications received", "Ukraine Sponsorship Scheme", 193300,
   58, "2023-05-02", "visas issued", "Ukraine Family Scheme", 68100,
@@ -646,7 +630,6 @@ visas_scraped <- tribble(
   58, "2023-05-02", "applications refused", "Ukraine Sponsorship Scheme", 2100,
   58, "2023-05-02", "applications awaiting conclusion", "Ukraine Family Scheme", 1000,
   58, "2023-05-02", "applications awaiting conclusion", "Ukraine Sponsorship Scheme", 9400,
-
   59, "2023-05-09", "visa applications received", "Ukraine Family Scheme", 95400,
   59, "2023-05-09", "visa applications received", "Ukraine Sponsorship Scheme", 193900,
   59, "2023-05-09", "visas issued", "Ukraine Family Scheme", 68200,
@@ -659,7 +642,6 @@ visas_scraped <- tribble(
   59, "2023-05-09", "applications refused", "Ukraine Sponsorship Scheme", 2200,
   59, "2023-05-09", "applications awaiting conclusion", "Ukraine Family Scheme", 1200,
   59, "2023-05-09", "applications awaiting conclusion", "Ukraine Sponsorship Scheme", 9400,
-  
   60, "2023-05-16", "visa applications received", "Ukraine Family Scheme", 96200,
   60, "2023-05-16", "visa applications received", "Ukraine Sponsorship Scheme", 195200,
   60, "2023-05-16", "visas issued", "Ukraine Family Scheme", 68400,
@@ -672,7 +654,6 @@ visas_scraped <- tribble(
   60, "2023-05-16", "applications refused", "Ukraine Sponsorship Scheme", 2500,
   60, "2023-05-16", "applications awaiting conclusion", "Ukraine Family Scheme", 1200,
   60, "2023-05-16", "applications awaiting conclusion", "Ukraine Sponsorship Scheme", 9400,
-
   61, "2023-05-23", "visa applications received", "Ukraine Family Scheme", 96800,
   61, "2023-05-23", "visa applications received", "Ukraine Sponsorship Scheme", 196200,
   61, "2023-05-23", "visas issued", "Ukraine Family Scheme", 68600,
@@ -685,7 +666,6 @@ visas_scraped <- tribble(
   61, "2023-05-23", "applications refused", "Ukraine Sponsorship Scheme", 3100,
   61, "2023-05-23", "applications awaiting conclusion", "Ukraine Family Scheme", 1000,
   61, "2023-05-23", "applications awaiting conclusion", "Ukraine Sponsorship Scheme", 8800,
-
   62, "2023-05-30", "visa applications received", "Ukraine Family Scheme", 97200,
   62, "2023-05-30", "visa applications received", "Ukraine Sponsorship Scheme", 197000,
   62, "2023-05-30", "visas issued", "Ukraine Family Scheme", 68800,
@@ -698,10 +678,9 @@ visas_scraped <- tribble(
   62, "2023-05-30", "applications refused", "Ukraine Sponsorship Scheme", 3600,
   62, "2023-05-30", "applications awaiting conclusion", "Ukraine Family Scheme", 800,
   62, "2023-05-30", "applications awaiting conclusion", "Ukraine Sponsorship Scheme", 8600,
-
   63, "2023-06-06", "visa applications received", "Ukraine Family Scheme", 97700,
   63, "2023-06-06", "visa applications received", "Ukraine Sponsorship Scheme", 197900,
-  63, "2023-06-06", "visas issued", "Ukraine Family Scheme", 68900 ,
+  63, "2023-06-06", "visas issued", "Ukraine Family Scheme", 68900,
   63, "2023-06-06", "visas issued", "Ukraine Sponsorship Scheme", 162700,
   63, "2023-06-05", "arrivals of visa-holders in the UK", "Ukraine Family Scheme", 51800, # Use last week's data due to technical issue
   63, "2023-06-05", "arrivals of visa-holders in the UK", "Ukraine Sponsorship Scheme", 124000, # Use last week's data due to technical issue
@@ -711,19 +690,30 @@ visas_scraped <- tribble(
   63, "2023-06-06", "applications refused", "Ukraine Sponsorship Scheme", 3900,
   63, "2023-06-06", "applications awaiting conclusion", "Ukraine Family Scheme", 600,
   63, "2023-06-06", "applications awaiting conclusion", "Ukraine Sponsorship Scheme", 8200,
-
   64, "2023-06-13", "visa applications received", "Ukraine Family Scheme", 98200,
   64, "2023-06-13", "visa applications received", "Ukraine Sponsorship Scheme", 198800,
   64, "2023-06-13", "visas issued", "Ukraine Family Scheme", 69100,
   64, "2023-06-13", "visas issued", "Ukraine Sponsorship Scheme", 163400,
-  64, "2023-06-12", "arrivals of visa-holders in the UK", "Ukraine Family Scheme", 52100, 
-  64, "2023-06-12", "arrivals of visa-holders in the UK", "Ukraine Sponsorship Scheme", 125000, 
+  64, "2023-06-12", "arrivals of visa-holders in the UK", "Ukraine Family Scheme", 52100,
+  64, "2023-06-12", "arrivals of visa-holders in the UK", "Ukraine Sponsorship Scheme", 125000,
   64, "2023-06-13", "applications withdrawn", "Ukraine Family Scheme", 11400,
   64, "2023-06-13", "applications withdrawn", "Ukraine Sponsorship Scheme", 23100,
   64, "2023-06-13", "applications refused", "Ukraine Family Scheme", 17200,
   64, "2023-06-13", "applications refused", "Ukraine Sponsorship Scheme", 4300,
   64, "2023-06-13", "applications awaiting conclusion", "Ukraine Family Scheme", 600,
-  64, "2023-06-13", "applications awaiting conclusion", "Ukraine Sponsorship Scheme", 8000
+  64, "2023-06-13", "applications awaiting conclusion", "Ukraine Sponsorship Scheme", 8000,
+  65, "2023-06-20", "visa applications received", "Ukraine Family Scheme", 98700,
+  65, "2023-06-20", "visa applications received", "Ukraine Sponsorship Scheme", 199800,
+  65, "2023-06-20", "visas issued", "Ukraine Family Scheme", 69100,
+  65, "2023-06-20", "visas issued", "Ukraine Sponsorship Scheme", 163900,
+  65, "2023-06-19", "arrivals of visa-holders in the UK", "Ukraine Family Scheme", 52300,
+  65, "2023-06-19", "arrivals of visa-holders in the UK", "Ukraine Sponsorship Scheme", 125700,
+  65, "2023-06-20", "applications withdrawn", "Ukraine Family Scheme", 11400,
+  65, "2023-06-20", "applications withdrawn", "Ukraine Sponsorship Scheme", 23200,
+  65, "2023-06-20", "applications refused", "Ukraine Family Scheme", 17400,
+  65, "2023-06-20", "applications refused", "Ukraine Sponsorship Scheme", 4600,
+  65, "2023-06-20", "applications awaiting conclusion", "Ukraine Family Scheme", 700,
+  65, "2023-06-20", "applications awaiting conclusion", "Ukraine Sponsorship Scheme", 8100
 ) |>
   mutate(
     Date = ymd(Date),
