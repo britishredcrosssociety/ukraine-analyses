@@ -29,7 +29,8 @@ doc <- read_html(out)
 # Get URLs of each visa data file by scraping the href of any <a> tags within anything that has the class "attachment-inline"
 visa_data_urls <-
   doc |>
-  html_nodes(xpath = "//*[contains(@class, 'attachment-inline')]//a/@href") |>
+  # html_nodes(xpath = "//*[contains(@class, 'attachment-inline')]//a/@href") |>
+  html_nodes(xpath = "//*[contains(@class, 'gem-c-attachment-link')]//a/@href") |>
   html_text()
 
 # Download each dataset if it doesn't already exist
