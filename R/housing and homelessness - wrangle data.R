@@ -8,7 +8,7 @@ library(httr)
 # Load live tables on homelessness
 # Source: https://www.gov.uk/government/statistical-data-sets/live-tables-on-homelessness
 GET(
-  "https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/1119809/Detailed_LA_202206.ods",
+  "https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/1173277/Detailed_LA_202303.ods",
   write_disk(tf <- tempfile(fileext = ".ods"))
 )
 
@@ -28,7 +28,7 @@ england_homeless <-
   )
 
 ## Temporary accommodation ----
-england_temp_accomm_raw <- read_ods(tf, sheet = "TA1_", skip = 6)
+england_temp_accomm_raw <- read_ods(tf, sheet = "TA1", skip = 6)
 
 england_temp_accomm <- england_temp_accomm_raw[, c(1, 2, 7)]
 names(england_temp_accomm) <- c("ltla21_code", "ltla21_name", "Total number of households in TA per (000s)")
@@ -44,14 +44,19 @@ england_temp_accomm <-
 ## Housing stock and waiting list data ----
 # Load LA housing statistics
 # Source: https://www.gov.uk/government/collections/local-authority-housing-data // https://www.gov.uk/government/statistical-data-sets/local-authority-housing-statistics-data-returns-for-2021-to-2022
-england_stock_waits <- read_csv("https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/1130122/LAHS_21-22_Full_Data.csv")
+GET(
+  "https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/1166232/LAHS_21_22_accessible.ods",
+  write_disk(tf <- tempfile(fileext = ".ods"))
+)
+
+england_stock_waits <- read_ods(tf, sheet = "Local_Authority_Data", skip = 2)
 
 # Keep relevant columns
 # Definitions of column codes are from: https://www.gov.uk/government/publications/completing-local-authority-housing-statistics-2020-to-2021-guidance-notes-and-bulk-upload
 england_stock_waits <- 
   england_stock_waits |> 
   select(
-    ltla21_code = LAD21CD,
+    ltla21_code = LA_Code,
     # ltla21_name = organisation.name,
     
     # Total number of households on the waiting list at 31 March
@@ -256,7 +261,7 @@ wales_homelessness_raw <- download_wales("http://open.statswales.gov.wales/en-gb
 wales_homelessness <- 
   wales_homelessness_raw |> 
   filter(
-    Period_Code == "2021220",
+    Period_Code == "2022230",
     str_detect(Area_AltCode1, "^W06"), 
     Household_ItemName_ENG == "Total",
     str_detect(Outcomes_ItemName_ENG, "Number of outcomes")
@@ -283,7 +288,7 @@ wales_temp_accom_raw <- download_wales("http://open.statswales.gov.wales/en-gb/d
 wales_temp_accom <- 
   wales_temp_accom_raw |> 
   filter(
-    Period_Code == "202122Q4",
+    Period_Code == "202223Q4",
     str_detect(Area_AltCode1, "^W06"), 
     Household_ItemName_ENG == "Total",
     Time_ItemName_ENG == "Total"
@@ -313,7 +318,7 @@ wales_stock_raw <- download_wales("http://open.statswales.gov.wales/en-gb/datase
 wales_stock_count <- 
   wales_stock_raw |> 
   filter(
-    Year_Code == "202021",
+    Year_Code == "202122",
     str_detect(Area_AltCode1, "^W06"),
     Accommodation_ItemName_ENG == "Total social housing stock including intermediate tenures, intermediate rents and other social housing",
     Provider_ItemName_ENG == "Wales"
@@ -343,7 +348,7 @@ wales_vacancies_raw <- download_wales("http://open.statswales.gov.wales/en-gb/da
 wales_vacancies <- 
   wales_vacancies_raw |> 
   filter(
-    Year_Code == "202021",
+    Year_Code == "202122",
     Area_Hierarchy != 0,  # Keep only Local Authorities
     Vacancy_ItemName_ENG == "Total",
     Availability_ItemName_ENG == "Total",
