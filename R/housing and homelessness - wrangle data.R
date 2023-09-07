@@ -1,6 +1,9 @@
 library(tidyverse)
 library(demographr)
+library(geographr)
+library(compositr)
 library(readODS)
+library(readxl)
 library(httr)
 
 # England ----
@@ -112,6 +115,28 @@ england <-
 write_csv(england, "data/housing/housing-england.csv")
 
 # Scotland ----
+# Download latest homelessness data
+# Source: https://www.gov.scot/publications/homelessness-in-scotland-2022-23/documents/
+tf <- download_file("https://www.gov.scot/binaries/content/documents/govscot/publications/statistics/2023/08/homelessness-in-scotland-2022-23/documents/main-tables_homelessness-in-scotland-2022-23/main-tables_homelessness-in-scotland-2022-23/govscot%3Adocument/Main%2Btables_Homelessness%2Bin%2BScotland%2B2022-23.xlsx", ".xlsx")
+
+## Local Authority names and codes ----
+scottish_ltla_names_codes <- 
+  geographr::boundaries_ltla21 |> 
+  sf::st_drop_geometry() |> 
+  filter(str_detect(ltla21_code, "^S")) |> 
+  
+  # Match to LA names in the homelessness data
+  mutate(ltla21_name = str_replace(ltla21_name, " and ", " & ")) |> 
+  mutate(
+    ltla21_name = case_match(
+      ltla21_name,
+      "Na h-Eileanan Siar" ~ "Eilean Siar", 
+      "City of Edinburgh" ~ "Edinburgh",
+      "Shetland Islands" ~ "Shetland",
+      .default = ltla21_name
+    )
+  )
+
 ## Household estimates ----
 # Source: https://statistics.gov.scot/resource?uri=http%3A%2F%2Fstatistics.gov.scot%2Fdata%2Fhousehold-estimates
 scotland_households <- read_csv("https://statistics.gov.scot/slice/observations.csv?&dataset=http%3A%2F%2Fstatistics.gov.scot%2Fdata%2Fhousehold-estimates&http%3A%2F%2Fpurl.org%2Flinked-data%2Fcube%23measureType=http%3A%2F%2Fstatistics.gov.scot%2Fdef%2Fmeasure-properties%2Fcount&http%3A%2F%2Fpurl.org%2Flinked-data%2Fsdmx%2F2009%2Fdimension%23refPeriod=http%3A%2F%2Freference.data.gov.uk%2Fid%2Fyear%2F2021", skip = 7)
@@ -127,19 +152,34 @@ scotland_households <-
   
 ## Homelessness ----
 # Source: https://statistics.gov.scot/resource?uri=http%3A%2F%2Fstatistics.gov.scot%2Fdata%2Fhomelessness-applications
-scotland_homelessness <- read_csv("https://statistics.gov.scot/downloads/cube-table?uri=http%3A%2F%2Fstatistics.gov.scot%2Fdata%2Fhomelessness-applications")
+# scotland_homelessness <- read_csv("https://statistics.gov.scot/downloads/cube-table?uri=http%3A%2F%2Fstatistics.gov.scot%2Fdata%2Fhomelessness-applications")
+# 
+# scotland_homelessness <- 
+#   scotland_homelessness |> 
+#   filter(DateCode == "2020/2021" & FeatureType == "Council Area" & `Application Type` == "Assessed as homeless or threatened with homelessness") |> 
+#   select(
+#     ltla21_code = FeatureCode,
+#     `Assessed as homeless or threatened with homelessness` = Value
+#   ) |> 
+#   
+#   # Calculate rate per 1000 households
+#   left_join(scotland_households) |> 
+#   mutate(`Assessed as homeless or threatened with homelessness per 1,000` = `Assessed as homeless or threatened with homelessness` / `Number of households` * 1000) |> 
+#   select(ltla21_code, `Assessed as homeless or threatened with homelessness per 1,000`)
+
+# Homelessness applications by local authority
+scotland_homelessness <- read_excel(tf, sheet = "T1", range = "A6:F39")
 
 scotland_homelessness <- 
   scotland_homelessness |> 
-  filter(DateCode == "2020/2021" & FeatureType == "Council Area" & `Application Type` == "Assessed as homeless or threatened with homelessness") |> 
-  select(
-    ltla21_code = FeatureCode,
-    `Assessed as homeless or threatened with homelessness` = Value
-  ) |> 
+  select(ltla21_name = `Local Authority`, applications = `2022-23`) |> 
+  filter(ltla21_name != "Scotland") |> 
   
-  # Calculate rate per 1000 households
+  left_join(scottish_ltla_names_codes) |> 
+  
+  # Calculate rate
   left_join(scotland_households) |> 
-  mutate(`Assessed as homeless or threatened with homelessness per 1,000` = `Assessed as homeless or threatened with homelessness` / `Number of households` * 1000) |> 
+  mutate(`Assessed as homeless or threatened with homelessness per 1,000` = applications / `Number of households` * 1000) |> 
   select(ltla21_code, `Assessed as homeless or threatened with homelessness per 1,000`)
 
 ## Temporary accommodation ----
@@ -157,6 +197,21 @@ scotland_temp_accom <-
   # Calculate rate per 1000 households
   left_join(scotland_households) |> 
   mutate(`Households in temporary accommodation per 1,000` = `Households in temporary accommodation` / `Number of households` * 1000) |> 
+  select(ltla21_code, `Households in temporary accommodation per 1,000`)
+
+#
+scotland_temp_accom <- read_excel(tf, sheet = "T26", range = "A6:F39")
+
+scotland_temp_accom <- 
+  scotland_temp_accom |> 
+  select(ltla21_name = `Local Authority`, temp_accomm = `2023`) |> 
+  filter(ltla21_name != "Scotland") |> 
+  
+  left_join(scottish_ltla_names_codes) |> 
+  
+  # Calculate rate
+  left_join(scotland_households) |> 
+  mutate(`Households in temporary accommodation per 1,000` = temp_accomm / `Number of households` * 1000) |> 
   select(ltla21_code, `Households in temporary accommodation per 1,000`)
 
 ## Waiting list ----
