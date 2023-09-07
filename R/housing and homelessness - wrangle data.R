@@ -446,68 +446,59 @@ write_csv(wales, "data/housing/housing-wales.csv")
 
 ## Households estimates ----
 
-# Northern Ireland Housing Statistics 2020-21 Section 1 Tables – Supply
-# Source: https://www.communities-ni.gov.uk/publications/northern-ireland-housing-statistics-2020-21
-GET(
-  "https://www.communities-ni.gov.uk/system/files/publications/communities/ni-housing-stats-20-21-tables1.ods",
-  write_disk(tf <- tempfile(fileext = ".ods"))
-)
+# Northern Ireland Housing Statistics 2021-22 Section 1 Tables – Supply
+# Source: https://www.communities-ni.gov.uk/publications/northern-ireland-housing-statistics-2021-22
+tf <- download_file("https://www.communities-ni.gov.uk/system/files/publications/communities/ni-housing-stats-21-22-tables1.ods", ".ods")
 
 # 1.2 Total housing stock in each of the 11 district council areas 2008-2021
-ni_households_raw <- read_ods(tf, sheet = "T1_2", range = "A3:O15")
+ni_households_raw <- read_ods(tf, sheet = "T1_2", range = "A3:P15")
 
 ni_households <- 
   ni_households_raw |> 
   na.omit() |> 
   as_tibble() |> 
   select(
-    ltla21_name = `District council`,
-    `Number of households` = `2021`
+    ltla21_name = District.council,
+    `Number of households` = X2022
   )
 
 ## Homelessness ----
-# Source: https://www.communities-ni.gov.uk/publications/northern-ireland-homelessness-bulletin-july-december-2021
-GET(
-  "https://www.communities-ni.gov.uk/system/files/publications/communities/ni-homelessness-bulletin-jul-dec-2021-tables.ods",
-  write_disk(tf <- tempfile(fileext = ".ods"))
-)
+# Source: https://www.communities-ni.gov.uk/publications/northern-ireland-homelessness-bulletin-july-december-2022
+tf <- download_file("https://www.communities-ni.gov.uk/system/files/publications/communities/ni-homelessness-bulletin-jul-dec-2022-tables.ods", ".ods")
 
 # 2.3 Households accepted as homeless by local government district
 # ni_homelessness_raw <- read_ods(tf, sheet = "2_3", range = "A3:I14")
 
 # 1.3 Homeless presenters by local government district
-ni_homelessness_raw <- read_ods(tf, sheet = "1_3", range = "A4:Q15")
+ni_homelessness_raw <- read_ods(tf, sheet = "1_3", range = "A4:U15")
 
 ni_homelessness <- 
-  ni_homelessness_raw[, c(1, 17)]
+  ni_homelessness_raw[, c(1, 21)]
 
 ni_homelessness <-
   ni_homelessness |> 
   as_tibble() |> 
   rename(
-    ltla21_name = `Local government district (LGD)`,
-    `Homeless or threatened with homelessness per 1,000` = `Presenters per 1,000 population`
+    ltla21_name = Local.government.district..LGD.,
+    `Homeless or threatened with homelessness per 1,000` = Presenters.per.1.000.population...21
   )
 
 ## Temporary accommodation ----
 #!! Data not available by Local Government District
 
 ## Waiting list ----
-# Northern Ireland Housing Statistics 2020-21 Section 3 Tables – Social Renting Sector
-# Source: https://www.communities-ni.gov.uk/publications/northern-ireland-housing-statistics-2020-21
-GET(
-  "https://www.communities-ni.gov.uk/system/files/publications/communities/ni-housing-stats-20-21-tables3.ods",
-  write_disk(tf <- tempfile(fileext = ".ods"))
-)
+# Northern Ireland Housing Statistics 2021-22 Section 3 Tables – Social Renting Sector
+# Source: https://www.communities-ni.gov.uk/publications/northern-ireland-housing-statistics-2021-22
+tf <- download_file("https://www.communities-ni.gov.uk/system/files/publications/communities/ni-housing-stats-21-22-tables3.ods", ".ods")
 
-# 3.6  Social rented sector waiting lists by new local government district  2020-21
+# 3.6  Social rented sector waiting lists by new local government district  2021-22
 ni_waiting_raw <- read_ods(tf, sheet = "T3_6", range = "A3:B14")
 
 ni_waiting <- 
   ni_waiting_raw |> 
   rename(
-    ltla21_name = `New local government district`,
-    `Households on housing waiting list` = `2020-21`
+    ltla21_name = New.local.government.district,
+    `Households on housing waiting list` = X2021.22
   ) |> 
   mutate(ltla21_name = str_replace(ltla21_name, "&", "and"))
 
