@@ -842,22 +842,36 @@ visas_scraped <- tribble(
   75, "2023-08-29", "applications refused", "Ukraine Family Scheme", 19600,
   75, "2023-08-29", "applications refused", "Ukraine Sponsorship Scheme", 7100,
   75, "2023-08-29", "applications awaiting conclusion", "Ukraine Family Scheme", 700,
-  75, "2023-08-29", "applications awaiting conclusion", "Ukraine Sponsorship Scheme", 6600
+  75, "2023-08-29", "applications awaiting conclusion", "Ukraine Sponsorship Scheme", 6600,
 
   # "Data for this release was not available for the scheduled update on 7
   # September due to a technical issue"
-  # 76, "2023-09-05", "visa applications received", "Ukraine Family Scheme", NA,
-  # 76, "2023-09-05", "visa applications received", "Ukraine Sponsorship Scheme", NA,
-  # 76, "2023-09-05", "visas issued", "Ukraine Family Scheme", NA,
-  # 76, "2023-09-05", "visas issued", "Ukraine Sponsorship Scheme", NA,
-  # 76, "2023-09-04", "arrivals of visa-holders in the UK", "Ukraine Family Scheme", NA,
-  # 76, "2023-09-04", "arrivals of visa-holders in the UK", "Ukraine Sponsorship Scheme", NA,
-  # 76, "2023-09-05", "applications withdrawn", "Ukraine Family Scheme", NA,
-  # 76, "2023-09-05", "applications withdrawn", "Ukraine Sponsorship Scheme", NA,
-  # 76, "2023-09-05", "applications refused", "Ukraine Family Scheme", NA,
-  # 76, "2023-09-05", "applications refused", "Ukraine Sponsorship Scheme", NA,
-  # 76, "2023-09-05", "applications awaiting conclusion", "Ukraine Family Scheme", NA,
-  # 76, "2023-09-05", "applications awaiting conclusion", "Ukraine Sponsorship Scheme", NA
+  76, "2023-09-05", "visa applications received", "Ukraine Family Scheme", NA,
+  76, "2023-09-05", "visa applications received", "Ukraine Sponsorship Scheme", NA,
+  76, "2023-09-05", "visas issued", "Ukraine Family Scheme", NA,
+  76, "2023-09-05", "visas issued", "Ukraine Sponsorship Scheme", NA,
+  76, "2023-09-04", "arrivals of visa-holders in the UK", "Ukraine Family Scheme", NA,
+  76, "2023-09-04", "arrivals of visa-holders in the UK", "Ukraine Sponsorship Scheme", NA,
+  76, "2023-09-05", "applications withdrawn", "Ukraine Family Scheme", NA,
+  76, "2023-09-05", "applications withdrawn", "Ukraine Sponsorship Scheme", NA,
+  76, "2023-09-05", "applications refused", "Ukraine Family Scheme", NA,
+  76, "2023-09-05", "applications refused", "Ukraine Sponsorship Scheme", NA,
+  76, "2023-09-05", "applications awaiting conclusion", "Ukraine Family Scheme", NA,
+  76, "2023-09-05", "applications awaiting conclusion", "Ukraine Sponsorship Scheme", NA,
+  
+  77, "2023-09-12", "visa applications received", "Ukraine Family Scheme", 102800,
+  77, "2023-09-12", "visa applications received", "Ukraine Sponsorship Scheme", 208800,
+  77, "2023-09-12", "visas issued", "Ukraine Family Scheme", 70200,
+  77, "2023-09-12", "visas issued", "Ukraine Sponsorship Scheme", 169800,
+  77, "2023-09-11", "arrivals of visa-holders in the UK", "Ukraine Family Scheme", 54300,
+  77, "2023-09-11", "arrivals of visa-holders in the UK", "Ukraine Sponsorship Scheme", 132300,
+  77, "2023-09-12", "applications withdrawn", "Ukraine Family Scheme", 12000,
+  77, "2023-09-12", "applications withdrawn", "Ukraine Sponsorship Scheme", 24800,
+  77, "2023-09-12", "applications refused", "Ukraine Family Scheme", 20200,
+  77, "2023-09-12", "applications refused", "Ukraine Sponsorship Scheme", 7500,
+  77, "2023-09-12", "applications awaiting conclusion", "Ukraine Family Scheme", 500,
+  77, "2023-09-12", "applications awaiting conclusion", "Ukraine Sponsorship Scheme", 6700
+  
 ) |>
   mutate(
     Date = ymd(Date),
