@@ -29,7 +29,7 @@ england_index <- read_csv("output-data/index-of-housing-insecurity/housing-index
 homelessness_total <- 
   homelessness_total |> 
   mutate(
-    Date_text = factor(Date_text, levels = c("3 June", "1 July", "29 July", "26 August", "23 September", "21 October", "18 November", "30 December")),
+    Date_text = factor(Date_text, levels = c("3 June", "1 July", "29 July", "26 August", "23 September", "21 October", "18 November", "30 December", "27 January", "24 February", "24 March", "21 April", "19 May", "16 June", "31 July")),
     `% in temporary accommodation` = `Temporary Accommodation Snapshot` / `Total Ukrainian households owed a prevention or relief duty`
   )
 
@@ -124,10 +124,27 @@ homelessness_total |>
   #   )
   # ) |> 
   
+  # mutate(
+  #   Date_text_short = Date_text |> 
+  #     str_remove("ember|tember|ober|ust|uary|y$|e$") |> 
+  #     factor(levels = c("3 Jun", "1 Jul", "29 Jul", "26 Aug", "23 Sep", "21 Oct", "18 Nov", "30 Dec", "27 Jan", "24 Feb", "24 Mar", "21 Apr", "19 May", "16 Jun", "31 Jul"))
+  # ) |> 
+  
   mutate(
     Date_text_short = Date_text |> 
-      str_remove("ember|tember|ober|ust|uary|y$|e$") |> 
-      factor(levels = c("3 Jun", "1 Jul", "29 Jul", "26 Aug", "23 Sep", "21 Oct", "18 Nov", "27 Jan"))
+      str_replace("June", "Jun") |> 
+      str_replace("July", "Jul") |> 
+      str_replace("August", "Aug") |> 
+      str_replace("September", "Sep") |> 
+      str_replace("October", "Oct") |> 
+      str_replace("November", "Nov") |> 
+      str_replace("December", "Dec") |> 
+      str_replace("January", "Jan") |> 
+      str_replace("February", "Feb") |> 
+      str_replace("March", "Mar") |> 
+      str_replace("April", "Apr") |> 
+      
+      factor(levels = c("3 Jun", "1 Jul", "29 Jul", "26 Aug", "23 Sep", "21 Oct", "18 Nov", "30 Dec", "27 Jan", "24 Feb", "24 Mar", "21 Apr", "19 May", "16 Jun", "31 Jul"))
   ) |> 
   
   ggplot(aes(x = Date_text_short, y = n, group = Scheme)) +
@@ -159,7 +176,7 @@ homelessness_total |>
     caption = "British Red Cross analysis of DLUHC data"
   )
 
-ggsave("images/homelessness - count by scheme and reason.png", width = 150, height = 150, units = "mm")
+ggsave("images/homelessness - count by scheme and reason.png", width = 175, height = 150, units = "mm")
 
 # ---- Numbers and %s in temporary accommodation ----
 homelessness_total |> 
