@@ -722,7 +722,7 @@ homelessness_total <-
     homelessness_24feb_3jun_total  |> mutate(Date = ymd("2022-06-03"), Date_text = "3 June")
   ) |> 
   relocate(Date) |> 
-  mutate(Date_text = factor(Date_text, levels = c("3 June", "1 July", "29 July", "26 August", "23 September", "21 October", "18 November", "30 December", "27 January", "24 February", "24 March", "21 April", "19 May")))
+  mutate(Date_text = factor(Date_text, levels = c("3 June", "1 July", "29 July", "26 August", "23 September", "21 October", "18 November", "30 December", "27 January", "24 February", "24 March", "21 April", "19 May", "16 June", "31 July")))
 
 # Calculate proportions of households at risk of homelessness in each visa scheme
 homelessness_total <- 
