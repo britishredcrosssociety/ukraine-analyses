@@ -64,7 +64,7 @@ wrangle_visa_summary <- function(d, visa_date) {
 wrangle_visa_data <- function(d, visa_date, country = "^E") {
   d |>
     as_tibble() |>
-    rename_with(function(x) "ltla21_code", contains("ONS code")) |>
+    rename_with(function(x) "ltla21_code", contains("ONS.code")) |>
     filter(str_detect(ltla21_code, country)) |>
     mutate(Date = visa_date) |>
     relocate(Date) |>
