@@ -94,7 +94,8 @@ england_stock_waits <-
     ltla21_code, 
     `Households on housing waiting list per 1,000`, 
     `Social housing stock as a proportion of all households`,
-    `Vacant dwellings per 1,000 units of social housing stock`
+    # `Vacant dwellings per 1,000 units of social housing stock`
+    `Vacant dwellings`
   )
 
 ## Combine datasets and calculate deciles ----
@@ -108,7 +109,7 @@ england <-
     waiting_quintile = as.integer(Hmisc::cut2(`Households on housing waiting list per 1,000`, g = 5)),
     homeless_quintile = as.integer(Hmisc::cut2(`Households assessed as threatened with homelessness per (000s)`, g = 5)),
     temp_accom_quintile = as.integer(Hmisc::cut2(`Households in temporary accommodation per 1,000`, g = 5)),
-    vacancies_quintile = as.integer(Hmisc::cut2(`Vacant dwellings per 1,000 units of social housing stock`, g = 5))
+    vacancies_quintile = as.integer(Hmisc::cut2(`Vacant dwellings`, g = 5))
   )
 
 # Save
