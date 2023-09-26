@@ -6,6 +6,9 @@ library(readODS)
 library(readxl)
 library(httr)
 
+source("https://github.com/britishredcrosssociety/resilience-index/raw/main/R/utils.R")
+source("https://github.com/matthewgthomas/brclib/raw/master/R/download_wales.R")
+
 # England ----
 ## Homelessness ----
 # Load live tables on homelessness
