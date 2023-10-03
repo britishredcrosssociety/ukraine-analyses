@@ -6,6 +6,9 @@ library(readODS)
 library(readxl)
 library(httr)
 
+source("https://github.com/britishredcrosssociety/resilience-index/raw/main/R/utils.R")
+source("https://github.com/matthewgthomas/brclib/raw/master/R/download_wales.R")
+
 # England ----
 ## Homelessness ----
 # Load live tables on homelessness
@@ -94,7 +97,8 @@ england_stock_waits <-
     ltla21_code, 
     `Households on housing waiting list per 1,000`, 
     `Social housing stock as a proportion of all households`,
-    `Vacant dwellings per 1,000 units of social housing stock`
+    # `Vacant dwellings per 1,000 units of social housing stock`
+    `Vacant dwellings`
   )
 
 ## Combine datasets and calculate deciles ----
@@ -108,7 +112,7 @@ england <-
     waiting_quintile = as.integer(Hmisc::cut2(`Households on housing waiting list per 1,000`, g = 5)),
     homeless_quintile = as.integer(Hmisc::cut2(`Households assessed as threatened with homelessness per (000s)`, g = 5)),
     temp_accom_quintile = as.integer(Hmisc::cut2(`Households in temporary accommodation per 1,000`, g = 5)),
-    vacancies_quintile = as.integer(Hmisc::cut2(`Vacant dwellings per 1,000 units of social housing stock`, g = 5))
+    vacancies_quintile = as.integer(Hmisc::cut2(`Vacant dwellings`, g = 5))
   )
 
 # Save
@@ -184,22 +188,22 @@ scotland_homelessness <-
 
 ## Temporary accommodation ----
 # Source: https://statistics.gov.scot/resource?uri=http%3A%2F%2Fstatistics.gov.scot%2Fdata%2Ftemporary-accommodation-statistics
-scotland_temp_accom <- read_csv("https://statistics.gov.scot/downloads/cube-table?uri=http%3A%2F%2Fstatistics.gov.scot%2Fdata%2Ftemporary-accommodation-statistics")
+# scotland_temp_accom <- read_csv("https://statistics.gov.scot/downloads/cube-table?uri=http%3A%2F%2Fstatistics.gov.scot%2Fdata%2Ftemporary-accommodation-statistics")
+# 
+# scotland_temp_accom <- 
+#   scotland_temp_accom |> 
+#   filter(DateCode == max(DateCode) & FeatureType == "Council Area") |> 
+#   select(
+#     ltla21_code = FeatureCode,
+#     `Households in temporary accommodation` = Value
+#   ) |> 
+#   
+#   # Calculate rate per 1000 households
+#   left_join(scotland_households) |> 
+#   mutate(`Households in temporary accommodation per 1,000` = `Households in temporary accommodation` / `Number of households` * 1000) |> 
+#   select(ltla21_code, `Households in temporary accommodation per 1,000`)
 
-scotland_temp_accom <- 
-  scotland_temp_accom |> 
-  filter(DateCode == max(DateCode) & FeatureType == "Council Area") |> 
-  select(
-    ltla21_code = FeatureCode,
-    `Households in temporary accommodation` = Value
-  ) |> 
-  
-  # Calculate rate per 1000 households
-  left_join(scotland_households) |> 
-  mutate(`Households in temporary accommodation per 1,000` = `Households in temporary accommodation` / `Number of households` * 1000) |> 
-  select(ltla21_code, `Households in temporary accommodation per 1,000`)
-
-#
+# Use more up-to-date data
 scotland_temp_accom <- read_excel(tf, sheet = "T26", range = "A6:F39")
 
 scotland_temp_accom <- 

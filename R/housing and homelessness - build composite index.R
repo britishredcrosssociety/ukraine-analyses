@@ -56,7 +56,7 @@ england_index <-
   # Align indicators - Higher value = more pressured housing situation.
   mutate(
     `Social housing stock as a proportion of all households` = `Social housing stock as a proportion of all households` * -1,
-    `Vacant dwellings per 1,000 units of social housing stock` = `Vacant dwellings per 1,000 units of social housing stock` * -1
+    `Vacant dwellings` = `Vacant dwellings` * -1
   ) |> 
 
   # Calculate composite index

@@ -29,7 +29,11 @@ england_index <- read_csv("output-data/index-of-housing-insecurity/housing-index
 homelessness_total <- 
   homelessness_total |> 
   mutate(
-    Date_text = factor(Date_text, levels = c("3 June", "1 July", "29 July", "26 August", "23 September", "21 October", "18 November", "30 December", "27 January", "24 February", "24 March", "21 April", "19 May", "16 June", "31 July")),
+    Date_text = factor(
+      Date_text, 
+      levels = c("3 June", "1 July", "29 July", "26 August", "23 September", "21 October", "18 November", "30 December", 
+                 "27 January", "24 February", "24 March", "21 April", "19 May", "16 June", "31 July", "31 August")
+    ),
     `% in temporary accommodation` = `Temporary Accommodation Snapshot` / `Total Ukrainian households owed a prevention or relief duty`
   )
 
@@ -144,7 +148,8 @@ homelessness_total |>
       str_replace("March", "Mar") |> 
       str_replace("April", "Apr") |> 
       
-      factor(levels = c("3 Jun", "1 Jul", "29 Jul", "26 Aug", "23 Sep", "21 Oct", "18 Nov", "30 Dec", "27 Jan", "24 Feb", "24 Mar", "21 Apr", "19 May", "16 Jun", "31 Jul"))
+      factor(levels = c("3 Jun", "1 Jul", "29 Jul", "26 Aug", "23 Sep", "21 Oct", "18 Nov", "30 Dec", 
+                        "27 Jan", "24 Feb", "24 Mar", "21 Apr", "19 May", "16 Jun", "31 Jul", "31 Aug"))
   ) |> 
   
   ggplot(aes(x = Date_text_short, y = n, group = Scheme)) +
