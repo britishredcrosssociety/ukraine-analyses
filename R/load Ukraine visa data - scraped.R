@@ -923,7 +923,20 @@ visas_scraped <- tribble(
   81, "2023-10-10", "applications refused", "Ukraine Family Scheme", 20800,
   81, "2023-10-10", "applications refused", "Ukraine Sponsorship Scheme", 8400,
   81, "2023-10-10", "applications awaiting conclusion", "Ukraine Family Scheme", 800,
-  81, "2023-10-10", "applications awaiting conclusion", "Ukraine Sponsorship Scheme", 6000
+  81, "2023-10-10", "applications awaiting conclusion", "Ukraine Sponsorship Scheme", 6000,
+
+  82, "2023-10-17", "visa applications received", "Ukraine Family Scheme", 104500,
+  82, "2023-10-17", "visa applications received", "Ukraine Sponsorship Scheme", 212900,
+  82, "2023-10-17", "visas issued", "Ukraine Family Scheme", 70600,
+  82, "2023-10-17", "visas issued", "Ukraine Sponsorship Scheme", 172500,
+  82, "2023-10-16", "arrivals of visa-holders in the UK", "Ukraine Family Scheme", 55000,
+  82, "2023-10-16", "arrivals of visa-holders in the UK", "Ukraine Sponsorship Scheme", 135200,
+  82, "2023-10-17", "applications withdrawn", "Ukraine Family Scheme", 12200,
+  82, "2023-10-17", "applications withdrawn", "Ukraine Sponsorship Scheme", 25800,
+  82, "2023-10-17", "applications refused", "Ukraine Family Scheme", 21100,
+  82, "2023-10-17", "applications refused", "Ukraine Sponsorship Scheme", 8700,
+  82, "2023-10-17", "applications awaiting conclusion", "Ukraine Family Scheme", 700,
+  82, "2023-10-17", "applications awaiting conclusion", "Ukraine Sponsorship Scheme", 6000
   
 ) |>
   mutate(
@@ -946,3 +959,4 @@ visas_scraped <-
 #   filter(str_detect(Stage, "arrivals")) |>
 #   pivot_wider(names_from = Scheme, values_from = Visas) |>
 #   mutate(Arrivals = `Ukraine Family Scheme` + `Ukraine Sponsorship Scheme`)
+
