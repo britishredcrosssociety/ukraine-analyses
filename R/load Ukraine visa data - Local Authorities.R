@@ -181,11 +181,16 @@ for (visa_file in visa_files) {
 }
 
 # Combine lists into single tibbles
-visas_ltla21_summary <- bind_rows(visas_summary)
-visas_ltla21_england <- bind_rows(visas_england)
-visas_ltla21_wales <- bind_rows(visas_wales)
-visas_ltla21_scotland <- bind_rows(visas_scotland)
-visas_ltla21_ni <- bind_rows(visas_ni)
+visas_ltla21_summary <- bind_rows(visas_summary) |>
+  rename_all(~ gsub("\\.", " ", .))
+visas_ltla21_england <- bind_rows(visas_england) |>
+  rename_all(~ gsub("\\.", " ", .))
+visas_ltla21_wales <- bind_rows(visas_wales) |>
+  rename_all(~ gsub("\\.", " ", .))
+visas_ltla21_scotland <- bind_rows(visas_scotland) |>
+  rename_all(~ gsub("\\.", " ", .))
+visas_ltla21_ni <- bind_rows(visas_ni) |>
+  rename_all(~ gsub("\\.", " ", .))
 
 # ---- Impute missing values ----
 # The week of 27th Dec 2022 was not published. No information for why this is
