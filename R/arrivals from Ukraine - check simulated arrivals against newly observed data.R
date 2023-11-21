@@ -332,3 +332,4 @@ sim_data |>
     x = NULL,
     y = "Predicted arrivals"
   )
+
