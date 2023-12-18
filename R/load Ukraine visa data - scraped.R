@@ -885,7 +885,6 @@ visas_scraped <- tribble(
   78, "2023-09-21", "applications awaiting conclusion", "Ukraine Family Scheme", 500,
   78, "2023-09-21", "applications awaiting conclusion", "Ukraine Sponsorship Scheme", 6200,
   
-  # Data updated on 28 September but "data is as of 26 September"
   79, "2023-09-26", "visa applications received", "Ukraine Family Scheme", 103500,
   79, "2023-09-26", "visa applications received", "Ukraine Sponsorship Scheme", 210400,
   79, "2023-09-26", "visas issued", "Ukraine Family Scheme", 70300,
@@ -988,8 +987,60 @@ visas_scraped <- tribble(
   86, "2023-11-14", "applications refused", "Ukraine Family Scheme", 21900,
   86, "2023-11-14", "applications refused", "Ukraine Sponsorship Scheme", 10400,
   86, "2023-11-14", "applications awaiting conclusion", "Ukraine Family Scheme", 600,
-  86, "2023-11-14", "applications awaiting conclusion", "Ukraine Sponsorship Scheme", 4300
+  86, "2023-11-14", "applications awaiting conclusion", "Ukraine Sponsorship Scheme", 4300,
   
+  87, "2023-11-21", "visa applications received", "Ukraine Family Scheme", 106000,
+  87, "2023-11-21", "visa applications received", "Ukraine Sponsorship Scheme", 217000,
+  87, "2023-11-21", "visas issued", "Ukraine Family Scheme", 71000,
+  87, "2023-11-21", "visas issued", "Ukraine Sponsorship Scheme", 176000,
+  87, "2023-11-20", "arrivals of visa-holders in the UK", "Ukraine Family Scheme", 55600,
+  87, "2023-11-20", "arrivals of visa-holders in the UK", "Ukraine Sponsorship Scheme", 137700,
+  87, "2023-11-21", "applications withdrawn", "Ukraine Family Scheme", 12400,
+  87, "2023-11-21", "applications withdrawn", "Ukraine Sponsorship Scheme", 26300,
+  87, "2023-11-21", "applications refused", "Ukraine Family Scheme", 22000,
+  87, "2023-11-21", "applications refused", "Ukraine Sponsorship Scheme", 10600,
+  87, "2023-11-21", "applications awaiting conclusion", "Ukraine Family Scheme", 700,
+  87, "2023-11-21", "applications awaiting conclusion", "Ukraine Sponsorship Scheme", 4100,
+  
+  88, "2023-11-28", "visa applications received", "Ukraine Family Scheme", 106300,
+  88, "2023-11-28", "visa applications received", "Ukraine Sponsorship Scheme", 217900,
+  88, "2023-11-28", "visas issued", "Ukraine Family Scheme", 71100,
+  88, "2023-11-28", "visas issued", "Ukraine Sponsorship Scheme", 176600,
+  88, "2023-11-27", "arrivals of visa-holders in the UK", "Ukraine Family Scheme", 55700,
+  88, "2023-11-27", "arrivals of visa-holders in the UK", "Ukraine Sponsorship Scheme", 138200,
+  88, "2023-11-28", "applications withdrawn", "Ukraine Family Scheme", 12400,
+  88, "2023-11-28", "applications withdrawn", "Ukraine Sponsorship Scheme", 26500,
+  88, "2023-11-28", "applications refused", "Ukraine Family Scheme", 22000,
+  88, "2023-11-28", "applications refused", "Ukraine Sponsorship Scheme", 11000,
+  88, "2023-11-28", "applications awaiting conclusion", "Ukraine Family Scheme", 700,
+  88, "2023-11-28", "applications awaiting conclusion", "Ukraine Sponsorship Scheme", 3800,
+  
+  # Due to an issue with data upstream there will be no update to this week’s publication. 
+  89, "2023-12-05", "visa applications received", "Ukraine Family Scheme", NA,
+  89, "2023-12-05", "visa applications received", "Ukraine Sponsorship Scheme", NA,
+  89, "2023-12-05", "visas issued", "Ukraine Family Scheme", NA,
+  89, "2023-12-05", "visas issued", "Ukraine Sponsorship Scheme", NA,
+  89, "2023-12-04", "arrivals of visa-holders in the UK", "Ukraine Family Scheme", NA,
+  89, "2023-12-04", "arrivals of visa-holders in the UK", "Ukraine Sponsorship Scheme", NA,
+  89, "2023-12-05", "applications withdrawn", "Ukraine Family Scheme", NA,
+  89, "2023-12-05", "applications withdrawn", "Ukraine Sponsorship Scheme", NA,
+  89, "2023-12-05", "applications refused", "Ukraine Family Scheme", NA,
+  89, "2023-12-05", "applications refused", "Ukraine Sponsorship Scheme", NA,
+  89, "2023-12-05", "applications awaiting conclusion", "Ukraine Family Scheme", NA,
+  89, "2023-12-05", "applications awaiting conclusion", "Ukraine Sponsorship Scheme", NA,
+  
+  90, "2023-12-12", "visa applications received", "Ukraine Family Scheme", 106600,
+  90, "2023-12-12", "visa applications received", "Ukraine Sponsorship Scheme", 218800,
+  90, "2023-12-12", "visas issued", "Ukraine Family Scheme", 71400,
+  90, "2023-12-12", "visas issued", "Ukraine Sponsorship Scheme", 177700,
+  90, "2023-12-11", "arrivals of visa-holders in the UK", "Ukraine Family Scheme", 55800,
+  90, "2023-12-11", "arrivals of visa-holders in the UK", "Ukraine Sponsorship Scheme", 139200,
+  90, "2023-12-12", "applications withdrawn", "Ukraine Family Scheme", 12500,
+  90, "2023-12-12", "applications withdrawn", "Ukraine Sponsorship Scheme", 26700,
+  90, "2023-12-12", "applications refused", "Ukraine Family Scheme", 22200,
+  90, "2023-12-12", "applications refused", "Ukraine Sponsorship Scheme", 11500,
+  90, "2023-12-12", "applications awaiting conclusion", "Ukraine Family Scheme", 600,
+  90, "2023-12-12", "applications awaiting conclusion", "Ukraine Sponsorship Scheme", 2900
   
 ) |>
   mutate(
