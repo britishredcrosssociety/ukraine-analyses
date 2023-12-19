@@ -889,7 +889,7 @@ homelessness_24feb_3jun <-
 # ---- Summary of homelessness ----
 homelessness_total <- 
   bind_rows(
-    homelessness_24feb_31oct_total |> mutate(Date = ymd("2023-11-30"), Date_text = "30 November"),
+    homelessness_24feb_30nov_total |> mutate(Date = ymd("2023-11-30"), Date_text = "30 November"),
     homelessness_24feb_31oct_total |> mutate(Date = ymd("2023-10-31"), Date_text = "31 October"),
     homelessness_24feb_30sep_total |> mutate(Date = ymd("2023-09-30"), Date_text = "30 September"),
     homelessness_24feb_31aug_total |> mutate(Date = ymd("2023-08-31"), Date_text = "31 August"),
