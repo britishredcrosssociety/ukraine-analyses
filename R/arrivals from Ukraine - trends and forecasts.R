@@ -56,15 +56,7 @@ weekly_sponsorship_scheme_visas <-
   mutate(Scheme = if_else(str_detect(Type, "Government"), "Government 'super sponsored'", Type)) |>
   # Calculate UK weekly totals
   mutate(
-    Week = if_else(
-      Date < "2023-01-01",
-      week(Date),
-      if_else(
-        Date < "2024-01-01",
-        week(Date) + 52,
-        week(Date) + 104
-      )
-    )
+    Week = week(Date) + (52 * (year(Date) - 2022))
   ) |>
   group_by(Week, Scheme) |>
   summarise(
@@ -119,15 +111,7 @@ cumulative_sponsorship_scheme_visas <-
   mutate(Scheme = if_else(str_detect(Type, "Government"), "Government 'super sponsored'", Type)) |>
   # Calculate UK weekly totals
   mutate(
-    Week = if_else(
-      Date < "2023-01-01",
-      week(Date),
-      if_else(
-        Date < "2024-01-01",
-        week(Date) + 52,
-        week(Date) + 104
-      )
-    )
+    Week = week(Date) + (52 * (year(Date) - 2022))
   ) |>
   group_by(Week, Scheme) |>
   summarise(
@@ -1422,3 +1406,4 @@ weekly_visas_by_scheme |>
   )
 
 ggsave("images/simulation/weekly visas.png", width = 150, height = 100, units = "mm")
+

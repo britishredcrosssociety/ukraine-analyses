@@ -1085,16 +1085,18 @@ visas_scraped <- tribble(
 ) |>
   mutate(
     Date = ymd(Date),
-    Week = if_else(
-      Date < "2023-01-01",
-      week(Date),
-      if_else(
-        Date < "2024-01-01",
-        week(Date) + 52,
-        week(Date) + 104
+    Week = week(Date) + (52 * (year(Date) - 2022))
     )
-  )
-  )
+  # Week = if_else(
+  #   Date < "2023-01-01",
+  #   week(Date),
+  #   if_else(
+  #     Date < "2024-01-01",
+  #     week(Date) + 52,
+  #     week(Date) + 104
+  # )
+  # )
+  # )
 
 # Interpolate missing values
 visas_scraped <-
