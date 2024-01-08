@@ -1053,7 +1053,34 @@ visas_scraped <- tribble(
   91, "2023-12-19", "applications refused", "Ukraine Family Scheme", 22300,
   91, "2023-12-19", "applications refused", "Ukraine Sponsorship Scheme", 11700,
   91, "2023-12-19", "applications awaiting conclusion", "Ukraine Family Scheme", 400,
-  91, "2023-12-19", "applications awaiting conclusion", "Ukraine Sponsorship Scheme", 2500
+  91, "2023-12-19", "applications awaiting conclusion", "Ukraine Sponsorship Scheme", 2500,
+  
+  92, "2023-12-26", "visa applications received", "Ukraine Family Scheme", NA,
+  92, "2023-12-26", "visa applications received", "Ukraine Sponsorship Scheme", NA,
+  92, "2023-12-26", "visas issued", "Ukraine Family Scheme", NA,
+  92, "2023-12-26", "visas issued", "Ukraine Sponsorship Scheme", NA,
+  92, "2023-12-25", "arrivals of visa-holders in the UK", "Ukraine Family Scheme", NA,
+  92, "2023-12-25", "arrivals of visa-holders in the UK", "Ukraine Sponsorship Scheme", NA,
+  92, "2023-12-26", "applications withdrawn", "Ukraine Family Scheme", NA,
+  92, "2023-12-26", "applications withdrawn", "Ukraine Sponsorship Scheme", NA,
+  92, "2023-12-26", "applications refused", "Ukraine Family Scheme", NA,
+  92, "2023-12-26", "applications refused", "Ukraine Sponsorship Scheme", NA,
+  92, "2023-12-26", "applications awaiting conclusion", "Ukraine Family Scheme", NA,
+  92, "2023-12-26", "applications awaiting conclusion", "Ukraine Sponsorship Scheme", NA,
+  
+  93, "2024-01-02", "visa applications received", "Ukraine Family Scheme", 106900,
+  93, "2024-01-02", "visa applications received", "Ukraine Sponsorship Scheme", 219700,
+  93, "2024-01-02", "visas issued", "Ukraine Family Scheme", 71600,
+  93, "2024-01-02", "visas issued", "Ukraine Sponsorship Scheme", 178400,
+  93, "2024-01-01", "arrivals of visa-holders in the UK", "Ukraine Family Scheme", 56300,
+  93, "2024-01-01", "arrivals of visa-holders in the UK", "Ukraine Sponsorship Scheme", 140800,
+  93, "2024-01-02", "applications withdrawn", "Ukraine Family Scheme", 12600,
+  93, "2024-01-02", "applications withdrawn", "Ukraine Sponsorship Scheme", 26900,
+  93, "2024-01-02", "applications refused", "Ukraine Family Scheme", 22400,
+  93, "2024-01-02", "applications refused", "Ukraine Sponsorship Scheme", 11900,
+  93, "2024-01-02", "applications awaiting conclusion", "Ukraine Family Scheme", 400,
+  93, "2024-01-02", "applications awaiting conclusion", "Ukraine Sponsorship Scheme", 2500
+
   
 ) |>
   mutate(
