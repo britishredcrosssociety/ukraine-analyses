@@ -193,20 +193,23 @@ visas_ltla21_ni <- bind_rows(visas_ni) |>
   rename_all(~ gsub("\\.", " ", .))
 
 # ---- Impute missing values ----
-# The week of 27th Dec 2022 was not published. No information for why this is
-# the case can be found. Assume this weeks figures match the previous week:
+# The week of 27th Dec 2022 was not published. 
+# The week of 27th Dec 2023 was not published.
+# No information for why this is the case can be found. Assume this weeks 
+# figures match the previous week:
 
 # - Summary -
-visas_ltla21_summary <- visas_ltla21_summary |>
+impute_week_summary <- function(data, week_missing) {
+  data |>
   distinct(Location, Type) |>
   mutate(
-    Date = ymd("2022-12-27"),
+    Date = ymd(week_missing),
     `Number of visa applications` = NA,
     `Number of visas issued` = NA,
     `Number of arrivals in the UK by sponsor location` = NA
   ) |>
   relocate(Date) |>
-  bind_rows(visas_ltla21_summary) |>
+  bind_rows(data) |>
   arrange(Date) |>
   group_by(Location, Type) |>
   fill(
@@ -214,71 +217,101 @@ visas_ltla21_summary <- visas_ltla21_summary |>
     `Number of visas issued`,
     `Number of arrivals in the UK by sponsor location`
   ) |>
-  ungroup()
+  ungroup() 
+}
+
+visas_ltla21_summary <- visas_ltla21_summary |>
+  impute_week_summary("2022-12-27") |>
+  impute_week_summary("2023-12-26")
 
 # - England -
-visas_ltla21_england <- visas_ltla21_england |>
+impute_week_england <- function(data, week_missing) {
+  data |>
   distinct(`Lower tier local authority name`, ltla21_code) |>
   mutate(
-    Date = ymd("2022-12-27"),
+    Date = ymd(week_missing),
     `Number of visa applications` = NA,
     `Number of visas issued` = NA,
     `Number of arrivals` = NA
   ) |>
   relocate(Date) |>
-  bind_rows(visas_ltla21_england) |>
+  bind_rows(data) |>
   arrange(Date) |>
   group_by(`Lower tier local authority name`, ltla21_code) |>
   fill(`Number of visa applications`, `Number of visas issued`, `Number of arrivals`) |>
   ungroup()
+}
+  
+visas_ltla21_england <- visas_ltla21_england |>
+  impute_week_england("2022-12-27") |>
+  impute_week_england("2023-12-26")
 
 # - Wales -
-visas_ltla21_wales <- visas_ltla21_wales |>
+impute_week_wales <- function(data, week_missing) {
+  data |>
   distinct(`Upper tier local authority name`, ltla21_code) |>
   mutate(
-    Date = ymd("2022-12-27"),
+    Date = ymd(week_missing),
     `Number of visa applications` = NA,
     `Number of visas issued` = NA,
     `Number of arrivals` = NA
   ) |>
   relocate(Date) |>
-  bind_rows(visas_ltla21_wales) |>
+  bind_rows(data) |>
   arrange(Date) |>
   group_by(`Upper tier local authority name`, ltla21_code) |>
   fill(`Number of visa applications`, `Number of visas issued`, `Number of arrivals`) |>
   ungroup()
+}
+
+visas_ltla21_wales <- visas_ltla21_wales |>
+  impute_week_wales("2022-12-27") |>
+  impute_week_wales("2023-12-26")
 
 # - Scotland -
-visas_ltla21_scotland <- visas_ltla21_scotland |>
+impute_week_scotland <- function(data, week_missing) {
+  data |>
   distinct(`Upper tier local authority name`, ltla21_code) |>
   mutate(
-    Date = ymd("2022-12-27"),
+    Date = ymd(week_missing),
     `Number of visa applications` = NA,
     `Number of visas issued` = NA,
     `Number of arrivals` = NA
   ) |>
   relocate(Date) |>
-  bind_rows(visas_ltla21_scotland) |>
+  bind_rows(data) |>
   arrange(Date) |>
   group_by(`Upper tier local authority name`, ltla21_code) |>
   fill(`Number of visa applications`, `Number of visas issued`, `Number of arrivals`) |>
   ungroup()
+}
+
+visas_ltla21_scotland <- visas_ltla21_scotland |>
+  impute_week_scotland("2022-12-27") |>
+  impute_week_scotland("2023-12-26")
+  
 
 # - NI -
-visas_ltla21_ni <- visas_ltla21_ni |>
+impute_week_ni <- function(data, week_missing) {
+  data |>
   distinct(`Local authority name`, ltla21_code) |>
   mutate(
-    Date = ymd("2022-12-27"),
+    Date = ymd(week_missing),
     `Number of visa applications` = NA,
     `Number of visas issued` = NA,
     `Number of arrivals` = NA
   ) |>
   relocate(Date) |>
-  bind_rows(visas_ltla21_ni) |>
+  bind_rows(data) |>
   arrange(Date) |>
   group_by(`Local authority name`, ltla21_code) |>
   fill(`Number of visa applications`, `Number of visas issued`, `Number of arrivals`) |>
   ungroup()
+}
+
+visas_ltla21_ni <- visas_ltla21_ni |>
+  impute_week_ni("2022-12-27") |>
+  impute_week_ni("2023-12-26")
 
 # Create UK dataframe
 visas_ltla21_uk <-

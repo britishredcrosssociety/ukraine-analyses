@@ -33,9 +33,13 @@ cumulative_sponsorship_scheme_visas <-
     Week = if_else(
       Date < "2023-01-01",
       week(Date),
-      week(Date) + 52
+      if_else(
+        Date < "2024-01-01",
+        week(Date) + 52,
+        week(Date) + 104
     )
-  ) |>
+  ) 
+  )|>
   group_by(Week, Scheme) |>
   summarise(
     `Number of visa applications` = sum(`Number of visa applications`),
