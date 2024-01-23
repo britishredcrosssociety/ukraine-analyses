@@ -4,6 +4,51 @@ library(httr)
 
 # source("R/load Ukraine visa data - Local Authorities.R")
 
+# ---- Load latest homelessness management info (24 February to 31 Dec 2023) ----
+# Source: https://www.gov.uk/government/publications/homelessness-management-information-ukrainian-nationals-england
+GET(
+  "https://assets.publishing.service.gov.uk/media/65a9373694c997000daeba2d/Ukraine_Homelessness_Pressures_Publication_December_2023.ods",
+  write_disk(tf <- tempfile(fileext = ".ods"))
+)
+
+homelessness_24feb_31dec_raw <- read_ods(tf, skip = 3, sheet = "Publication")
+
+# Remove empty columns
+homelessness_24feb_31dec_raw <- homelessness_24feb_31dec_raw[-c(8, 10, 18)]
+
+names(homelessness_24feb_31dec_raw) <- c(
+  "lad_code",
+  "lad_name",
+  "Total Ukrainian households owed a prevention or relief duty",
+  "Single household (total)",
+  "Single household (%)",
+  "Household with dependent children (total)",
+  "Household with dependent children (%)",
+  "Prevention and relief",
+  "Family Scheme: Accommodation or arrangement broken down",
+  "Family Scheme: Accommodation not available or suitable on arrival",
+  "Homes for Ukraine Scheme: Accommodation or arrangement broken down",
+  "Homes for Ukraine Scheme: Accommodation not available or suitable on arrival",
+  "Homes for Ukraine Scheme: Rejected sponsors offer",
+  "Extension Scheme",
+  "Other/Not Known",
+  "Temporary Accommodation Snapshot",
+  "Offer of Settled Accomodation"
+)
+
+homelessness_24feb_31dec_raw <- 
+  homelessness_24feb_31dec_raw |> 
+  as_tibble() |> 
+  mutate(across(-(lad_code:lad_name), as.numeric))
+
+homelessness_24feb_31dec_total <- 
+  homelessness_24feb_31dec_raw |> 
+  slice(3)
+
+homelessness_24feb_31dec <- 
+  homelessness_24feb_31dec_raw |> 
+  filter(str_detect(lad_code, "^E"))
+
 # ---- Load latest homelessness management info (24 February to 30 Nov 2023) ----
 # Source: https://www.gov.uk/government/publications/homelessness-management-information-ukrainian-nationals-england
 GET(
@@ -94,8 +139,6 @@ homelessness_24feb_31oct_total <-
 homelessness_24feb_31oct <- 
   homelessness_24feb_31oct_raw |> 
   filter(str_detect(lad_code, "^E"))
-
-
 
 # ---- Load latest homelessness management info (24 February to 30 Sept 2023) ----
 # Source: https://www.gov.uk/government/publications/homelessness-management-information-ukrainian-nationals-england
@@ -889,6 +932,7 @@ homelessness_24feb_3jun <-
 # ---- Summary of homelessness ----
 homelessness_total <- 
   bind_rows(
+    homelessness_24feb_31dec_total |> mutate(Date = ymd("2023-12-31"), Date_text = "31 December"),
     homelessness_24feb_30nov_total |> mutate(Date = ymd("2023-11-30"), Date_text = "30 November"),
     homelessness_24feb_31oct_total |> mutate(Date = ymd("2023-10-31"), Date_text = "31 October"),
     homelessness_24feb_30sep_total |> mutate(Date = ymd("2023-09-30"), Date_text = "30 September"),
@@ -910,7 +954,7 @@ homelessness_total <-
     homelessness_24feb_3jun_total  |> mutate(Date = ymd("2022-06-03"), Date_text = "3 June")
   ) |> 
   relocate(Date) |> 
-  mutate(Date_text = factor(Date_text, levels = c("3 June", "1 July", "29 July", "26 August", "23 September", "21 October", "18 November", "30 December", "27 January", "24 February", "24 March", "21 April", "19 May", "16 June", "31 July", "31 August", "30 September", "31 October", "30 November")))
+  mutate(Date_text = factor(Date_text, levels = c("3 June", "1 July", "29 July", "26 August", "23 September", "21 October", "18 November", "30 December", "27 January", "24 February", "24 March", "21 April", "19 May", "16 June", "31 July", "31 August", "30 September", "31 October", "30 November", "31 December")))
 
 # Calculate proportions of households at risk of homelessness in each visa scheme
 homelessness_total <- 
@@ -1295,8 +1339,16 @@ homelessness_trends <-
         lad_name, 
         total_30nov = `Total Ukrainian households owed a prevention or relief duty`, 
         temp_30nov = `Temporary Accommodation Snapshot`
+        )
+      ) |>
+  left_join(
+    homelessness_24feb_31dec |> 
+      select(
+        lad_code, 
+        lad_name, 
+        total_31dec = `Total Ukrainian households owed a prevention or relief duty`, 
+        temp_31dec = `Temporary Accommodation Snapshot`
       )
-      
   )
 
 homelessness_trends <- 
@@ -1380,12 +1432,15 @@ homelessness_trends <-
     temp_31oct = 0,
     
     total_30nov = 0,
-    temp_30nov = 0
+    temp_30nov = 0,
+    
+    total_31dec = 0,
+    temp_31dec = 0
     
   )) |> 
   mutate(
-    total_delta = total_30nov - total_3jun,
-    temp_delta = temp_30nov - temp_3jun
+    total_delta = total_31dec - total_3jun,
+    temp_delta = temp_31dec - temp_3jun
   )
 
 # ---- Save wrangled data ----
