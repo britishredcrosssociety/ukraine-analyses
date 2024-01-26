@@ -1105,7 +1105,20 @@ visas_scraped <- tribble(
   95, "2024-01-16", "applications refused", "Ukraine Family Scheme", 22500,
   95, "2024-01-16", "applications refused", "Ukraine Sponsorship Scheme", 12200,
   95, "2024-01-16", "applications awaiting conclusion", "Ukraine Family Scheme", 300,
-  95, "2024-01-16", "applications awaiting conclusion", "Ukraine Sponsorship Scheme", 2100
+  95, "2024-01-16", "applications awaiting conclusion", "Ukraine Sponsorship Scheme", 2100,
+  
+  96, "2024-01-23", "visa applications received", "Ukraine Family Scheme", 107200,
+  96, "2024-01-23", "visa applications received", "Ukraine Sponsorship Scheme", 220700,
+  96, "2024-01-23", "visas issued", "Ukraine Family Scheme", 71700,
+  96, "2024-01-23", "visas issued", "Ukraine Sponsorship Scheme", 179200,
+  96, "2024-01-22", "arrivals of visa-holders in the UK", "Ukraine Family Scheme", 56600,
+  96, "2024-01-22", "arrivals of visa-holders in the UK", "Ukraine Sponsorship Scheme", 142200,
+  96, "2024-01-23", "applications withdrawn", "Ukraine Family Scheme", 12600,
+  96, "2024-01-23", "applications withdrawn", "Ukraine Sponsorship Scheme", 27000,
+  96, "2024-01-23", "applications refused", "Ukraine Family Scheme", 22500,
+  96, "2024-01-23", "applications refused", "Ukraine Sponsorship Scheme", 12300,
+  96, "2024-01-23", "applications awaiting conclusion", "Ukraine Family Scheme", 300,
+  96, "2024-01-23", "applications awaiting conclusion", "Ukraine Sponsorship Scheme", 2100
 
 ) |>
   mutate(
