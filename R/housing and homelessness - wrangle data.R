@@ -14,7 +14,8 @@ source("https://github.com/matthewgthomas/brclib/raw/master/R/download_wales.R")
 # Load live tables on homelessness
 # Source: https://www.gov.uk/government/statistical-data-sets/live-tables-on-homelessness
 GET(
-  "https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/1173277/Detailed_LA_202303.ods",
+  #"https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/1173277/Detailed_LA_202303.ods",
+  "https://assets.publishing.service.gov.uk/media/65804b111c0c2a001318cf6d/Detailed_LA_202306_All_Dropdowns_Fixed.ods",
   write_disk(tf <- tempfile(fileext = ".ods"))
 )
 
@@ -51,7 +52,8 @@ england_temp_accomm <-
 # Load LA housing statistics
 # Source: https://www.gov.uk/government/collections/local-authority-housing-data // https://www.gov.uk/government/statistical-data-sets/local-authority-housing-statistics-data-returns-for-2021-to-2022
 GET(
-  "https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/1166232/LAHS_21_22_accessible.ods",
+  #"https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/1166232/LAHS_21_22_accessible.ods",
+  "https://assets.publishing.service.gov.uk/media/65c33faf12d5f1000e375158/LAHS_22_23_accessible.ods",
   write_disk(tf <- tempfile(fileext = ".ods"))
 )
 
@@ -82,17 +84,20 @@ england_stock_waits <-
   ) |> 
   mutate(social_rent_stock = as.integer(social_rent_stock), affordable_rent_stock = as.integer(affordable_rent_stock)) |> 
   mutate(`Housing stock` = social_rent_stock + affordable_rent_stock) |> 
-  select(-social_rent_stock, -affordable_rent_stock)
+  select(-social_rent_stock, -affordable_rent_stock) 
+  
 
 # Calculate rates
 england_stock_waits <- 
   england_stock_waits |> 
   left_join(demographr::households21_ltla21 |> select(-ltla21_name)) |> 
+  mutate_at(vars(`Households on housing waiting list`, `Vacant dwellings`, `Housing stock`, households), ~ifelse(ltla21_code == "E06000020", NA_real_, .)) |> # handle error
+
   mutate(
-    `Households on housing waiting list per 1,000` = `Households on housing waiting list` / households * 1000,
-    `Social housing stock as a proportion of all households` = `Housing stock` / households,
-    `Vacant dwellings per 1,000 units of social housing stock` = if_else(is.na(`Housing stock`) | `Housing stock` == 0, `Vacant dwellings`, `Vacant dwellings` / `Housing stock` * 1000)
-  ) |> 
+    `Households on housing waiting list per 1,000` = as.numeric(`Households on housing waiting list`) / as.numeric(households) * 1000,
+    `Social housing stock as a proportion of all households` = as.numeric(`Housing stock`) / as.numeric(households),
+    `Vacant dwellings per 1,000 units of social housing stock` = if_else(is.na(`Housing stock`) | as.numeric(`Housing stock`) == 0, as.numeric(`Vacant dwellings`), as.numeric(`Vacant dwellings`) / as.numeric(`Housing stock`) * 1000)
+  )  |> 
   select(
     ltla21_code, 
     `Households on housing waiting list per 1,000`, 
@@ -112,7 +117,7 @@ england <-
     waiting_quintile = as.integer(Hmisc::cut2(`Households on housing waiting list per 1,000`, g = 5)),
     homeless_quintile = as.integer(Hmisc::cut2(`Households assessed as threatened with homelessness per (000s)`, g = 5)),
     temp_accom_quintile = as.integer(Hmisc::cut2(`Households in temporary accommodation per 1,000`, g = 5)),
-    vacancies_quintile = as.integer(Hmisc::cut2(`Vacant dwellings`, g = 5))
+    vacancies_quintile = as.integer(Hmisc::cut2(as.numeric(`Vacant dwellings`), g = 5))
   )
 
 # Save
@@ -121,6 +126,7 @@ write_csv(england, "data/housing/housing-england.csv")
 # Scotland ----
 # Download latest homelessness data
 # Source: https://www.gov.scot/publications/homelessness-in-scotland-2022-23/documents/
+# No more recent data
 tf <- download_file("https://www.gov.scot/binaries/content/documents/govscot/publications/statistics/2023/08/homelessness-in-scotland-2022-23/documents/main-tables_homelessness-in-scotland-2022-23/main-tables_homelessness-in-scotland-2022-23/govscot%3Adocument/Main%2Btables_Homelessness%2Bin%2BScotland%2B2022-23.xlsx", ".xlsx")
 
 ## Local Authority names and codes ----
@@ -143,7 +149,9 @@ scottish_ltla_names_codes <-
 
 ## Household estimates ----
 # Source: https://statistics.gov.scot/resource?uri=http%3A%2F%2Fstatistics.gov.scot%2Fdata%2Fhousehold-estimates
-scotland_households <- read_csv("https://statistics.gov.scot/slice/observations.csv?&dataset=http%3A%2F%2Fstatistics.gov.scot%2Fdata%2Fhousehold-estimates&http%3A%2F%2Fpurl.org%2Flinked-data%2Fcube%23measureType=http%3A%2F%2Fstatistics.gov.scot%2Fdef%2Fmeasure-properties%2Fcount&http%3A%2F%2Fpurl.org%2Flinked-data%2Fsdmx%2F2009%2Fdimension%23refPeriod=http%3A%2F%2Freference.data.gov.uk%2Fid%2Fyear%2F2021", skip = 7)
+#scotland_households <- read_csv("https://statistics.gov.scot/slice/observations.csv?&dataset=http%3A%2F%2Fstatistics.gov.scot%2Fdata%2Fhousehold-estimates&http%3A%2F%2Fpurl.org%2Flinked-data%2Fcube%23measureType=http%3A%2F%2Fstatistics.gov.scot%2Fdef%2Fmeasure-properties%2Fcount&http%3A%2F%2Fpurl.org%2Flinked-data%2Fsdmx%2F2009%2Fdimension%23refPeriod=http%3A%2F%2Freference.data.gov.uk%2Fid%2Fyear%2F2021", skip = 7)
+scotland_households <- read_csv("https://statistics.gov.scot/slice/observations.csv?&dataset=http%3A%2F%2Fstatistics.gov.scot%2Fdata%2Fhousehold-estimates&http%3A%2F%2Fpurl.org%2Flinked-data%2Fcube%23measureType=http%3A%2F%2Fstatistics.gov.scot%2Fdef%2Fmeasure-properties%2Fcount&http%3A%2F%2Fpurl.org%2Flinked-data%2Fsdmx%2F2009%2Fdimension%23refPeriod=http%3A%2F%2Freference.data.gov.uk%2Fid%2Fyear%2F2022", skip = 7)
+
 
 scotland_households <- 
   scotland_households |> 
@@ -220,6 +228,7 @@ scotland_temp_accom <-
 
 ## Waiting list ----
 # Source: https://statistics.gov.scot/resource?uri=http%3A%2F%2Fstatistics.gov.scot%2Fdata%2Fhousing-lists
+# No data more recent
 scotland_waiting <- read_csv("https://statistics.gov.scot/downloads/cube-table?uri=http%3A%2F%2Fstatistics.gov.scot%2Fdata%2Fhousing-lists")
 
 scotland_waiting <- 
@@ -237,6 +246,7 @@ scotland_waiting <-
 
 ## Social housing stock ----
 # Source: https://statistics.gov.scot/resource?uri=http%3A%2F%2Fstatistics.gov.scot%2Fdata%2Flocal-authority-housing-stock-by-normal-use
+# No more recent data
 scotland_stock_raw <- read_csv("https://statistics.gov.scot/downloads/cube-table?uri=http%3A%2F%2Fstatistics.gov.scot%2Fdata%2Flocal-authority-housing-stock-by-normal-use")
 
 scotland_stock_raw <- 
@@ -255,6 +265,7 @@ scotland_stock <-
   select(ltla21_code, `Social housing stock as a proportion of all households`)
 
 ## Vacancies ----
+# No more recenty data
 # Source: https://statistics.gov.scot/data/local-authority-vacant-dwellings
 scotland_vacancies <- read_csv("https://statistics.gov.scot/downloads/cube-table?uri=http%3A%2F%2Fstatistics.gov.scot%2Fdata%2Flocal-authority-vacant-dwellings")
 
@@ -294,6 +305,7 @@ source("https://github.com/matthewgthomas/brclib/raw/master/R/download_wales.R")
 
 ## Household estimates ----
 # Dwelling stock estimates by local authority and tenure
+# No more recent data
 # Source: https://statswales.gov.wales/Catalogue/Housing/Dwelling-Stock-Estimates
 wales_households_raw <- download_wales("http://open.statswales.gov.wales/en-gb/dataset/hous0501")
 
@@ -314,6 +326,7 @@ wales_households <-
 ## Homelessness ----
 # Households for which assistance has been provided by outcome and household type
 # Source: https://statswales.gov.wales/Catalogue/Housing/Homelessness/Statutory-Homelessness-Prevention-and-Relief
+# No more recent data
 wales_homelessness_raw <- download_wales("http://open.statswales.gov.wales/en-gb/dataset/hous0413")
 
 #!! I don't think `number of outcomes` is what we want - needs to be number of households
@@ -336,7 +349,8 @@ wales_homelessness <-
 wales_homelessness <- 
   wales_homelessness |> 
   left_join(wales_households) |> 
-  mutate(`Homeless or threatened with homelessness per 1,000` = `Homeless or threatened with homelessness` / `Number of households` * 1000) |> 
+  mutate(`Homeless or threatened with homelessness per 1,000` = as.numeric(`Homeless or threatened with homelessness`) / 
+    as.numeric(`Number of households`) * 1000) |> 
   select(ltla21_code = Area_AltCode1, `Homeless or threatened with homelessness per 1,000`)
 
 ## Temporary accommodation ----
@@ -363,7 +377,7 @@ wales_temp_accom <-
 wales_temp_accom <- 
   wales_temp_accom |> 
   left_join(wales_households) |> 
-  mutate(`Households in temporary accommodation per 1,000` = `Households in temporary accommodation` / `Number of households` * 1000) |> 
+  mutate(`Households in temporary accommodation per 1,000` = as.numeric(`Households in temporary accommodation`) / as.numeric(`Number of households`) * 1000) |> 
   select(ltla21_code = Area_AltCode1, `Households in temporary accommodation per 1,000`)
 
 ## Waiting list ----
@@ -396,7 +410,7 @@ wales_stock_count <-
 wales_stock <- 
   wales_stock_count |> 
   left_join(wales_households) |> 
-  mutate(`Social housing stock as a proportion of all households` = `Housing stock` / `Number of households`) |> 
+  mutate(`Social housing stock as a proportion of all households` = as.numeric(`Housing stock`) / as.numeric(`Number of households`)) |> 
   select(ltla21_code, `Social housing stock as a proportion of all households`)
 
 ## Vacancies ----
@@ -452,7 +466,8 @@ write_csv(wales, "data/housing/housing-wales.csv")
 
 # Northern Ireland Housing Statistics 2021-22 Section 1 Tables – Supply
 # Source: https://www.communities-ni.gov.uk/publications/northern-ireland-housing-statistics-2021-22
-tf <- download_file("https://www.communities-ni.gov.uk/system/files/publications/communities/ni-housing-stats-21-22-tables1.ods", ".ods")
+# tf <- download_file("https://www.communities-ni.gov.uk/system/files/publications/communities/ni-housing-stats-21-22-tables1.ods", ".ods")
+tf <- download_file("https://www.communities-ni.gov.uk/system/files/publications/communities/ni-housing-stats-22-23-tables1.ods", ".ods")
 
 # 1.2 Total housing stock in each of the 11 district council areas 2008-2021
 ni_households_raw <- read_ods(tf, sheet = "T1_2", range = "A3:P15")
@@ -462,13 +477,15 @@ ni_households <-
   na.omit() |> 
   as_tibble() |> 
   select(
-    ltla21_name = District.council,
-    `Number of households` = X2022
+    ltla21_name = `District council`,
+    `Number of households` = `2022`
   )
 
 ## Homelessness ----
 # Source: https://www.communities-ni.gov.uk/publications/northern-ireland-homelessness-bulletin-july-december-2022
-tf <- download_file("https://www.communities-ni.gov.uk/system/files/publications/communities/ni-homelessness-bulletin-jul-dec-2022-tables.ods", ".ods")
+#tf <- download_file("https://www.communities-ni.gov.uk/system/files/publications/communities/ni-homelessness-bulletin-jul-dec-2022-tables.ods", ".ods")
+tf <- download_file("https://www.communities-ni.gov.uk/system/files/publications/communities/ni-homelessness-bulletin-jan-jun-2023-tables.ods", ".ods")
+
 
 # 2.3 Households accepted as homeless by local government district
 # ni_homelessness_raw <- read_ods(tf, sheet = "2_3", range = "A3:I14")
@@ -483,8 +500,8 @@ ni_homelessness <-
   ni_homelessness |> 
   as_tibble() |> 
   rename(
-    ltla21_name = Local.government.district..LGD.,
-    `Homeless or threatened with homelessness per 1,000` = Presenters.per.1.000.population...21
+    ltla21_name = `Local government district (LGD)`,
+    `Homeless or threatened with homelessness per 1,000` = `Presenters per 1,000 population...21`
   )
 
 ## Temporary accommodation ----
@@ -493,7 +510,8 @@ ni_homelessness <-
 ## Waiting list ----
 # Northern Ireland Housing Statistics 2021-22 Section 3 Tables – Social Renting Sector
 # Source: https://www.communities-ni.gov.uk/publications/northern-ireland-housing-statistics-2021-22
-tf <- download_file("https://www.communities-ni.gov.uk/system/files/publications/communities/ni-housing-stats-21-22-tables3.ods", ".ods")
+#tf <- download_file("https://www.communities-ni.gov.uk/system/files/publications/communities/ni-housing-stats-21-22-tables3.ods", ".ods")
+tf <- download_file("https://www.communities-ni.gov.uk/system/files/publications/communities/ni-housing-stats-22-23-tables3.ods", ".ods")
 
 # 3.6  Social rented sector waiting lists by new local government district  2021-22
 ni_waiting_raw <- read_ods(tf, sheet = "T3_6", range = "A3:B14")
@@ -501,8 +519,8 @@ ni_waiting_raw <- read_ods(tf, sheet = "T3_6", range = "A3:B14")
 ni_waiting <- 
   ni_waiting_raw |> 
   rename(
-    ltla21_name = New.local.government.district,
-    `Households on housing waiting list` = X2021.22
+    ltla21_name = `New local government district`,
+    `Households on housing waiting list` = `2022-23`
   ) |> 
   mutate(ltla21_name = str_replace(ltla21_name, "&", "and"))
 
