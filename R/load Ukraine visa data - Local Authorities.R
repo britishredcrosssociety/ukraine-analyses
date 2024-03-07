@@ -64,7 +64,7 @@ wrangle_visa_summary <- function(d, visa_date) {
 wrangle_visa_data <- function(d, visa_date, country = "^E") {
   d |>
     as_tibble() |>
-    rename_with(function(x) "ltla21_code", contains("ONS.code")) |>
+    rename_with(function(x) "ltla21_code", contains("LTLA")) |>
     filter(str_detect(ltla21_code, country)) |>
     mutate(Date = visa_date) |>
     relocate(Date) |>
@@ -164,17 +164,17 @@ for (visa_file in visa_files) {
   if (ncol(tmp_england) > 5) tmp_england <- tmp_england |> select(1:5)
   visas_england[[i]] <- wrangle_visa_data(tmp_england, visa_date, country = "^E")
 
-  # Wales
-  tmp_wales <- read_ods(file.path(visa_path, visa_file), sheet = "Wales", skip = wales_scotland_skip)
-  visas_wales[[i]] <- wrangle_visa_data(tmp_wales, visa_date, country = "^W")
+  # # Wales
+  # tmp_wales <- read_ods(file.path(visa_path, visa_file), sheet = "Wales", skip = wales_scotland_skip)
+  # visas_wales[[i]] <- wrangle_visa_data(tmp_wales, visa_date, country = "^W")
 
-  # Scotland
-  tmp_scotland <- read_ods(file.path(visa_path, visa_file), sheet = "Scotland", skip = wales_scotland_skip)
-  visas_scotland[[i]] <- wrangle_visa_data(tmp_scotland, visa_date, country = "^S")
-
-  # Northern Ireland
-  tmp_ni <- read_ods(file.path(visa_path, visa_file), sheet = "Northern_Ireland", skip = ni_skip)
-  visas_ni[[i]] <- wrangle_visa_data(tmp_ni, visa_date, country = "^N")
+  # # Scotland
+  # tmp_scotland <- read_ods(file.path(visa_path, visa_file), sheet = "Scotland", skip = wales_scotland_skip)
+  # visas_scotland[[i]] <- wrangle_visa_data(tmp_scotland, visa_date, country = "^S")
+  #
+  # # Northern Ireland
+  # tmp_ni <- read_ods(file.path(visa_path, visa_file), sheet = "Northern_Ireland", skip = ni_skip)
+  # visas_ni[[i]] <- wrangle_visa_data(tmp_ni, visa_date, country = "^N")
 
   i <- i + 1
   print(paste0("Imported data from ", visa_date))
