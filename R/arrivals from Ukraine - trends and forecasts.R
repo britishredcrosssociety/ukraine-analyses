@@ -40,7 +40,7 @@ weekly_family_scheme_visas <-
   filter(str_detect(Stage, "arrival|visas issued|visa applications received")) |>
   filter(Scheme == "Ukraine Family Scheme") |>
   select(-Date, -Visas) |>
-  pivot_wider(names_from = Stage, values_from = Visas_imputed) |>
+  pivot_wider(names_from = Stage, values_from = Visas_imputed, values_fn = mean) |>
   # Calculate week-on-week changes
   mutate(
     `Weekly applications` = `visa applications received` - lag(`visa applications received`),
