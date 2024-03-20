@@ -5,6 +5,8 @@ library(zoo)
 # ---- Manually scrape visa data from Home Office ----
 # - Current figures: https://www.gov.uk/government/publications/ukraine-family-scheme-application-data/ukraine-family-scheme-and-ukraine-sponsorship-scheme-homes-for-ukraine-visa-data
 # - Historical figures: https://web.archive.org/web/*/https://www.gov.uk/government/publications/ukraine-family-scheme-application-data/ukraine-family-scheme-and-ukraine-sponsorship-scheme-homes-for-ukraine-visa-data
+# Note: if no data available create NA values for the given week 
+
 visas_scraped <- tribble(
   ~Week, ~Date, ~Stage, ~Scheme, ~Visas,
   1, "2022-03-31", "visa applications received", "Ukraine Family Scheme", 32800,
@@ -1196,7 +1198,23 @@ visas_scraped <- tribble(
   102, "2024-03-05", "applications refused", "Ukraine Family Scheme", 22800,
   102, "2024-03-05", "applications refused", "Ukraine Sponsorship Scheme", 13000,
   102, "2024-03-05", "applications awaiting conclusion", "Ukraine Family Scheme", 300,
-  102, "2024-03-05", "applications awaiting conclusion", "Ukraine Sponsorship Scheme", 2300
+  102, "2024-03-05", "applications awaiting conclusion", "Ukraine Sponsorship Scheme", 2300,
+  
+  103, "2024-03-12", "visa applications received", "Ukraine Family Scheme", 108100,
+  103, "2024-03-12", "visa applications received", "Ukraine Sponsorship Scheme", 224500,
+  103, "2024-03-12", "visas issued", "Ukraine Family Scheme", 72200,
+  103, "2024-03-12", "visas issued", "Ukraine Sponsorship Scheme", 181600,
+  103, "2024-03-11", "arrivals of visa-holders in the UK", "Ukraine Family Scheme", 57100,
+  103, "2024-03-11", "arrivals of visa-holders in the UK", "Ukraine Sponsorship Scheme", 144700,
+  103, "2024-03-12", "applications withdrawn", "Ukraine Family Scheme", 12800,
+  103, "2024-03-12", "applications withdrawn", "Ukraine Sponsorship Scheme", 27300,
+  103, "2024-03-12", "applications refused", "Ukraine Family Scheme", 22900,
+  103, "2024-03-12", "applications refused", "Ukraine Sponsorship Scheme", 13200,
+  103, "2024-03-12", "applications awaiting conclusion", "Ukraine Family Scheme", 300,
+  103, "2024-03-12", "applications awaiting conclusion", "Ukraine Sponsorship Scheme", 2400
+  
+  
+  
 ) |>
   mutate(
     Date = ymd(Date),
