@@ -1224,7 +1224,33 @@ visas_scraped <- tribble(
   104, "2024-03-18", "applications refused", "Ukraine Family Scheme", 22900,
   104, "2024-03-18", "applications refused", "Ukraine Sponsorship Scheme", 13400,
   104, "2024-03-18", "applications awaiting conclusion", "Ukraine Family Scheme", 200,
-  104, "2024-03-18", "applications awaiting conclusion", "Ukraine Sponsorship Scheme", 2300
+  104, "2024-03-18", "applications awaiting conclusion", "Ukraine Sponsorship Scheme", 2300,
+  
+  105, "2024-03-26", "visa applications received", "Ukraine Family Scheme", 108100,
+  105, "2024-03-26", "visa applications received", "Ukraine Sponsorship Scheme", 225500,
+  105, "2024-03-26", "visas issued", "Ukraine Family Scheme", 72300,
+  105, "2024-03-26", "visas issued", "Ukraine Sponsorship Scheme", 182600,
+  105, "2024-03-25", "arrivals of visa-holders in the UK", "Ukraine Family Scheme", 57300,
+  105, "2024-03-25", "arrivals of visa-holders in the UK", "Ukraine Sponsorship Scheme", 145500,
+  105, "2024-03-26", "applications withdrawn", "Ukraine Family Scheme", 12800,
+  105, "2024-03-26", "applications withdrawn", "Ukraine Sponsorship Scheme", 27300,
+  105, "2024-03-26", "applications refused", "Ukraine Family Scheme", 22900,
+  105, "2024-03-26", "applications refused", "Ukraine Sponsorship Scheme", 13500,
+  105, "2024-03-26", "applications awaiting conclusion", "Ukraine Family Scheme", 200,
+  105, "2024-03-26", "applications awaiting conclusion", "Ukraine Sponsorship Scheme", 2100,
+  
+  105, "2024-04-09", "visa applications received", "Ukraine Family Scheme", 108200,
+  105, "2024-04-09", "visa applications received", "Ukraine Sponsorship Scheme", 226500,
+  105, "2024-04-09", "visas issued", "Ukraine Family Scheme", 72300,
+  105, "2024-04-09", "visas issued", "Ukraine Sponsorship Scheme", 183100,
+  105, "2024-04-08", "arrivals of visa-holders in the UK", "Ukraine Family Scheme", 57700,
+  105, "2024-04-08", "arrivals of visa-holders in the UK", "Ukraine Sponsorship Scheme", 146200,
+  105, "2024-04-09", "applications withdrawn", "Ukraine Family Scheme", 12800,
+  105, "2024-04-09", "applications withdrawn", "Ukraine Sponsorship Scheme", 27300,
+  105, "2024-04-09", "applications refused", "Ukraine Family Scheme", 22900,
+  105, "2024-04-09", "applications refused", "Ukraine Sponsorship Scheme", 13800,
+  105, "2024-04-09", "applications awaiting conclusion", "Ukraine Family Scheme", 200,
+  105, "2024-04-09", "applications awaiting conclusion", "Ukraine Sponsorship Scheme", 2200
 
   
   
