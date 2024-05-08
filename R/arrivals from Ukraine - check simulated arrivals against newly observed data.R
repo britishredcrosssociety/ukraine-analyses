@@ -16,7 +16,7 @@ cumulative_family_scheme_visas <-
   filter(str_detect(Stage, "arrival|visas issued|visa applications received")) |>
   filter(Scheme == "Ukraine Family Scheme") |>
   select(-Date, -Visas) |>
-  pivot_wider(names_from = Stage, values_from = Visas_imputed) |>
+  pivot_wider(names_from = Stage, values_from = Visas_imputed, values_fn = mean) |>
   rename(
     `Number of visa applications` = `visa applications received`,
     `Number of visas issued` = `visas issued`,
@@ -56,7 +56,7 @@ weekly_visas <-
   arrange(Date) |>
   filter(str_detect(Stage, "arrivals")) |>
   select(-Date, -Visas) |>
-  pivot_wider(names_from = Stage, values_from = Visas_imputed) |>
+  pivot_wider(names_from = Stage, values_from = Visas_imputed, values_fn = mean) |>
   group_by(Week) |>
   summarise(
     `arrivals of visa-holders in the UK` = sum(`arrivals of visa-holders in the UK`, na.rm = TRUE)

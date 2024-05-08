@@ -97,7 +97,7 @@ cumulative_family_scheme_visas <-
   filter(str_detect(Stage, "arrival|visas issued|visa applications received")) |>
   filter(Scheme == "Ukraine Family Scheme") |>
   select(-Date, -Visas) |>
-  pivot_wider(names_from = Stage, values_from = Visas_imputed) |>
+  pivot_wider(names_from = Stage, values_from = Visas_imputed, values_fn = mean) |>
   rename(
     `Number of visa applications` = `visa applications received`,
     `Number of visas issued` = `visas issued`,
@@ -143,7 +143,7 @@ write_csv(cumulative_visas_by_scheme, glue::glue("data/cumulative-visas/cumulati
 historical_processing_rates <-
   visas_scraped |>
   select(-Visas, -Date) |>
-  pivot_wider(names_from = Stage, values_from = Visas_imputed) |>
+  pivot_wider(names_from = Stage, values_from = Visas_imputed, values_fn = mean) |>
   group_by(Scheme) |>
   mutate(
     `New applications this week` = `visa applications received` - lag(`visa applications received`),
@@ -276,7 +276,7 @@ refusal_withdrawal_rate_by_scheme <-
   visas_scraped |>
   filter(str_detect(Stage, "application")) |>
   select(-Visas) |>
-  pivot_wider(names_from = Stage, values_from = Visas_imputed) |>
+  pivot_wider(names_from = Stage, values_from = Visas_imputed, values_fn = mean) |>
   mutate(
     `applications withdrawn` = replace_na(`applications withdrawn`, 0),
     `applications refused` = replace_na(`applications refused`, 0),
