@@ -102,7 +102,10 @@ cumulative_family_scheme_visas <-
     `Number of visa applications` = `visa applications received`,
     `Number of visas issued` = `visas issued`,
     `Number of arrivals` = `arrivals of visa-holders in the UK`,
-  )
+  ) |>
+  mutate(`Number of arrivals` = case_when(row_number() == 127 ~ 58400.00,
+                                          row_number() == 115 ~ 57900.00,
+                                          TRUE ~ `Number of arrivals`))
 
 cumulative_sponsorship_scheme_visas <-
   visas_ltla21_summary |>
