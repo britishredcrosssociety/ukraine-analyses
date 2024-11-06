@@ -4,6 +4,52 @@ library(httr)
 
 # source("R/load Ukraine visa data - Local Authorities.R")
 
+# ---- Load latest homelessness management info (24 February 22 to 31 August 2024) ----
+# No data released between March and August 2024
+# Source: https://www.gov.uk/government/publications/homelessness-management-information-ukrainian-nationals-england
+GET(
+  "https://assets.publishing.service.gov.uk/media/66fd6d2a30536cb927482b31/Ukraine_Homelessness_Pressures_Publication_August_2024.ods",
+  write_disk(tf <- tempfile(fileext = ".ods"))
+)
+
+homelessness_24feb_31aug24_raw <- read_ods(tf, skip = 3, sheet = "Publication")
+
+# Remove empty columns
+homelessness_24feb_31aug24_raw <- homelessness_24feb_31aug24_raw[-c(8, 10, 18)]
+
+names(homelessness_24feb_31aug24_raw) <- c(
+  "lad_code",
+  "lad_name",
+  "Total Ukrainian households owed a prevention or relief duty",
+  "Single household (total)",
+  "Single household (%)",
+  "Household with dependent children (total)",
+  "Household with dependent children (%)",
+  "Prevention and relief",
+  "Family Scheme: Accommodation or arrangement broken down",
+  "Family Scheme: Accommodation not available or suitable on arrival",
+  "Homes for Ukraine Scheme: Accommodation or arrangement broken down",
+  "Homes for Ukraine Scheme: Accommodation not available or suitable on arrival",
+  "Homes for Ukraine Scheme: Rejected sponsors offer",
+  "Extension Scheme",
+  "Other/Not Known",
+  "Temporary Accommodation Snapshot",
+  "Offer of Settled Accomodation"
+)
+
+homelessness_24feb_31aug24_raw <- 
+  homelessness_24feb_31aug24_raw |> 
+  as_tibble() |> 
+  mutate(across(-(lad_code:lad_name), as.numeric))
+
+homelessness_24feb_31aug24_total <- 
+  homelessness_24feb_31aug24_raw |> 
+  slice(3)
+
+homelessness_24feb_31aug24 <- 
+  homelessness_24feb_31aug24_raw |> 
+  filter(str_detect(lad_code, "^E"))
+
 # ---- Load latest homelessness management info (24 February 22 to 31 March 2024) ----
 # Source: https://www.gov.uk/government/publications/homelessness-management-information-ukrainian-nationals-england
 GET(
@@ -1112,6 +1158,7 @@ homelessness_24feb_3jun <-
 # ---- Summary of homelessness ----
 homelessness_total <- 
   bind_rows(
+    homelessness_24feb_31aug24_total |> mutate(Date = ymd("2024-08-31"), Date_text = "31 August"),
     homelessness_24feb_31mar_total |> mutate(Date = ymd("2024-03-31"), Date_text = "31 March"),
     homelessness_24feb_29feb_total |> mutate(Date = ymd("2024-02-29"), Date_text = "29 February"),
     homelessness_24feb_31jan_total |> mutate(Date = ymd("2024-01-31"), Date_text = "31 January"),
@@ -1565,7 +1612,16 @@ homelessness_trends <-
         total_31mar = `Total Ukrainian households owed a prevention or relief duty`, 
         temp_31mar = `Temporary Accommodation Snapshot` 
       )
-  )
+  ) |>
+  left_join(
+    homelessness_24feb_31aug24 |> 
+      select(
+        lad_code, 
+        lad_name, 
+        total_31aug24 = `Total Ukrainian households owed a prevention or relief duty`, 
+        temp_31aug24 = `Temporary Accommodation Snapshot` 
+      )
+  ) 
 
 homelessness_trends <- 
   homelessness_trends |> 
@@ -1660,7 +1716,10 @@ homelessness_trends <-
     temp_29feb = 0,
     
     total_31mar = 0,
-    temp_31mar = 0
+    temp_31mar = 0,
+    
+    total_31aug24 = 0,
+    temp_31aug24 = 0
     
   )) |> 
   mutate(
