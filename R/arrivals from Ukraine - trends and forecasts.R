@@ -1065,7 +1065,7 @@ write_csv(simulated_visas_surge, glue::glue("output-data/simulations/simulation-
 # Plot historical and simulated arrivals for all scenarios ----
 cumulative_visas_by_scheme |>
   ggplot(aes(x = Date, y = `Number of arrivals`)) +
-  geom_col(aes(fill = Scheme), position = "stack", colour = "white") +
+  geom_area(aes(fill = Scheme), position = "stack", colour = "white") +
 
   # Add simulated arrivals - baseline scenario
   geom_ribbon(
