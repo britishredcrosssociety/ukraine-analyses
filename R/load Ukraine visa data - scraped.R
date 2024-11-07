@@ -1671,3 +1671,9 @@ visas_scraped <-
 #   pivot_wider(names_from = Scheme, values_from = Visas) |>
 #   mutate(Arrivals = `Ukraine Family Scheme` + `Ukraine Sponsorship Scheme`)
 
+# Check trends
+# visas_scraped |> 
+#   mutate(Visas = if_else(is.na(Visas), Visas_imputed, Visas)) |> 
+#   ggplot(aes(x = Date, y = Visas)) +
+#   geom_line(aes(colour = Stage)) +
+#   facet_wrap(~Scheme)

@@ -47,7 +47,9 @@ weekly_family_scheme_visas <-
     `Weekly visas issued` = `visas issued` - lag(`visas issued`),
     `Weekly arrivals` = `arrivals of visa-holders in the UK` - lag(`arrivals of visa-holders in the UK`)
   ) |>
-  select(Week, Scheme, starts_with("Weekly"))
+  select(Week, Scheme, starts_with("Weekly")) |> 
+  # Turn NAs into zeros
+  mutate(across(where(is.numeric), \(x) replace_na(x, 0)))
 
 weekly_sponsorship_scheme_visas <-
   visas_ltla21_summary |>
@@ -73,7 +75,32 @@ weekly_sponsorship_scheme_visas <-
     `Weekly arrivals` = `Number of arrivals` - lag(`Number of arrivals`)
   ) |>
   ungroup() |>
-  select(Week, Scheme, starts_with("Weekly"))
+  select(Week, Scheme, starts_with("Weekly")) |> 
+  # Turn NAs into zeros
+  mutate(across(where(is.numeric), \(x) replace_na(x, 0)))
+
+# Since March 2024, the LA-level data has been published fortnightly rather than weekly
+# This creates gaps when forecasting, so create a dataset with the full set of weeks using `expand_grid()`,
+# then impute the 'missing' weeks
+weekly_sponsorship_scheme_visas <- 
+  expand_grid(
+    Week = min(weekly_sponsorship_scheme_visas$Week):max(visas_scraped$Week),
+    Scheme = unique(weekly_sponsorship_scheme_visas$Scheme)
+  ) |> 
+  left_join(weekly_sponsorship_scheme_visas) |> 
+  
+  # Impute missing weeks
+  group_by(Scheme) |>
+  mutate(
+    `Weekly applications` = zoo::na.approx(`Weekly applications`, na.rm = FALSE),
+    `Weekly visas issued` = zoo::na.approx(`Weekly visas issued`, na.rm = FALSE),
+    `Weekly arrivals` = zoo::na.approx(`Weekly arrivals`, na.rm = FALSE)
+  ) |> 
+  
+  # Fill in any remaining NAs - which will be the latest weeks (and, so, couldn't have been imputed)
+  fill(starts_with("Weekly"), .direction = "down") |> 
+  
+  ungroup()
 
 weekly_visas_by_scheme <- bind_rows(weekly_sponsorship_scheme_visas, weekly_family_scheme_visas) |>
   arrange(Week, Scheme) |>
@@ -83,7 +110,22 @@ weekly_visas_by_scheme <- bind_rows(weekly_sponsorship_scheme_visas, weekly_fami
   ) |>
   # Convert week number to date; source: https://stackoverflow.com/a/46183403
   mutate(Date = ymd("2022-01-03") + weeks(Week - 1)) |>
-  relocate(Date)
+  relocate(Date) |> 
+  
+  # Fix NaNs and Infs
+  mutate(
+    `% applications --> issued` = if_else(
+      is.na(`% applications --> issued`) | is.infinite(`% applications --> issued`) | is.null(`% applications --> issued`) | is.nan(`% applications --> issued`),
+      0,
+      `% applications --> issued`
+    ),
+    
+    `% issued --> arrivals` = if_else(
+      is.na(`% issued --> arrivals`) | is.infinite(`% issued --> arrivals`) | is.null(`% issued --> arrivals`) | is.nan(`% issued --> arrivals`),
+      0,
+      `% issued --> arrivals`
+    )
+  )
 
 ## Make a dataframe containing cumulative visa data ----
 # Containing total applications, visas issued, and arrivals for:
@@ -124,7 +166,39 @@ cumulative_sponsorship_scheme_visas <-
   ) |>
   ungroup()
 
-cumulative_visas_by_scheme <- bind_rows(cumulative_sponsorship_scheme_visas, cumulative_family_scheme_visas) |>
+# Since March 2024, the LA-level data has been published fortnightly rather than weekly
+# This creates gaps when forecasting, so:
+# 1. Split the dataset into separate tibbles for weekly and fortnightly data
+# 2. For the fortnightly data, use `expand_grid()` to add rows for the 'missing' weeks, then impute values
+#
+# (Can't do this in one single block of data, unlike above, since there are too many missing values at the start of the dataset, meaning imputation fails)
+cumulative_sponsorship_scheme_visas_weekly_data <- 
+  cumulative_sponsorship_scheme_visas |> 
+  filter(Week < 124)
+
+cumulative_sponsorship_scheme_visas_fortnightly_data <- 
+  expand_grid(
+    Week = 124:max(visas_scraped$Week),  # use the latest week from `visas_scraped` so we have the latest week across all datasets
+    Scheme = unique(cumulative_sponsorship_scheme_visas$Scheme)
+  ) |> 
+  left_join(cumulative_sponsorship_scheme_visas) |>
+  
+  # Impute missing weeks
+  group_by(Scheme) |>
+  mutate(
+    `Number of visa applications` = zoo::na.approx(`Number of visa applications`, na.rm = FALSE),
+    `Number of visas issued` = zoo::na.approx(`Number of visas issued`, na.rm = FALSE),
+    `Number of arrivals` = zoo::na.approx(`Number of arrivals`, na.rm = FALSE)
+  ) |> 
+  
+  # Fill in any remaining NAs - which will be the latest weeks (and, so, couldn't have been imputed)
+  fill(starts_with("Number"), .direction = "down") |> 
+  ungroup()
+
+# Combine weekly and formerly-fortnightly data
+cumulative_sponsorship_scheme_visas <- bind_rows(cumulative_sponsorship_scheme_visas_weekly_data, cumulative_sponsorship_scheme_visas_fortnightly_data)
+
+cumulative_visas_by_scheme <- bind_rows(cumulative_family_scheme_visas, cumulative_sponsorship_scheme_visas) |>
   arrange(Week, Scheme) |>
   mutate(
     `% applications --> issued` = `Number of visas issued` / `Number of visa applications`,
@@ -157,7 +231,9 @@ historical_processing_rates <-
     `Issued visas yet to arrive` = `visas issued` - `arrivals of visa-holders in the UK`,
     `% backlog issued a visa this week` = `Additional visas issued this week` / `This week's application backlog`,
     `% issued visas arriving this week` = `New arrivals this week` / lag(`Issued visas yet to arrive`)
-  )
+  ) |> 
+  # Turn NAs into zeros
+  mutate(across(where(is.numeric), \(x) replace_na(x, 0)))
 
 # Calculate weekly visa issued --> arrival rate for super sponsor and individual sponsor schemes
 historical_processing_rates_sponsorship_schemes <-
@@ -189,7 +265,7 @@ historical_processing_rates |>
 
 # The average conversion rates are pretty similar for family and homes schemes, so just take one rate for simplicity
 mean_applications_issued_rate <- mean(historical_processing_rates$`% backlog issued a visa this week`, na.rm = TRUE)
-min_applications_issued_rate <- min(historical_processing_rates$`% backlog issued a visa this week`, na.rm = TRUE)
+min_applications_issued_rate <- max(0, min(historical_processing_rates$`% backlog issued a visa this week`, na.rm = TRUE))  # Don't let this go below zero
 max_applications_issued_rate <- max(historical_processing_rates$`% backlog issued a visa this week`, na.rm = TRUE)
 
 ## Calculate arrival rates from the pool of visas issued ----
@@ -219,16 +295,19 @@ arrival_rates <-
 # Maximum values for arrival rates can be the initial rates in the data
 max_arrival_rate_family_scheme <- arrival_rates |>
   na.omit() |>
+  filter(`% issued visas arriving this week` > 0) |> 
   filter(Scheme == "Ukraine Family Scheme") |>
   filter(Week == min(Week)) |>
   pull(`% issued visas arriving this week`)
 max_arrival_rate_homes_scheme <- arrival_rates |>
   na.omit() |>
+  filter(`% issued visas arriving this week` > 0) |> 
   filter(Scheme == "Sponsored by individuals") |>
   filter(Week == min(Week)) |>
   pull(`% issued visas arriving this week`)
 max_arrival_rate_govt_scheme <- arrival_rates |>
   na.omit() |>
+  filter(`% issued visas arriving this week` > 0) |> 
   filter(Scheme == "Government 'super sponsored'") |>
   filter(Week == min(Week)) |>
   pull(`% issued visas arriving this week`)
@@ -256,7 +335,7 @@ arrival_rates_summary <-
   group_by(Scheme) |>
   summarise(
     `Mean arrival rate` = mean(`% issued visas arriving this week`, na.rm = TRUE),
-    `Min arrival rate` = min(`% issued visas arriving this week`, na.rm = TRUE),
+    `Min arrival rate` = max(0, min(`% issued visas arriving this week`, na.rm = TRUE)),  # Don't let this go below zero
     `Max arrival rate` = max(`% issued visas arriving this week`, na.rm = TRUE)
   )
 
@@ -560,6 +639,7 @@ visa_backlogs <-
 total_arrivals <-
   cumulative_visas_by_scheme |>
   filter(Week == sim_start_week) |>
+  ungroup() |>  # Just in case
   summarise(`Total arrivals` = sum(`Number of arrivals`)) |>
   pull(`Total arrivals`)
 
@@ -800,7 +880,7 @@ write_csv(simulated_visas_baseline, glue::glue("output-data/simulations/simulati
 plt_sim_baseline <-
   cumulative_visas_by_scheme |>
   ggplot(aes(x = Date, y = `Number of arrivals`)) +
-  geom_col(aes(fill = Scheme), position = "stack", colour = "white") +
+  geom_area(aes(fill = Scheme), position = "stack", colour = "white") +
 
   # Add simulated arrivals
   geom_ribbon(
